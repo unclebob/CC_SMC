@@ -9,7 +9,7 @@ import static org.junit.Assert.assertEquals;
 import static smc.ParserEvent.EOF;
 
 @RunWith(HierarchicalContextRunner.class)
-public class ParserTest{
+public class ParserTest {
   private Lexer lexer;
   private Parser parser;
   private SyntaxBuilder builder;
@@ -180,6 +180,46 @@ public class ParserTest{
         "" +
           "{\n" +
           "  s null null {}\n" +
+          "}\n" +
+          ".\n");
+    }
+
+    @Test
+    public void multipleSuperStates() throws Exception {
+      assertParseResult("{s :x :y - - -}",
+        "" +
+          "{\n" +
+          "  s:x:y null null {}\n" +
+          "}\n" +
+          ".\n");
+    }
+
+    @Test
+    public void multipleEntryActions() throws Exception {
+      assertParseResult("{s <x <y - - -}",
+        "" +
+          "{\n" +
+          "  s <x <y null null {}\n" +
+          "}\n" +
+          ".\n");
+    }
+
+    @Test
+    public void multipleExitActions() throws Exception {
+      assertParseResult("{s >x >y - - -}",
+        "" +
+          "{\n" +
+          "  s >x >y null null {}\n" +
+          "}\n" +
+          ".\n");
+    }
+
+    @Test
+    public void multipleEntryAndExitActionsWithBraces() throws Exception {
+      assertParseResult("{s <{u v} >{w x} - - -}",
+        "" +
+          "{\n" +
+          "  s <u <v >w >x null null {}\n" +
           "}\n" +
           ".\n");
     }

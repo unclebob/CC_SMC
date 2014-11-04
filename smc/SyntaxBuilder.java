@@ -49,15 +49,15 @@ public class SyntaxBuilder implements Builder {
   }
 
   public void setEntryAction() {
-    transition.state.entryAction = parsedName;
+    transition.state.entryActions.add(parsedName);
   }
 
   public void setExitAction() {
-    transition.state.exitAction = parsedName;
+    transition.state.exitActions.add(parsedName);
   }
 
   public void setStateBase() {
-    transition.state.superState = parsedName;
+    transition.state.superStates.add(parsedName);
   }
 
   public void setNextState() {

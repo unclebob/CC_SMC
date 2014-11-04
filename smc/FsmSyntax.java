@@ -21,9 +21,9 @@ public class FsmSyntax {
 
   public static class StateSpec {
     String name;
-    String superState;
-    String entryAction;
-    String exitAction;
+    List<String> superStates = new ArrayList<>();
+    List<String> entryActions = new ArrayList<>();
+    List<String> exitActions = new ArrayList<>();
     boolean abstractState;
   }
 
@@ -95,12 +95,12 @@ public class FsmSyntax {
 
   private String formatStateName(StateSpec stateSpec) {
     String stateName = String.format(stateSpec.abstractState ? "(%s)" : "%s", stateSpec.name);
-    if (stateSpec.superState != null)
-      stateName += ":" + stateSpec.superState;
-    if (stateSpec.entryAction != null)
-      stateName += " <" + stateSpec.entryAction;
-    if (stateSpec.exitAction != null)
-      stateName += " >" + stateSpec.exitAction;
+    for (String superState : stateSpec.superStates)
+      stateName += ":"+superState;
+    for (String entryAction : stateSpec.entryActions)
+      stateName += " <" + entryAction;
+    for (String exitAction : stateSpec.exitActions)
+      stateName += " >" + exitAction;
     return stateName;
   }
 
