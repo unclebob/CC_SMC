@@ -22,7 +22,7 @@ package smc;
 <action> ::= <name>
 <state> ::= <name>
 <event> ::= <name>
- */
+*/
 
 import java.util.function.Consumer;
 
