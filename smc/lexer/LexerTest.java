@@ -1,4 +1,4 @@
-package smc;
+package smc.lexer;
 
 import de.bechte.junit.runners.context.HierarchicalContextRunner;
 import org.junit.Before;

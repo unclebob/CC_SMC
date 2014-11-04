@@ -1,7 +1,12 @@
-package smc;
+package smc.parser;
 
-import static smc.FsmSyntax.*;
-import static smc.FsmSyntax.SyntaxError.Type.*;
+import smc.parser.Builder;
+import smc.parser.FsmSyntax;
+import smc.parser.ParserEvent;
+import smc.parser.ParserState;
+
+import static smc.parser.FsmSyntax.*;
+import static smc.parser.FsmSyntax.SyntaxError.Type.*;
 
 public class SyntaxBuilder implements Builder {
   private FsmSyntax fsm;

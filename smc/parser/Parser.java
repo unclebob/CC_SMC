@@ -1,4 +1,4 @@
-package smc;
+package smc.parser;
 
 /*
 <FSM> ::= <header>* <logic>
@@ -24,10 +24,12 @@ package smc;
 <event> ::= <name>
 */
 
+import smc.lexer.TokenCollector;
+
 import java.util.function.Consumer;
 
-import static smc.ParserEvent.*;
-import static smc.ParserState.*;
+import static smc.parser.ParserEvent.*;
+import static smc.parser.ParserState.*;
 
 public class Parser implements TokenCollector {
   private ParserState state = HEADER;

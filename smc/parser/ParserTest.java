@@ -1,12 +1,13 @@
-package smc;
+package smc.parser;
 
 import de.bechte.junit.runners.context.HierarchicalContextRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import smc.lexer.Lexer;
 
 import static org.junit.Assert.assertEquals;
-import static smc.ParserEvent.EOF;
+import static smc.parser.ParserEvent.EOF;
 
 @RunWith(HierarchicalContextRunner.class)
 public class ParserTest {
