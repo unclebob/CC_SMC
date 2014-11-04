@@ -108,6 +108,4 @@ public class SemanticAnalyzerTest {
       }
     } // Header Errors
   }// Semantic Errors.
-
-  
 }

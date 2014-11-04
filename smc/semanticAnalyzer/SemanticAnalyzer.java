@@ -14,6 +14,16 @@ public class SemanticAnalyzer {
 
   public AbstractSyntaxTree analyze(FsmSyntax fsm) {
     ast = new AbstractSyntaxTree();
+    analyzeHeaders(fsm);
+    return ast;
+  }
+
+  private void analyzeHeaders(FsmSyntax fsm) {
+    setHeaders(fsm);
+    checkMissingHeaders();
+  }
+
+  private void setHeaders(FsmSyntax fsm) {
     for (Header header : fsm.headers) {
       if (isNamed(header, "fsm"))
         setHeader(fsmHeader, header);
@@ -24,17 +34,10 @@ public class SemanticAnalyzer {
       else
         ast.addError(new AnalysisError(INVALID_HEADER, header));
     }
-    if (isNullHeader(actionsHeader))
-      ast.addError(new AnalysisError(AnalysisError.ID.NO_ACTIONS));
-    if (isNullHeader(fsmHeader))
-      ast.addError(new AnalysisError(AnalysisError.ID.NO_FSM));
-    if (isNullHeader(initialHeader))
-      ast.addError(new AnalysisError(AnalysisError.ID.NO_INITIAL));
-    return ast;
   }
 
-  private boolean isNullHeader(Header header) {
-    return header.name == null;
+  private boolean isNamed(Header header, String headerName) {
+    return header.name.equalsIgnoreCase(headerName);
   }
 
   private void setHeader(Header targetHeader, Header header) {
@@ -46,7 +49,16 @@ public class SemanticAnalyzer {
       ast.addError(new AnalysisError(EXTRA_HEADER_IGNORED, header));
   }
 
-  private boolean isNamed(Header header, String headerName) {
-    return header.name.equalsIgnoreCase(headerName);
+  private void checkMissingHeaders() {
+    if (isNullHeader(actionsHeader))
+      ast.addError(new AnalysisError(AnalysisError.ID.NO_ACTIONS));
+    if (isNullHeader(fsmHeader))
+      ast.addError(new AnalysisError(AnalysisError.ID.NO_FSM));
+    if (isNullHeader(initialHeader))
+      ast.addError(new AnalysisError(AnalysisError.ID.NO_INITIAL));
+  }
+
+  private boolean isNullHeader(Header header) {
+    return header.name == null;
   }
 }
