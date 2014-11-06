@@ -4,6 +4,7 @@ import java.util.*;
 
 public class AbstractSyntaxTree {
   public List<AnalysisError> errors = new ArrayList<>();
+  public List<AnalysisError> warnings = new ArrayList<>();
   public Map<String, State> states = new HashMap<>();
   public Set<String> events = new HashSet<>();
   public Set<String> actions = new HashSet<>();
@@ -44,7 +45,14 @@ public class AbstractSyntaxTree {
       NO_INITIAL,
       INVALID_HEADER,
       EXTRA_HEADER_IGNORED,
-      UNDEFINED_STATE, UNDEFINED_SUPER_STATE,
+      UNDEFINED_STATE,
+      UNDEFINED_SUPER_STATE,
+      UNUSED_STATE,
+      DUPLICATE_TRANSITION,
+      ABSTRACT_STATE_USED_AS_NEXT_STATE,
+      CONCRETE_STATE_WITH_NO_EVENT,
+      CONCRETE_STATE_WITH_NO_NEXT_STATE,
+      INCONSISTENT_ABSTRACTION, STATE_ACTIONS_DISORGANIZED,
     };
 
     private ID id;

@@ -142,8 +142,111 @@ public class SemanticAnalyzerTest {
         List<AnalysisError> errors = produceAst("{ss - - - s:ss - - -}").errors;
         assertThat(errors, not(hasItems(new AnalysisError(UNDEFINED_SUPER_STATE, "s2"))));
       }
-    }
+
+      @Test
+      public void unusedStates() throws Exception {
+        List<AnalysisError> errors = produceAst("{s - - -}").errors;
+        assertThat(errors, hasItems(new AnalysisError(UNUSED_STATE, "s")));
+      }
+
+      @Test
+      public void noUnusedStates() throws Exception {
+        List<AnalysisError> errors = produceAst("{s - s -}").errors;
+        assertThat(errors, not(hasItems(new AnalysisError(UNUSED_STATE, "s"))));
+      }
+
+      @Test
+      public void usedAsBaseIsValidUsage() throws Exception {
+        List<AnalysisError> errors = produceAst("{b - - - s:b - s -}").errors;
+        assertThat(errors, not(hasItems(new AnalysisError(UNUSED_STATE, "b"))));
+      }
+    } // State Errors
+
+    public class TransitionErrors {
+      @Test
+      public void duplicateTransitions() throws Exception {
+        List<AnalysisError> errors = produceAst("{s e - - s e - -}").errors;
+        assertThat(errors, hasItems(new AnalysisError(DUPLICATE_TRANSITION, "s(e)")));
+      }
+
+      @Test
+      public void noDuplicateTransitions() throws Exception {
+        List<AnalysisError> errors = produceAst("{s e - -}").errors;
+        assertThat(errors, not(hasItems(new AnalysisError(DUPLICATE_TRANSITION, "s(e)"))));
+      }
+
+      @Test
+      public void abstractStatesCantBeTargets() throws Exception {
+        List<AnalysisError> errors = produceAst("{(as) e - - s e as -}").errors;
+        assertThat(errors, hasItems(new AnalysisError(ABSTRACT_STATE_USED_AS_NEXT_STATE, "s(e)->as")));
+      }
+
+      @Test
+      public void abstractStatesCanBeUsedAsSuperStates() throws Exception {
+        List<AnalysisError> errors = produceAst("{(as) e - - s:as e s -}").errors;
+        assertThat(errors, not(hasItems(new AnalysisError(ABSTRACT_STATE_USED_AS_NEXT_STATE, "s(e)->s"))));
+      }
+
+      @Test
+      public void concreteStatesCantHaveNullEvents() throws Exception {
+        List<AnalysisError> errors = produceAst("{(as) - - - s - - -}").errors;
+        assertThat(errors, not(hasItems(new AnalysisError(CONCRETE_STATE_WITH_NO_EVENT, "as"))));
+        assertThat(errors, hasItems(new AnalysisError(CONCRETE_STATE_WITH_NO_EVENT, "s")));
+      }
+
+      @Test
+      public void concreteStatesCantHaveNullNextStates() throws Exception {
+        List<AnalysisError> errors = produceAst("{(as) e - - s e - -}").errors;
+        assertThat(errors, not(hasItems(new AnalysisError(CONCRETE_STATE_WITH_NO_NEXT_STATE, "as"))));
+        assertThat(errors, hasItems(new AnalysisError(CONCRETE_STATE_WITH_NO_NEXT_STATE, "s")));
+      }
+    } // Transition Errors
   }// Semantic Errors.
+
+  public class Warnings {
+    @Test
+    public void warnIfStateUsedAsBothAbstractAndConcrete() throws Exception {
+      List<AnalysisError> errors = produceAst("{(ias) e - - ias e - - (cas) e - -}").warnings;
+      assertThat(errors, not(hasItems(new AnalysisError(INCONSISTENT_ABSTRACTION, "cas"))));
+      assertThat(errors, hasItems(new AnalysisError(INCONSISTENT_ABSTRACTION, "ias")));
+    }
+
+    @Test
+    public void entryAndExitActionsNotDisorganized() throws Exception {
+      List<AnalysisError> errors = produceAst(
+        "" +
+          "{" +
+          "  s - - - " +
+          "  s - - -" +
+          "  es <x - - - " +
+          "  es <x - - -" +
+          "  xs >x - - -" +
+          "  xs >{x} - - -" +
+          "}").warnings;
+      assertThat(errors, not(hasItems(new AnalysisError(STATE_ACTIONS_DISORGANIZED, "s"))));
+      assertThat(errors, not(hasItems(new AnalysisError(STATE_ACTIONS_DISORGANIZED, "es"))));
+      assertThat(errors, not(hasItems(new AnalysisError(STATE_ACTIONS_DISORGANIZED, "xs"))));
+    }
+
+    @Test
+    public void warnIfStateHasMultipleEntryActionDefinitions() throws Exception {
+      List<AnalysisError> errors = produceAst("{s - - - ds <x - - - ds <y - -}").warnings;
+      assertThat(errors, not(hasItems(new AnalysisError(STATE_ACTIONS_DISORGANIZED, "s"))));
+      assertThat(errors, hasItems(new AnalysisError(STATE_ACTIONS_DISORGANIZED, "ds")));
+    }
+
+    @Test
+    public void warnIfStateHasMultipleExitActionDefinitions() throws Exception {
+      List<AnalysisError> errors = produceAst("{ds >x - - - ds >y - -}").warnings;
+      assertThat(errors, hasItems(new AnalysisError(STATE_ACTIONS_DISORGANIZED, "ds")));
+    }
+
+    @Test
+    public void warnIfStateHasDisorganizedEntryAndExitActions() throws Exception {
+      List<AnalysisError> errors = produceAst("{ds >x - - - ds <y - -}").warnings;
+      assertThat(errors, hasItems(new AnalysisError(STATE_ACTIONS_DISORGANIZED, "ds")));
+    }
+  }
 
   public class Lists {
     @Test
