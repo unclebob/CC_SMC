@@ -2,9 +2,10 @@ package smc.semanticAnalyzer;
 
 import smc.parser.FsmSyntax;
 
-import static smc.parser.FsmSyntax.Header;
-import static smc.semanticAnalyzer.AnalysisError.ID.EXTRA_HEADER_IGNORED;
-import static smc.semanticAnalyzer.AnalysisError.ID.INVALID_HEADER;
+import static smc.parser.FsmSyntax.*;
+import static smc.semanticAnalyzer.AbstractSyntaxTree.*;
+import static smc.semanticAnalyzer.AbstractSyntaxTree.State;
+import static smc.semanticAnalyzer.AbstractSyntaxTree.AnalysisError.ID.*;
 
 public class SemanticAnalyzer {
   private AbstractSyntaxTree ast;
@@ -15,7 +16,37 @@ public class SemanticAnalyzer {
   public AbstractSyntaxTree analyze(FsmSyntax fsm) {
     ast = new AbstractSyntaxTree();
     analyzeHeaders(fsm);
+    createStateEventAndActionLists(fsm);
+    checkUndefinedStates(fsm);
     return ast;
+  }
+
+  private void checkUndefinedStates(FsmSyntax fsm) {
+    for (Transition t : fsm.logic) {
+      for (String superState : t.state.superStates)
+        checkUndefinedState(superState, UNDEFINED_SUPER_STATE);
+
+      for (SubTransition st : t.subTransitions)
+        checkUndefinedState(st.nextState, UNDEFINED_STATE);
+    }
+  }
+
+  private void checkUndefinedState(String referencedState, AnalysisError.ID errorCode) {
+    if (referencedState != null && !ast.states.containsKey(referencedState)) {
+      ast.errors.add(new AnalysisError(errorCode, referencedState));
+    }
+  }
+
+  private void createStateEventAndActionLists(FsmSyntax fsm) {
+    for (Transition t : fsm.logic) {
+      State state = new State(t.state.name);
+      ast.states.put(state.name, state);
+      for (SubTransition st : t.subTransitions) {
+        ast.events.add(st.event);
+        for (String action : st.actions)
+          ast.actions.add(action);
+      }
+    }
   }
 
   private void analyzeHeaders(FsmSyntax fsm) {

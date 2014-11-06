@@ -47,17 +47,17 @@ public class FsmSyntax {
   }
 
   public static class StateSpec {
-    String name;
-    List<String> superStates = new ArrayList<>();
-    List<String> entryActions = new ArrayList<>();
-    List<String> exitActions = new ArrayList<>();
-    boolean abstractState;
+    public String name;
+    public List<String> superStates = new ArrayList<>();
+    public List<String> entryActions = new ArrayList<>();
+    public List<String> exitActions = new ArrayList<>();
+    public boolean abstractState;
   }
 
   public static class SubTransition {
-    String event;
-    String nextState;
-    List<String> actions = new ArrayList<>();
+    public String event;
+    public String nextState;
+    public List<String> actions = new ArrayList<>();
 
     public SubTransition(String event) {
       this.event = event;
@@ -65,10 +65,10 @@ public class FsmSyntax {
   }
 
   public static class SyntaxError {
-    Type type;
-    String msg;
-    int lineNumber;
-    int position;
+    public Type type;
+    public String msg;
+    public int lineNumber;
+    public int position;
 
     public SyntaxError(Type type, String msg, int lineNumber, int position) {
       this.type = type;
