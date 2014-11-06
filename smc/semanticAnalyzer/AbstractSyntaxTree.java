@@ -5,9 +5,12 @@ import java.util.*;
 public class AbstractSyntaxTree {
   public List<AnalysisError> errors = new ArrayList<>();
   public List<AnalysisError> warnings = new ArrayList<>();
-  public Map<String, State> states = new HashMap<>();
+  public SortedMap<String, State> states = new TreeMap<>();
   public Set<String> events = new HashSet<>();
   public Set<String> actions = new HashSet<>();
+  public State initialState;
+  public String actionClass;
+  public String fsmName;
 
   public String toString() {
     return "";
@@ -17,8 +20,21 @@ public class AbstractSyntaxTree {
     errors.add(analysisError);
   }
 
-  public static class State {
+  public String statesToString() {
+    String statesString = "{";
+    for (State s : states.values()) {
+      statesString += s.toString();
+    }
+    return statesString + "}\n";
+  }
+
+  public static class State implements Comparable<State> {
     public String name;
+    public SortedSet<String> entryActions = new TreeSet<>();
+    public SortedSet<String> exitActions = new TreeSet<>();
+    public boolean abstractState = false;
+    public SortedSet<State> superStates = new TreeSet<>();
+    public List<SemanticTransition> transitions = new ArrayList<>();
 
     public State(String name) {
       this.name = name;
@@ -26,15 +42,45 @@ public class AbstractSyntaxTree {
 
     public boolean equals(Object obj) {
       if (obj instanceof State) {
-        State other = (State)obj;
-        return Objects.equals(other.name, name);
-      }
-      else
+        State other = (State) obj;
+        return
+          Objects.equals(other.name, name) &&
+            Objects.equals(other.entryActions, entryActions) &&
+            Objects.equals(other.exitActions, exitActions) &&
+            Objects.equals(other.superStates, superStates) &&
+            Objects.equals(other.transitions, transitions) &&
+            other.abstractState == abstractState;
+      } else
         return false;
     }
 
     public String toString() {
-      return String.format("state: %s", name);
+      String stateString = "\n  ";
+      stateString += abstractState ? ("(" + name + ")") : name;
+      for (State superState : superStates)
+        stateString += " :" + superState.name;
+      for (String entryAction : entryActions)
+        stateString += " <" + entryAction;
+      for (String exitAction : exitActions)
+        stateString += " >" + exitAction;
+      stateString +=  " {\n";
+      for (SemanticTransition st : transitions) {
+        stateString += "    ";
+        String nextStateName = st.nextState == null ? "null" : st.nextState.name;
+        stateString += st.event + " " + nextStateName + " " + "{";
+        boolean firstAction = true;
+        for (String action : st.actions) {
+          stateString += (firstAction ? "" : " ") + action;
+          firstAction = false;
+        }
+        stateString += "}\n";
+      }
+      stateString += "  }\n";
+      return stateString;
+    }
+
+    public int compareTo(State s) {
+      return name.compareTo(s.name);
     }
   }
 
@@ -53,7 +99,7 @@ public class AbstractSyntaxTree {
       CONCRETE_STATE_WITH_NO_EVENT,
       CONCRETE_STATE_WITH_NO_NEXT_STATE,
       INCONSISTENT_ABSTRACTION, STATE_ACTIONS_DISORGANIZED,
-    };
+    }    ;
 
     private ID id;
     private Object extra;
@@ -77,10 +123,16 @@ public class AbstractSyntaxTree {
 
     public boolean equals(Object obj) {
       if (obj instanceof AnalysisError) {
-        AnalysisError other = (AnalysisError)obj;
+        AnalysisError other = (AnalysisError) obj;
         return id == other.id && Objects.equals(extra, other.extra);
       }
       return false;
     }
+  }
+
+  public static class SemanticTransition {
+    public String event;
+    public State nextState;
+    public SortedSet<String> actions = new TreeSet<>();
   }
 }

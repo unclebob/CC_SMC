@@ -90,7 +90,6 @@ public class SemanticAnalyzerTest {
       @Test
       public void nothingMissing() throws Exception {
         List<AnalysisError> errors = produceAst("Initial: f Actions:a Fsm:f {}").errors;
-        assertThat(errors.size(), equalTo(0));
         assertThat(errors, not(hasItems(
           new AnalysisError(NO_INITIAL),
           new AnalysisError(NO_ACTIONS),
@@ -109,6 +108,13 @@ public class SemanticAnalyzerTest {
         List<AnalysisError> errors = produceAst("fsm:f fsm:x{s - - -}").errors;
         assertThat(errors, hasItems(
           new AnalysisError(EXTRA_HEADER_IGNORED, new Header("fsm", "x"))));
+      }
+
+      @Test
+      public void initialStateMustBeDefined() throws Exception {
+        List<AnalysisError> errors = produceAst("initial: i {s - - -}").errors;
+        assertThat(errors, hasItems(
+          new AnalysisError(UNDEFINED_STATE, "initial: i")));
       }
     } // Header Errors
 
@@ -158,6 +164,12 @@ public class SemanticAnalyzerTest {
       @Test
       public void usedAsBaseIsValidUsage() throws Exception {
         List<AnalysisError> errors = produceAst("{b - - - s:b - s -}").errors;
+        assertThat(errors, not(hasItems(new AnalysisError(UNUSED_STATE, "b"))));
+      }
+
+      @Test
+      public void usedAsInitialIsValidUsage() throws Exception {
+        List<AnalysisError> errors = produceAst("initial: b {b - - -}").errors;
         assertThat(errors, not(hasItems(new AnalysisError(UNUSED_STATE, "b"))));
       }
     } // State Errors
@@ -246,7 +258,7 @@ public class SemanticAnalyzerTest {
       List<AnalysisError> errors = produceAst("{ds >x - - - ds <y - -}").warnings;
       assertThat(errors, hasItems(new AnalysisError(STATE_ACTIONS_DISORGANIZED, "ds")));
     }
-  }
+  } // Warnings
 
   public class Lists {
     @Test
@@ -292,5 +304,71 @@ public class SemanticAnalyzerTest {
       assertThat(ast.actions, hasItems("a1", "a2", "a3"));
       assertThat(ast.actions, hasSize(3));
     }
-  }
+  } // Lists
+
+  public class Logic {
+    private String addHeader(String s) {
+      return "initial: s fsm:f actions:a " + s;
+    }
+
+    private void assertSyntaxToAst(String syntax, String ast) {
+      String states = produceAst(addHeader(syntax)).statesToString();
+      assertThat(states, equalTo(ast));
+    }
+
+    @Test
+    public void oneTransition() throws Exception {
+      assertSyntaxToAst("{s e s a}",
+        "" +
+          "{\n" +
+          "  s {\n" +
+          "    e s {a}\n" +
+          "  }\n" +
+          "}\n");
+    }
+
+    @Test
+    public void twoTransitionsAreAggregated() throws Exception {
+      assertSyntaxToAst("{s e1 s a s e2 s a}",
+        "" +
+          "{\n" +
+          "  s {\n" +
+          "    e1 s {a}\n" +
+          "    e2 s {a}\n" +
+          "  }\n" +
+          "}\n");
+    }
+
+    @Test
+    public void entryAndExitsAreAggregated() throws Exception {
+    assertSyntaxToAst("{s <ea1 >xa1 e1 s - s <ea2 >xa2 e2 s -}",
+      "" +
+        "{\n" +
+        "  s <ea1 <ea2 >xa1 >xa2 {\n" +
+        "    e1 s {}\n" +
+        "    e2 s {}\n" +
+        "  }\n" +
+        "}\n");
+    }
+
+    @Test
+    public void superStatesAreAggregated() throws Exception {
+      assertSyntaxToAst("{s:b1 e1 s a s:b2 e2 s a (b1) - - - (b2) - - -}",
+        "" +
+          "{\n" +
+          "  (b1) {\n" +
+          "    null null {}\n" +
+          "  }\n" +
+          "\n" +
+          "  (b2) {\n" +
+          "    null null {}\n" +
+          "  }\n" +
+          "\n" +
+          "  s :b1 :b2 {\n" +
+          "    e1 s {a}\n" +
+          "    e2 s {a}\n" +
+          "  }\n" +
+          "}\n");
+    }
+  } //Logic
 }

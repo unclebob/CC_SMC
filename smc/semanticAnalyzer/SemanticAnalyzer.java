@@ -7,6 +7,7 @@ import java.util.*;
 import static smc.parser.FsmSyntax.*;
 import static smc.semanticAnalyzer.AbstractSyntaxTree.AnalysisError;
 import static smc.semanticAnalyzer.AbstractSyntaxTree.AnalysisError.ID.*;
+import static smc.semanticAnalyzer.AbstractSyntaxTree.SemanticTransition;
 import static smc.semanticAnalyzer.AbstractSyntaxTree.State;
 
 public class SemanticAnalyzer {
@@ -26,6 +27,28 @@ public class SemanticAnalyzer {
     checkForConcreteStatesWithNoEvents(fsm);
     checkForInconsistentAbstraction(fsm);
     checkForDisorganizedStateActions(fsm);
+
+    if (ast.errors.size() == 0) {
+      ast.initialState = ast.states.get(initialHeader.value);
+      ast.actionClass = actionsHeader.value;
+      ast.fsmName = fsmHeader.value;
+      for (Transition t : fsm.logic) {
+        State state = ast.states.get(t.state.name);
+        state.entryActions.addAll(t.state.entryActions);
+        state.exitActions.addAll(t.state.exitActions);
+        state.abstractState |= t.state.abstractState;
+        for (String superStateName : t.state.superStates)
+          state.superStates.add(ast.states.get(superStateName));
+
+        for (SubTransition st : t.subTransitions) {
+          SemanticTransition semanticTransition = new SemanticTransition();
+          semanticTransition.event = st.event;
+          semanticTransition.nextState = st.nextState == null ? null : ast.states.get(st.nextState);
+          semanticTransition.actions.addAll(st.actions);
+          state.transitions.add(semanticTransition);
+        }
+      }
+    }
 
     return ast;
   }
@@ -104,6 +127,7 @@ public class SemanticAnalyzer {
 
   private void checkForUnusedStates(FsmSyntax fsm) {
     Set<String> usedStates = new HashSet<>();
+    usedStates.add(initialHeader.value);
     for (Transition t : fsm.logic) {
       for (String superState : t.state.superStates)
         usedStates.add(superState);
@@ -124,6 +148,9 @@ public class SemanticAnalyzer {
       for (SubTransition st : t.subTransitions)
         checkUndefinedState(st.nextState, UNDEFINED_STATE);
     }
+
+    if (initialHeader.value != null && !ast.states.containsKey(initialHeader.value))
+      ast.errors.add(new AnalysisError(UNDEFINED_STATE, "initial: " + initialHeader.value));
   }
 
   private void checkUndefinedState(String referencedState, AnalysisError.ID errorCode) {
