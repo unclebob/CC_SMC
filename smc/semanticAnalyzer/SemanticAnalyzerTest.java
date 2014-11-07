@@ -198,20 +198,6 @@ public class SemanticAnalyzerTest {
         List<AnalysisError> errors = produceAst("{(as) e - - s:as e s -}").errors;
         assertThat(errors, not(hasItems(new AnalysisError(ABSTRACT_STATE_USED_AS_NEXT_STATE, "s(e)->s"))));
       }
-
-      @Test
-      public void concreteStatesCantHaveNullEvents() throws Exception {
-        List<AnalysisError> errors = produceAst("{(as) - - - s - - -}").errors;
-        assertThat(errors, not(hasItems(new AnalysisError(CONCRETE_STATE_WITH_NO_EVENT, "as"))));
-        assertThat(errors, hasItems(new AnalysisError(CONCRETE_STATE_WITH_NO_EVENT, "s")));
-      }
-
-      @Test
-      public void concreteStatesCantHaveNullNextStates() throws Exception {
-        List<AnalysisError> errors = produceAst("{(as) e - - s e - -}").errors;
-        assertThat(errors, not(hasItems(new AnalysisError(CONCRETE_STATE_WITH_NO_NEXT_STATE, "as"))));
-        assertThat(errors, hasItems(new AnalysisError(CONCRETE_STATE_WITH_NO_NEXT_STATE, "s")));
-      }
     } // Transition Errors
   }// Semantic Errors.
 
@@ -341,27 +327,27 @@ public class SemanticAnalyzerTest {
 
     @Test
     public void entryAndExitsAreAggregated() throws Exception {
-    assertSyntaxToAst("{s <ea1 >xa1 e1 s - s <ea2 >xa2 e2 s -}",
-      "" +
-        "{\n" +
-        "  s <ea1 <ea2 >xa1 >xa2 {\n" +
-        "    e1 s {}\n" +
-        "    e2 s {}\n" +
-        "  }\n" +
-        "}\n");
+      assertSyntaxToAst("{s <ea1 >xa1 e1 s - s <ea2 >xa2 e2 s -}",
+        "" +
+          "{\n" +
+          "  s <ea1 <ea2 >xa1 >xa2 {\n" +
+          "    e1 s {}\n" +
+          "    e2 s {}\n" +
+          "  }\n" +
+          "}\n");
     }
 
     @Test
     public void superStatesAreAggregated() throws Exception {
-      assertSyntaxToAst("{s:b1 e1 s a s:b2 e2 s a (b1) - - - (b2) - - -}",
+      assertSyntaxToAst("{s:b1 e1 s a s:b2 e2 s a (b1) e s - (b2) e s -}",
         "" +
           "{\n" +
           "  (b1) {\n" +
-          "    null null {}\n" +
+          "    e s {}\n" +
           "  }\n" +
           "\n" +
           "  (b2) {\n" +
-          "    null null {}\n" +
+          "    e s {}\n" +
           "  }\n" +
           "\n" +
           "  s :b1 :b2 {\n" +
@@ -370,5 +356,177 @@ public class SemanticAnalyzerTest {
           "  }\n" +
           "}\n");
     }
+
+    @Test
+    public void nullNextStateRefersToSelf() throws Exception {
+      assertSyntaxToAst("{s e - a}",
+        "" +
+          "{\n" +
+          "  s {\n" +
+          "    e s {a}\n" +
+          "  }\n" +
+          "}\n"
+      );
+    }
+
+    @Test
+    public void actionsRemainInOrder() throws Exception {
+      assertSyntaxToAst("{s e s {the quick brown fox jumped over the lazy dogs back}}",
+        "" +
+          "{\n" +
+          "  s {\n" +
+          "    e s {the quick brown fox jumped over the lazy dogs back}\n" +
+          "  }\n" +
+          "}\n");
+    }
   } //Logic
+
+  public class AcceptanceTests {
+    @Test
+    public void subwayTurnstileOne() throws Exception {
+      AbstractSyntaxTree ast = produceAst(
+        "" +
+          "Actions: Turnstile\n" +
+          "FSM: OneCoinTurnstile\n" +
+          "Initial: Locked\n" +
+          "{\n" +
+          "  Locked\tCoin\tUnlocked\t{alarmOff unlock}\n" +
+          "  Locked \tPass\tLocked\t\talarmOn\n" +
+          "  Unlocked\tCoin\tUnlocked\tthankyou\n" +
+          "  Unlocked\tPass\tLocked\t\tlock\n" +
+          "}");
+      assertThat(ast.toString(), equalTo(
+        "" +
+          "Actions: Turnstile\n" +
+          "FSM: OneCoinTurnstile\n" +
+          "Initial: Locked{\n" +
+          "  Locked {\n" +
+          "    Coin Unlocked {alarmOff unlock}\n" +
+          "    Pass Locked {alarmOn}\n" +
+          "  }\n" +
+          "\n" +
+          "  Unlocked {\n" +
+          "    Coin Unlocked {thankyou}\n" +
+          "    Pass Locked {lock}\n" +
+          "  }\n" +
+          "}\n"));
+    }
+
+    @Test
+    public void subwayTurnstileTwo() throws Exception {
+      AbstractSyntaxTree ast = produceAst(
+        "" +
+          "Actions: Turnstile\n" +
+          "FSM: TwoCoinTurnstile\n" +
+          "Initial: Locked\n" +
+          "{\n" +
+          "\tLocked {\n" +
+          "\t\tPass\tAlarming\talarmOn\n" +
+          "\t\tCoin\tFirstCoin\t-\n" +
+          "\t\tReset\tLocked\t{lock alarmOff}\n" +
+          "\t}\n" +
+          "\t\n" +
+          "\tAlarming\tReset\tLocked {lock alarmOff}\n" +
+          "\t\n" +
+          "\tFirstCoin {\n" +
+          "\t\tPass\tAlarming\t-\n" +
+          "\t\tCoin\tUnlocked\tunlock\n" +
+          "\t\tReset\tLocked {lock alarmOff}\n" +
+          "\t}\n" +
+          "\t\n" +
+          "\tUnlocked {\n" +
+          "\t\tPass\tLocked\tlock\n" +
+          "\t\tCoin\t-\t\tthankyou\n" +
+          "\t\tReset\tLocked {lock alarmOff}\n" +
+          "\t}\n" +
+          "}"
+      );
+      assertThat(ast.toString(), equalTo(
+        "" +
+          "Actions: Turnstile\n" +
+          "FSM: TwoCoinTurnstile\n" +
+          "Initial: Locked{\n" +
+          "  Alarming {\n" +
+          "    Reset Locked {lock alarmOff}\n" +
+          "  }\n" +
+          "\n" +
+          "  FirstCoin {\n" +
+          "    Pass Alarming {}\n" +
+          "    Coin Unlocked {unlock}\n" +
+          "    Reset Locked {lock alarmOff}\n" +
+          "  }\n" +
+          "\n" +
+          "  Locked {\n" +
+          "    Pass Alarming {alarmOn}\n" +
+          "    Coin FirstCoin {}\n" +
+          "    Reset Locked {lock alarmOff}\n" +
+          "  }\n" +
+          "\n" +
+          "  Unlocked {\n" +
+          "    Pass Locked {lock}\n" +
+          "    Coin Unlocked {thankyou}\n" +
+          "    Reset Locked {lock alarmOff}\n" +
+          "  }\n" +
+          "}\n"));
+    }
+
+    @Test
+    public void subwayTurnstileThree() throws Exception {
+      AbstractSyntaxTree ast = produceAst(
+        "" +
+          "Actions: Turnstile\n" +
+          "FSM: TwoCoinTurnstile\n" +
+          "Initial: Locked\n" +
+          "{\n" +
+          "    (Base)\tReset\tLocked\tlock\n" +
+          "\n" +
+          "\tLocked : Base {\n" +
+          "\t\tPass\tAlarming\t-\n" +
+          "\t\tCoin\tFirstCoin\t-\n" +
+          "\t}\n" +
+          "\t\n" +
+          "\tAlarming : Base\t<alarmOn >alarmOff -\t-\t-\n" +
+          "\t\n" +
+          "\tFirstCoin : Base {\n" +
+          "\t\tPass\tAlarming\t-\n" +
+          "\t\tCoin\tUnlocked\tunlock\n" +
+          "\t}\n" +
+          "\t\n" +
+          "\tUnlocked : Base {\n" +
+          "\t\tPass\tLocked\tlock\n" +
+          "\t\tCoin\t-\t\tthankyou\n" +
+          "\t}\n" +
+          "}"
+      );
+      assertThat(ast.toString(), equalTo(
+        "" +
+          "Actions: Turnstile\n" +
+          "FSM: TwoCoinTurnstile\n" +
+          "Initial: Locked{\n" +
+          "  Alarming :Base <alarmOn >alarmOff {\n" +
+          "    null Alarming {}\n" +
+          "  }\n" +
+          "\n" +
+          "  (Base) {\n" +
+          "    Reset Locked {lock}\n" +
+          "  }\n" +
+          "\n" +
+          "  FirstCoin :Base {\n" +
+          "    Pass Alarming {}\n" +
+          "    Coin Unlocked {unlock}\n" +
+          "  }\n" +
+          "\n" +
+          "  Locked :Base {\n" +
+          "    Pass Alarming {}\n" +
+          "    Coin FirstCoin {}\n" +
+          "  }\n" +
+          "\n" +
+          "  Unlocked :Base {\n" +
+          "    Pass Locked {lock}\n" +
+          "    Coin Unlocked {thankyou}\n" +
+          "  }\n" +
+          "}\n"));
+    }
+
+  }
 }

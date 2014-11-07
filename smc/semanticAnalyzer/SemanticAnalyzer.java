@@ -73,7 +73,6 @@ public class SemanticAnalyzer {
     checkForUnusedStates(fsm);
     checkForDuplicateTransitions(fsm);
     checkThatAbstractStatesAreNotTargets(fsm);
-    checkForConcreteStatesWithNoEvents(fsm);
     checkForInconsistentAbstraction(fsm);
     checkForDisorganizedStateActions(fsm);
   }
@@ -158,17 +157,6 @@ public class SemanticAnalyzer {
     return abstractStates;
   }
 
-  private void checkForConcreteStatesWithNoEvents(FsmSyntax fsm) {
-    for (Transition t : fsm.logic)
-      if (t.state.abstractState == false)
-        for (SubTransition st : t.subTransitions) {
-          if (st.event == null)
-            ast.errors.add(new AnalysisError(CONCRETE_STATE_WITH_NO_EVENT, t.state.name));
-          if (st.nextState == null)
-            ast.errors.add(new AnalysisError(CONCRETE_STATE_WITH_NO_NEXT_STATE, t.state.name));
-        }
-  }
-
   private void checkForInconsistentAbstraction(FsmSyntax fsm) {
     Set<String> abstractStates = findAbstractStates(fsm);
     for (Transition t : fsm.logic)
@@ -245,7 +233,7 @@ public class SemanticAnalyzer {
   private void compileTransition(State state, SubTransition st) {
     SemanticTransition semanticTransition = new SemanticTransition();
     semanticTransition.event = st.event;
-    semanticTransition.nextState = st.nextState == null ? null : ast.states.get(st.nextState);
+    semanticTransition.nextState = st.nextState == null ? state : ast.states.get(st.nextState);
     semanticTransition.actions.addAll(st.actions);
     state.transitions.add(semanticTransition);
   }

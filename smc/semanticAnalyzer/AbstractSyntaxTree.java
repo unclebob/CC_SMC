@@ -13,7 +13,14 @@ public class AbstractSyntaxTree {
   public String fsmName;
 
   public String toString() {
-    return "";
+    return String.format(
+      "" +
+        "Actions: %s\n" +
+        "FSM: %s\n" +
+        "Initial: %s" +
+        "%s",
+      actionClass, fsmName, initialState.name, statesToString());
+
   }
 
   public void addError(AnalysisError analysisError) {
@@ -116,12 +123,8 @@ public class AbstractSyntaxTree {
       UNUSED_STATE,
       DUPLICATE_TRANSITION,
       ABSTRACT_STATE_USED_AS_NEXT_STATE,
-      CONCRETE_STATE_WITH_NO_EVENT,
-      CONCRETE_STATE_WITH_NO_NEXT_STATE,
       INCONSISTENT_ABSTRACTION, STATE_ACTIONS_DISORGANIZED,
     }
-
-    ;
 
     private ID id;
     private Object extra;
@@ -155,6 +158,6 @@ public class AbstractSyntaxTree {
   public static class SemanticTransition {
     public String event;
     public State nextState;
-    public SortedSet<String> actions = new TreeSet<>();
+    public List<String> actions = new ArrayList<>();
   }
 }
