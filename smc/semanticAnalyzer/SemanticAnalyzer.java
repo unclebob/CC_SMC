@@ -5,10 +5,8 @@ import smc.parser.FsmSyntax;
 import java.util.*;
 
 import static smc.parser.FsmSyntax.*;
-import static smc.semanticAnalyzer.AbstractSyntaxTree.AnalysisError;
+import static smc.semanticAnalyzer.AbstractSyntaxTree.*;
 import static smc.semanticAnalyzer.AbstractSyntaxTree.AnalysisError.ID.*;
-import static smc.semanticAnalyzer.AbstractSyntaxTree.SemanticTransition;
-import static smc.semanticAnalyzer.AbstractSyntaxTree.State;
 
 public class SemanticAnalyzer {
   private AbstractSyntaxTree ast;
@@ -78,14 +76,38 @@ public class SemanticAnalyzer {
   }
 
   private void createStateEventAndActionLists(FsmSyntax fsm) {
+    addStateNamesToStateList(fsm);
+    addEntryAndExitActionsToActionList(fsm);
+    addEventsToEventList(fsm);
+    addTransitionActionsToActionList(fsm);
+  }
+
+  private void addTransitionActionsToActionList(FsmSyntax fsm) {
+    for (Transition t : fsm.logic)
+      for (SubTransition st : t.subTransitions)
+        for (String action : st.actions)
+          ast.actions.add(action);
+  }
+
+  private void addEventsToEventList(FsmSyntax fsm) {
+    for (Transition t : fsm.logic)
+      for (SubTransition st : t.subTransitions)
+        ast.events.add(st.event);
+  }
+
+  private void addEntryAndExitActionsToActionList(FsmSyntax fsm) {
+    for (Transition t : fsm.logic) {
+      for (String entryAction : t.state.entryActions)
+        ast.actions.add(entryAction);
+      for (String exitAction : t.state.exitActions)
+        ast.actions.add(exitAction);
+    }
+  }
+
+  private void addStateNamesToStateList(FsmSyntax fsm) {
     for (Transition t : fsm.logic) {
       State state = new State(t.state.name);
       ast.states.put(state.name, state);
-      for (SubTransition st : t.subTransitions) {
-        ast.events.add(st.event);
-        for (String action : st.actions)
-          ast.actions.add(action);
-      }
     }
   }
 
@@ -109,14 +131,28 @@ public class SemanticAnalyzer {
   private Set<String> findUsedStates(FsmSyntax fsm) {
     Set<String> usedStates = new HashSet<>();
     usedStates.add(initialHeader.value);
-    for (Transition t : fsm.logic) {
-      for (String superState : t.state.superStates)
-        usedStates.add(superState);
-      for (SubTransition st : t.subTransitions)
-        if (st.nextState != null)
-          usedStates.add(st.nextState);
-    }
+    usedStates.addAll(getSuperStates(fsm));
+    usedStates.addAll(getNextStates(fsm));
     return usedStates;
+  }
+
+  private Set<String> getNextStates(FsmSyntax fsm) {
+    Set<String> nextStates = new HashSet<>();
+    for (Transition t : fsm.logic)
+      for (SubTransition st : t.subTransitions)
+        if (st.nextState == null) // implicit use of current state.
+          nextStates.add(t.state.name);
+        else
+          nextStates.add(st.nextState);
+    return nextStates;
+  }
+
+  private Set<String> getSuperStates(FsmSyntax fsm) {
+    Set<String> superStates = new HashSet<>();
+    for (Transition t : fsm.logic)
+      for (String superState : t.state.superStates)
+        superStates.add(superState);
+    return superStates;
   }
 
   private void findStatesDefinedButNotUsed(Set<String> usedStates) {

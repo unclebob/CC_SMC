@@ -151,25 +151,31 @@ public class SemanticAnalyzerTest {
 
       @Test
       public void unusedStates() throws Exception {
-        List<AnalysisError> errors = produceAst("{s - - -}").errors;
+        List<AnalysisError> errors = produceAst("{s e n -}").errors;
         assertThat(errors, hasItems(new AnalysisError(UNUSED_STATE, "s")));
       }
 
       @Test
       public void noUnusedStates() throws Exception {
-        List<AnalysisError> errors = produceAst("{s - s -}").errors;
+        List<AnalysisError> errors = produceAst("{s e s -}").errors;
+        assertThat(errors, not(hasItems(new AnalysisError(UNUSED_STATE, "s"))));
+      }
+
+      @Test
+      public void nextStateNullIsImplicitUse() throws Exception {
+        List<AnalysisError> errors = produceAst("{s e - -}").errors;
         assertThat(errors, not(hasItems(new AnalysisError(UNUSED_STATE, "s"))));
       }
 
       @Test
       public void usedAsBaseIsValidUsage() throws Exception {
-        List<AnalysisError> errors = produceAst("{b - - - s:b - s -}").errors;
+        List<AnalysisError> errors = produceAst("{b e n - s:b e2 s -}").errors;
         assertThat(errors, not(hasItems(new AnalysisError(UNUSED_STATE, "b"))));
       }
 
       @Test
       public void usedAsInitialIsValidUsage() throws Exception {
-        List<AnalysisError> errors = produceAst("initial: b {b - - -}").errors;
+        List<AnalysisError> errors = produceAst("initial: b {b e n -}").errors;
         assertThat(errors, not(hasItems(new AnalysisError(UNUSED_STATE, "b"))));
       }
     } // State Errors
@@ -289,6 +295,12 @@ public class SemanticAnalyzerTest {
       AbstractSyntaxTree ast = produceAst("{s1 e1 - {a1 a2} s2 e2 - {a3 a1}}");
       assertThat(ast.actions, hasItems("a1", "a2", "a3"));
       assertThat(ast.actions, hasSize(3));
+    }
+
+    @Test
+    public void entryAndExitActionsAreCountedAsActions() throws Exception {
+      AbstractSyntaxTree ast = produceAst("{s <ea >xa - - a}");
+      assertThat(ast.actions, hasItems("ea", "xa"));
     }
   } // Lists
 
