@@ -55,28 +55,48 @@ public class AbstractSyntaxTree {
     }
 
     public String toString() {
-      String stateString = "\n  ";
-      stateString += abstractState ? ("(" + name + ")") : name;
-      for (State superState : superStates)
-        stateString += " :" + superState.name;
-      for (String entryAction : entryActions)
-        stateString += " <" + entryAction;
-      for (String exitAction : exitActions)
-        stateString += " >" + exitAction;
-      stateString +=  " {\n";
-      for (SemanticTransition st : transitions) {
-        stateString += "    ";
-        String nextStateName = st.nextState == null ? "null" : st.nextState.name;
-        stateString += st.event + " " + nextStateName + " " + "{";
-        boolean firstAction = true;
-        for (String action : st.actions) {
-          stateString += (firstAction ? "" : " ") + action;
-          firstAction = false;
-        }
-        stateString += "}\n";
+      return
+        String.format("\n  %s {\n%s  }\n",
+          makeStateNameWithAdornments(),
+          makeTransitionStrings());
+    }
+
+    private String makeTransitionStrings() {
+      String transitionStrings = "";
+      for (SemanticTransition st : transitions)
+        transitionStrings += makeTransitionString(st);
+
+      return transitionStrings;
+    }
+
+    private String makeTransitionString(SemanticTransition st) {
+      return String.format("    %s %s {%s}\n", st.event, makeNextStateName(st), makeActions(st));
+    }
+
+    private String makeActions(SemanticTransition st) {
+      String actions = "";
+      boolean firstAction = true;
+      for (String action : st.actions) {
+        actions += (firstAction ? "" : " ") + action;
+        firstAction = false;
       }
-      stateString += "  }\n";
-      return stateString;
+      return actions;
+    }
+
+    private String makeNextStateName(SemanticTransition st) {
+      return st.nextState == null ? "null" : st.nextState.name;
+    }
+
+    private String makeStateNameWithAdornments() {
+      String stateName = "";
+      stateName += abstractState ? ("(" + name + ")") : name;
+      for (State superState : superStates)
+        stateName += " :" + superState.name;
+      for (String entryAction : entryActions)
+        stateName += " <" + entryAction;
+      for (String exitAction : exitActions)
+        stateName += " >" + exitAction;
+      return stateName;
     }
 
     public int compareTo(State s) {
@@ -99,7 +119,9 @@ public class AbstractSyntaxTree {
       CONCRETE_STATE_WITH_NO_EVENT,
       CONCRETE_STATE_WITH_NO_NEXT_STATE,
       INCONSISTENT_ABSTRACTION, STATE_ACTIONS_DISORGANIZED,
-    }    ;
+    }
+
+    ;
 
     private ID id;
     private Object extra;
