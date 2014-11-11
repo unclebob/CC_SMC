@@ -204,6 +204,43 @@ public class SemanticAnalyzerTest {
         List<AnalysisError> errors = produceAst("{(as) e - - s:as e s -}").errors;
         assertThat(errors, not(hasItems(new AnalysisError(ABSTRACT_STATE_USED_AS_NEXT_STATE, "s(e)->s"))));
       }
+
+      @Test
+       public void entryAndExitActionsNotMultiplyDefined() throws Exception {
+         List<AnalysisError> errors = produceAst(
+           "" +
+             "{" +
+             "  s - - - " +
+             "  s - - -" +
+             "  es - - -" +
+             "  es <x - - - " +
+             "  es <x - - -" +
+             "  xs >x - - -" +
+             "  xs >{x} - - -" +
+             "}").errors;
+         assertThat(errors, not(hasItems(new AnalysisError(STATE_ACTIONS_MULTIPLY_DEFINED, "s"))));
+         assertThat(errors, not(hasItems(new AnalysisError(STATE_ACTIONS_MULTIPLY_DEFINED, "es"))));
+         assertThat(errors, not(hasItems(new AnalysisError(STATE_ACTIONS_MULTIPLY_DEFINED, "xs"))));
+       }
+
+       @Test
+       public void warnIfStateHasMultipleEntryActionDefinitions() throws Exception {
+         List<AnalysisError> errors = produceAst("{s - - - ds <x - - - ds <y - - -}").errors;
+         assertThat(errors, not(hasItems(new AnalysisError(STATE_ACTIONS_MULTIPLY_DEFINED, "s"))));
+         assertThat(errors, hasItems(new AnalysisError(STATE_ACTIONS_MULTIPLY_DEFINED, "ds")));
+       }
+
+       @Test
+       public void warnIfStateHasMultipleExitActionDefinitions() throws Exception {
+         List<AnalysisError> errors = produceAst("{ds >x - - - ds >y - -}").errors;
+         assertThat(errors, hasItems(new AnalysisError(STATE_ACTIONS_MULTIPLY_DEFINED, "ds")));
+       }
+
+       @Test
+       public void warnIfStateHasMultiplyDefinedEntryAndExitActions() throws Exception {
+         List<AnalysisError> errors = produceAst("{ds >x - - - ds <y - -}").errors;
+         assertThat(errors, hasItems(new AnalysisError(STATE_ACTIONS_MULTIPLY_DEFINED, "ds")));
+       }
     } // Transition Errors
   }// Semantic Errors.
 
@@ -213,42 +250,6 @@ public class SemanticAnalyzerTest {
       List<AnalysisError> errors = produceAst("{(ias) e - - ias e - - (cas) e - -}").warnings;
       assertThat(errors, not(hasItems(new AnalysisError(INCONSISTENT_ABSTRACTION, "cas"))));
       assertThat(errors, hasItems(new AnalysisError(INCONSISTENT_ABSTRACTION, "ias")));
-    }
-
-    @Test
-    public void entryAndExitActionsNotDisorganized() throws Exception {
-      List<AnalysisError> errors = produceAst(
-        "" +
-          "{" +
-          "  s - - - " +
-          "  s - - -" +
-          "  es <x - - - " +
-          "  es <x - - -" +
-          "  xs >x - - -" +
-          "  xs >{x} - - -" +
-          "}").warnings;
-      assertThat(errors, not(hasItems(new AnalysisError(STATE_ACTIONS_DISORGANIZED, "s"))));
-      assertThat(errors, not(hasItems(new AnalysisError(STATE_ACTIONS_DISORGANIZED, "es"))));
-      assertThat(errors, not(hasItems(new AnalysisError(STATE_ACTIONS_DISORGANIZED, "xs"))));
-    }
-
-    @Test
-    public void warnIfStateHasMultipleEntryActionDefinitions() throws Exception {
-      List<AnalysisError> errors = produceAst("{s - - - ds <x - - - ds <y - -}").warnings;
-      assertThat(errors, not(hasItems(new AnalysisError(STATE_ACTIONS_DISORGANIZED, "s"))));
-      assertThat(errors, hasItems(new AnalysisError(STATE_ACTIONS_DISORGANIZED, "ds")));
-    }
-
-    @Test
-    public void warnIfStateHasMultipleExitActionDefinitions() throws Exception {
-      List<AnalysisError> errors = produceAst("{ds >x - - - ds >y - -}").warnings;
-      assertThat(errors, hasItems(new AnalysisError(STATE_ACTIONS_DISORGANIZED, "ds")));
-    }
-
-    @Test
-    public void warnIfStateHasDisorganizedEntryAndExitActions() throws Exception {
-      List<AnalysisError> errors = produceAst("{ds >x - - - ds <y - -}").warnings;
-      assertThat(errors, hasItems(new AnalysisError(STATE_ACTIONS_DISORGANIZED, "ds")));
     }
   } // Warnings
 
@@ -333,18 +334,6 @@ public class SemanticAnalyzerTest {
           "  s {\n" +
           "    e1 s {a}\n" +
           "    e2 s {a}\n" +
-          "  }\n" +
-          "}\n");
-    }
-
-    @Test
-    public void entryAndExitsAreAggregated() throws Exception {
-      assertSyntaxToAst("{s <ea1 >xa1 e1 s - s <ea2 >xa2 e2 s -}",
-        "" +
-          "{\n" +
-          "  s <ea1 <ea2 >xa1 >xa2 {\n" +
-          "    e1 s {}\n" +
-          "    e2 s {}\n" +
           "  }\n" +
           "}\n");
     }

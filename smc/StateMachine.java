@@ -1,0 +1,57 @@
+package smc;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class StateMachine {
+  public List<String> states = new ArrayList<>();
+  public List<String> events = new ArrayList<>();
+  public List<String> actions = new ArrayList<>();
+  public Header header;
+  public List<Transition> transitions = new ArrayList<>();
+
+  public String transitionsToString() {
+    String result = "";
+    for (Transition t : transitions)
+      result += t + "\n";
+    return result;
+  }
+
+  public static class Header {
+    public String initial;
+    public String fsm;
+    public String actions;
+  }
+
+  public static class Transition {
+    public String toString() {
+      String result = String.format("%s {\n", currentState);
+      for (SubTransition st : subTransitions)
+        result += st.toString();
+      result += "}";
+      return result;
+    }
+
+    public String currentState;
+    public List<SubTransition> subTransitions = new ArrayList<>();
+  }
+
+  public static class SubTransition {
+    public String toString() {
+      return String.format("  %s %s {%s}\n", event, nextState, actionsToString());
+    }
+
+    private String actionsToString() {
+      String result = "";
+      if (actions.size() == 0)
+        return result;
+      for (String action : actions)
+        result += action + " ";
+      return result.substring(0, result.length()-1);
+    }
+
+    public String event;
+    public String nextState;
+    public List<String> actions = new ArrayList<>();
+  }
+}

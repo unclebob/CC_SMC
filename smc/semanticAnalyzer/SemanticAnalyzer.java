@@ -72,7 +72,7 @@ public class SemanticAnalyzer {
     checkForDuplicateTransitions(fsm);
     checkThatAbstractStatesAreNotTargets(fsm);
     checkForInconsistentAbstraction(fsm);
-    checkForDisorganizedStateActions(fsm);
+    checkForMultiplyDefinedStateActions(fsm);
   }
 
   private void createStateEventAndActionLists(FsmSyntax fsm) {
@@ -200,16 +200,22 @@ public class SemanticAnalyzer {
         ast.warnings.add(new AnalysisError(INCONSISTENT_ABSTRACTION, t.state.name));
   }
 
-  private void checkForDisorganizedStateActions(FsmSyntax fsm) {
+  private void checkForMultiplyDefinedStateActions(FsmSyntax fsm) {
     Map<String, String> firstActionsForState = new HashMap<>();
     for (Transition t : fsm.logic) {
-      String actionsKey = makeActionsKey(t);
-      if (firstActionsForState.containsKey(t.state.name)) {
-        if (!firstActionsForState.get(t.state.name).equals(actionsKey))
-          ast.warnings.add(new AnalysisError(STATE_ACTIONS_DISORGANIZED, t.state.name));
-      } else
-        firstActionsForState.put(t.state.name, actionsKey);
+      if (specifiesStateActions(t)) {
+        String actionsKey = makeActionsKey(t);
+        if (firstActionsForState.containsKey(t.state.name)) {
+          if (!firstActionsForState.get(t.state.name).equals(actionsKey))
+            ast.errors.add(new AnalysisError(STATE_ACTIONS_MULTIPLY_DEFINED, t.state.name));
+        } else
+          firstActionsForState.put(t.state.name, actionsKey);
+      }
     }
+  }
+
+  private boolean specifiesStateActions(Transition t) {
+    return t.state.entryActions.size() != 0 || t.state.exitActions.size() != 0;
   }
 
   private String makeActionsKey(Transition t) {
