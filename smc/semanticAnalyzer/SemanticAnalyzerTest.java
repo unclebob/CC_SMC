@@ -380,6 +380,17 @@ public class SemanticAnalyzerTest {
           "  }\n" +
           "}\n");
     }
+
+    @Test
+    public void entryAndExitActionsRemainInOrder() throws Exception {
+      assertSyntaxToAst("{s <{d o} <g >{c a} >t e s a}",
+        "" +
+          "{\n" +
+          "  s <d <o <g >c >a >t {\n" +
+          "    e s {a}\n" +
+          "  }\n" +
+          "}\n");
+    }
   } //Logic
 
   public class AcceptanceTests {

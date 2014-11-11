@@ -17,6 +17,13 @@ public class StateMachine {
     return result;
   }
 
+  public String toString() {
+    String transitionsString = transitionsToString().replaceAll("\n", "\n  ");
+    transitionsString = transitionsString.substring(0, transitionsString.length()-2);
+    return String.format("Initial: %s\nFsm: %s\nActions:%s\n{\n  %s}\n",
+      header.initial, header.fsm, header.actions, transitionsString);
+  }
+
   public static class Header {
     public String initial;
     public String fsm;

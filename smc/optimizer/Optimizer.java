@@ -3,9 +3,11 @@ package smc.optimizer;
 import smc.StateMachine;
 import smc.semanticAnalyzer.AbstractSyntaxTree;
 
-import static smc.StateMachine.Header;
-import static smc.StateMachine.SubTransition;
-import static smc.StateMachine.Transition;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import static smc.StateMachine.*;
 import static smc.semanticAnalyzer.AbstractSyntaxTree.SemanticTransition;
 import static smc.semanticAnalyzer.AbstractSyntaxTree.State;
 
@@ -24,29 +26,89 @@ public class Optimizer {
 
   private void addTransitions() {
     for (State s : ast.states.values())
-      addTransitionsForState(s);
+      if (!s.abstractState)
+        new StateOptimizer(s).optimize();
   }
 
-  private void addTransitionsForState(State state) {
-    Transition transition = new Transition();
-    transition.currentState = state.name;
-    addSubTransitions(transition, state);
-    sm.transitions.add(transition);
-  }
+  private class StateOptimizer {
+    private State currentState;
 
-  private void addSubTransitions(Transition transition, State s) {
-    for (SemanticTransition semanticTransition : s.transitions)
-      addSubTransition(semanticTransition, transition);
-  }
+    public StateOptimizer(State currentState) {
+      this.currentState = currentState;
+    }
 
-  private void addSubTransition(SemanticTransition semanticTransition, Transition transition) {
-    SubTransition subTransition = new SubTransition();
-    subTransition.event = semanticTransition.event;
-    subTransition.nextState = semanticTransition.nextState.name;
-    subTransition.actions.addAll(semanticTransition.nextState.entryActions);
-    subTransition.actions.addAll(semanticTransition.actions);
-    subTransition.actions.addAll(semanticTransition.nextState.exitActions);
-    transition.subTransitions.add(subTransition);
+    public void optimize() {
+      addTransitionsForState();
+    }
+
+    private void addTransitionsForState() {
+      Transition transition = new Transition();
+      transition.currentState = currentState.name;
+      addSubTransitions(transition);
+      sm.transitions.add(transition);
+    }
+
+    private void addSubTransitions(Transition transition) {
+      List<State> hierarchy = new ArrayList<>();
+      findAllStatesInHierarchy(currentState, hierarchy);
+
+      for (State superState : hierarchy)
+        addStateTransitions(transition, superState);
+    }
+
+    private void addStateTransitions(Transition transition, State state) {
+      for (SemanticTransition semanticTransition : state.transitions)
+        if (semanticTransition.event != null)
+          addSubTransition(semanticTransition, transition);
+    }
+
+    private void addSubTransition(SemanticTransition semanticTransition, Transition transition) {
+      SubTransition subTransition = new SubTransition();
+      new SubTransitionOptimizer(semanticTransition, subTransition).optimize();
+      transition.subTransitions.add(subTransition);
+    }
+
+    private class SubTransitionOptimizer {
+      private SemanticTransition semanticTransition;
+      private SubTransition subTransition;
+
+      public SubTransitionOptimizer(SemanticTransition semanticTransition, SubTransition subTransition) {
+        this.semanticTransition = semanticTransition;
+        this.subTransition = subTransition;
+      }
+
+      public void optimize() {
+        subTransition.event = semanticTransition.event;
+        subTransition.nextState = semanticTransition.nextState.name;
+        addExitActions(currentState);
+        addEntryActions(semanticTransition.nextState);
+        subTransition.actions.addAll(semanticTransition.actions);
+      }
+
+      private void addEntryActions(State entryState) {
+        List<State> hierarchy = new ArrayList<>();
+        findAllStatesInHierarchy(entryState, hierarchy);
+        for (State superState : hierarchy) {
+          subTransition.actions.addAll(superState.entryActions);
+        }
+      }
+      private void addExitActions(State exitState) {
+        List<State> hierarchy = new ArrayList<>();
+        findAllStatesInHierarchy(exitState, hierarchy);
+        Collections.reverse(hierarchy);
+        for (State superState : hierarchy) {
+          subTransition.actions.addAll(superState.exitActions);
+        }
+      }
+    } // SubTransitionOptimizer
+  } // StateOptimizer
+
+  private void findAllStatesInHierarchy(State state, List<State> hierarchy) {
+    for (State superState : state.superStates) {
+      if (!hierarchy.contains(superState))
+        findAllStatesInHierarchy(superState, hierarchy);
+    }
+    hierarchy.add(state);
   }
 
   private void addHeader(AbstractSyntaxTree ast) {

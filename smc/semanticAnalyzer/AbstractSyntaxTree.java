@@ -37,8 +37,8 @@ public class AbstractSyntaxTree {
 
   public static class State implements Comparable<State> {
     public String name;
-    public SortedSet<String> entryActions = new TreeSet<>();
-    public SortedSet<String> exitActions = new TreeSet<>();
+    public List<String> entryActions = new ArrayList<>();
+    public List<String> exitActions = new ArrayList<>();
     public boolean abstractState = false;
     public SortedSet<State> superStates = new TreeSet<>();
     public List<SemanticTransition> transitions = new ArrayList<>();
