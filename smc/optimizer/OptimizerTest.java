@@ -2,6 +2,7 @@ package smc.optimizer;
 
 import de.bechte.junit.runners.context.HierarchicalContextRunner;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import smc.StateMachine;
@@ -15,6 +16,7 @@ import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 import static smc.parser.ParserEvent.EOF;
 
 @RunWith(HierarchicalContextRunner.class)
@@ -284,6 +286,18 @@ public class OptimizerTest {
           "  e i {}\n" +
           "}\n"
       );
+    }
+
+    @Ignore
+    @Test
+    public void overridingTransitions() throws Exception {
+      fail();
+    }
+
+    @Ignore
+    @Test
+    public void eliminationOfDuplicateTransitions() throws Exception {
+      fail();
     }
   }// Super State Transitions
 

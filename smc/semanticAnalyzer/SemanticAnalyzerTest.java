@@ -178,6 +178,67 @@ public class SemanticAnalyzerTest {
         List<AnalysisError> errors = produceAst("initial: b {b e n -}").errors;
         assertThat(errors, not(hasItems(new AnalysisError(UNUSED_STATE, "b"))));
       }
+
+      @Test
+      public void errorIfSuperStatesHaveConflictingTransitions() throws Exception {
+        List<AnalysisError> errors = produceAst(
+          "" +
+            "FSM: f Actions: act Initial: s" +
+            "{" +
+            "  (ss1) e1 s1 -" +
+            "  (ss2) e1 s2 -" +
+            "  s :ss1 :ss2 e2 s3 a" +
+            "  s2 e s -" +
+            "  s1 e s -" +
+            "  s3 e s -" +
+            "}").errors;
+        assertThat(errors, hasItems(new AnalysisError(CONFLICTING_SUPERSTATES, "s|e1")));
+      }
+
+      @Test
+      public void noErrorForOverriddenTransition() throws Exception {
+        List<AnalysisError> errors = produceAst(
+          "" +
+            "FSM: f Actions: act Initial: s" +
+            "{" +
+            "  (ss1) e1 s1 -" +
+            "  s :ss1 e1 s3 a" +
+            "  s1 e s -" +
+            "  s3 e s -" +
+            "}").errors;
+        assertThat(errors, not(hasItems(new AnalysisError(CONFLICTING_SUPERSTATES, "s|e1"))));
+      }
+
+      @Test
+      public void noErrorIfSuperStatesHaveIdenticalTransitions() throws Exception {
+        List<AnalysisError> errors = produceAst(
+          "" +
+            "FSM: f Actions: act Initial: s" +
+            "{" +
+            "  (ss1) e1 s1 ax" +
+            "  (ss2) e1 s1 ax" +
+            "  s :ss1 :ss2 e2 s3 a" +
+            "  s1 e s -" +
+            "  s3 e s -" +
+            "}").errors;
+        assertThat(errors, not(hasItems(new AnalysisError(CONFLICTING_SUPERSTATES, "s|e1"))));
+      }
+
+      @Test
+      public void errorIfSuperstatesHaveDifferentActionsInSameTransitions() throws Exception {
+        List<AnalysisError> errors = produceAst(
+          "" +
+            "FSM: f Actions: act Initial: s" +
+            "{" +
+            "  (ss1) e1 s1 a1" +
+            "  (ss2) e1 s1 a2" +
+            "  s :ss1 :ss2 e2 s3 a" +
+            "  s1 e s -" +
+            "  s3 e s -" +
+            "}").errors;
+        assertThat(errors, hasItems(new AnalysisError(CONFLICTING_SUPERSTATES, "s|e1")));
+
+      }
     } // State Errors
 
     public class TransitionErrors {
@@ -206,41 +267,41 @@ public class SemanticAnalyzerTest {
       }
 
       @Test
-       public void entryAndExitActionsNotMultiplyDefined() throws Exception {
-         List<AnalysisError> errors = produceAst(
-           "" +
-             "{" +
-             "  s - - - " +
-             "  s - - -" +
-             "  es - - -" +
-             "  es <x - - - " +
-             "  es <x - - -" +
-             "  xs >x - - -" +
-             "  xs >{x} - - -" +
-             "}").errors;
-         assertThat(errors, not(hasItems(new AnalysisError(STATE_ACTIONS_MULTIPLY_DEFINED, "s"))));
-         assertThat(errors, not(hasItems(new AnalysisError(STATE_ACTIONS_MULTIPLY_DEFINED, "es"))));
-         assertThat(errors, not(hasItems(new AnalysisError(STATE_ACTIONS_MULTIPLY_DEFINED, "xs"))));
-       }
+      public void entryAndExitActionsNotMultiplyDefined() throws Exception {
+        List<AnalysisError> errors = produceAst(
+          "" +
+            "{" +
+            "  s - - - " +
+            "  s - - -" +
+            "  es - - -" +
+            "  es <x - - - " +
+            "  es <x - - -" +
+            "  xs >x - - -" +
+            "  xs >{x} - - -" +
+            "}").errors;
+        assertThat(errors, not(hasItems(new AnalysisError(STATE_ACTIONS_MULTIPLY_DEFINED, "s"))));
+        assertThat(errors, not(hasItems(new AnalysisError(STATE_ACTIONS_MULTIPLY_DEFINED, "es"))));
+        assertThat(errors, not(hasItems(new AnalysisError(STATE_ACTIONS_MULTIPLY_DEFINED, "xs"))));
+      }
 
-       @Test
-       public void warnIfStateHasMultipleEntryActionDefinitions() throws Exception {
-         List<AnalysisError> errors = produceAst("{s - - - ds <x - - - ds <y - - -}").errors;
-         assertThat(errors, not(hasItems(new AnalysisError(STATE_ACTIONS_MULTIPLY_DEFINED, "s"))));
-         assertThat(errors, hasItems(new AnalysisError(STATE_ACTIONS_MULTIPLY_DEFINED, "ds")));
-       }
+      @Test
+      public void errorIfStateHasMultipleEntryActionDefinitions() throws Exception {
+        List<AnalysisError> errors = produceAst("{s - - - ds <x - - - ds <y - - -}").errors;
+        assertThat(errors, not(hasItems(new AnalysisError(STATE_ACTIONS_MULTIPLY_DEFINED, "s"))));
+        assertThat(errors, hasItems(new AnalysisError(STATE_ACTIONS_MULTIPLY_DEFINED, "ds")));
+      }
 
-       @Test
-       public void warnIfStateHasMultipleExitActionDefinitions() throws Exception {
-         List<AnalysisError> errors = produceAst("{ds >x - - - ds >y - -}").errors;
-         assertThat(errors, hasItems(new AnalysisError(STATE_ACTIONS_MULTIPLY_DEFINED, "ds")));
-       }
+      @Test
+      public void errorIfStateHasMultipleExitActionDefinitions() throws Exception {
+        List<AnalysisError> errors = produceAst("{ds >x - - - ds >y - -}").errors;
+        assertThat(errors, hasItems(new AnalysisError(STATE_ACTIONS_MULTIPLY_DEFINED, "ds")));
+      }
 
-       @Test
-       public void warnIfStateHasMultiplyDefinedEntryAndExitActions() throws Exception {
-         List<AnalysisError> errors = produceAst("{ds >x - - - ds <y - -}").errors;
-         assertThat(errors, hasItems(new AnalysisError(STATE_ACTIONS_MULTIPLY_DEFINED, "ds")));
-       }
+      @Test
+      public void errorIfStateHasMultiplyDefinedEntryAndExitActions() throws Exception {
+        List<AnalysisError> errors = produceAst("{ds >x - - - ds <y - -}").errors;
+        assertThat(errors, hasItems(new AnalysisError(STATE_ACTIONS_MULTIPLY_DEFINED, "ds")));
+      }
     } // Transition Errors
   }// Semantic Errors.
 

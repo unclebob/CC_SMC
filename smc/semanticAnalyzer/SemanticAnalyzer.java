@@ -248,6 +248,8 @@ public class SemanticAnalyzer {
         State state = compileState(t);
         compileTransitions(t, state);
       }
+
+      new SuperClassCrawler().checkSuperClassTransitions();
     }
   }
 
@@ -278,5 +280,98 @@ public class SemanticAnalyzer {
     semanticTransition.nextState = st.nextState == null ? state : ast.states.get(st.nextState);
     semanticTransition.actions.addAll(st.actions);
     state.transitions.add(semanticTransition);
+  }
+
+  private class SuperClassCrawler {
+    class TransitionTuple {
+      TransitionTuple(String currentState, String event, String nextState, List<String> actions) {
+        this.currentState = currentState;
+        this.event = event;
+        this.nextState = nextState;
+        this.actions = actions;
+      }
+
+      public int hashCode() {
+        return Objects.hash(currentState, event, nextState, actions);
+      }
+
+      public boolean equals(Object obj) {
+        if (obj instanceof TransitionTuple) {
+          TransitionTuple tt = (TransitionTuple) obj;
+          return
+            Objects.equals(currentState, tt.currentState) &&
+              Objects.equals(event, tt.event) &&
+              Objects.equals(nextState, tt.nextState) &&
+              Objects.equals(actions, tt.actions);
+        }
+        return false;
+      }
+
+      String currentState;
+      String event;
+      String nextState;
+      List<String> actions;
+    }
+
+    private State concreteState = null;
+    private Map<String, TransitionTuple> transitionTuples;
+
+    private void checkSuperClassTransitions() {
+      for (State state : ast.states.values()) {
+        if (state.abstractState == false) {
+          concreteState = state;
+          transitionTuples = new HashMap<>();
+          checkTransitionsForState(concreteState);
+        }
+      }
+    }
+
+    private void checkTransitionsForState(State state) {
+      for (State superState : state.superStates)
+        checkTransitionsForState(superState);
+      checkStateForPreviouslyDefinedTransition(state);
+    }
+
+    private void checkStateForPreviouslyDefinedTransition(State state) {
+      for (SemanticTransition st : state.transitions)
+        checkTransitionForPreviousDefinition(state, st);
+    }
+
+    private void checkTransitionForPreviousDefinition(State state, SemanticTransition st) {
+      TransitionTuple thisTuple = new TransitionTuple(state.name, st.event, st.nextState.name, st.actions);
+      if (transitionTuples.containsKey(thisTuple.event)) {
+        determineIfThePreviousDefinitionIsAnError(state, thisTuple);
+      } else
+        transitionTuples.put(thisTuple.event, thisTuple);
+    }
+
+    private void determineIfThePreviousDefinitionIsAnError(State state, TransitionTuple thisTuple) {
+      TransitionTuple previousTuple = transitionTuples.get(thisTuple.event);
+      if (!transitionsHaveSameOutcomes(thisTuple, previousTuple))
+        checkForOverriddenTransition(state, thisTuple, previousTuple);
+    }
+
+    private void checkForOverriddenTransition(State state, TransitionTuple thisTuple, TransitionTuple previousTuple) {
+      State definingState = ast.states.get(previousTuple.currentState);
+      if (!isSuperStateOf(definingState, state)) {
+        ast.errors.add(new AnalysisError(CONFLICTING_SUPERSTATES, concreteState.name + "|" + thisTuple.event));
+      } else
+        transitionTuples.put(thisTuple.event, thisTuple);
+    }
+
+    private boolean transitionsHaveSameOutcomes(TransitionTuple t1, TransitionTuple t2) {
+      return
+        Objects.equals(t1.nextState, t2.nextState) &&
+          Objects.equals(t1.actions, t2.actions);
+    }
+  }
+
+  private boolean isSuperStateOf(State possibleSuperState, State state) {
+    if (state == possibleSuperState)
+      return true;
+    for (State superState : state.superStates)
+      if (isSuperStateOf(possibleSuperState, superState))
+        return true;
+    return false;
   }
 }
