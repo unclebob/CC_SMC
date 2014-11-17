@@ -3,6 +3,9 @@ package smc;
 import java.util.ArrayList;
 import java.util.List;
 
+// This is the final output of the finite state machine parser.
+// Code generators will use this format as their input.
+
 public class StateMachine {
   public List<String> states = new ArrayList<>();
   public List<String> events = new ArrayList<>();

@@ -2,7 +2,6 @@ package smc.optimizer;
 
 import de.bechte.junit.runners.context.HierarchicalContextRunner;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import smc.StateMachine;
@@ -16,7 +15,6 @@ import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
 import static smc.parser.ParserEvent.EOF;
 
 @RunWith(HierarchicalContextRunner.class)
@@ -207,8 +205,8 @@ public class OptimizerTest {
           "}",
         "" +
           "i {\n" +
-          "  be s {ba}\n" +
           "  e s {a}\n" +
+          "  be s {ba}\n" +
           "}\n" +
           "s {\n" +
           "  e i {}\n" +
@@ -231,10 +229,10 @@ public class OptimizerTest {
           "}",
         "" +
           "i {\n" +
+          "  e s {a}\n" +
+          "  b2e s {b2a}\n" +
           "  b1e1 s {b1a1}\n" +
           "  b1e2 s {b1a2}\n" +
-          "  b2e s {b2a}\n" +
-          "  e s {a}\n" +
           "}\n" +
           "s {\n" +
           "  e i {}\n" +
@@ -254,9 +252,9 @@ public class OptimizerTest {
           "}",
         "" +
           "i {\n" +
-          "  b1e s {b1a}\n" +
-          "  b2e s {b2a}\n" +
           "  e s {a}\n" +
+          "  b2e s {b2a}\n" +
+          "  b1e s {b1a}\n" +
           "}\n" +
           "s {\n" +
           "  e i {}\n" +
@@ -277,10 +275,10 @@ public class OptimizerTest {
           "}",
         "" +
           "i {\n" +
-          "  be s {ba}\n" +
-          "  b1e s {b1a}\n" +
-          "  b2e s {b2a}\n" +
           "  e s {a}\n" +
+          "  b2e s {b2a}\n" +
+          "  b1e s {b1a}\n" +
+          "  be s {ba}\n" +
           "}\n" +
           "s {\n" +
           "  e i {}\n" +
@@ -288,16 +286,47 @@ public class OptimizerTest {
       );
     }
 
-    @Ignore
     @Test
     public void overridingTransitions() throws Exception {
-      fail();
+      assertOptimization(
+        "" +
+          "{" +
+          "  (b) e s2 a2" +
+          "  i:b e s a" +
+          "  s e i -" +
+          "  s2 e i -" +
+          "}",
+        "" +
+          "i {\n" +
+          "  e s {a}\n" +
+          "}\n" +
+          "s {\n" +
+          "  e i {}\n" +
+          "}\n" +
+          "s2 {\n" +
+          "  e i {}\n" +
+          "}\n"
+      );
     }
 
-    @Ignore
     @Test
     public void eliminationOfDuplicateTransitions() throws Exception {
-      fail();
+      assertOptimization(
+        "" +
+          "{" +
+          "  (b) e s a" +
+          "  i:b e s a" +
+          "  s e i -" +
+          "}",
+        "" +
+          "i {\n" +
+          "  e s {a}\n" +
+          "}\n" +
+          "s {\n" +
+          "  e i {}\n" +
+          "}\n"
+      );
+
     }
   }// Super State Transitions
 
@@ -339,19 +368,19 @@ public class OptimizerTest {
           "    Reset Locked {alarmOff lock}\n" +
           "  }\n" +
           "  FirstCoin {\n" +
-          "    Reset Locked {lock}\n" +
           "    Pass Alarming {alarmOn}\n" +
           "    Coin Unlocked {unlock}\n" +
+          "    Reset Locked {lock}\n" +
           "  }\n" +
           "  Locked {\n" +
-          "    Reset Locked {lock}\n" +
           "    Pass Alarming {alarmOn}\n" +
           "    Coin FirstCoin {}\n" +
+          "    Reset Locked {lock}\n" +
           "  }\n" +
           "  Unlocked {\n" +
-          "    Reset Locked {lock}\n" +
           "    Pass Locked {lock}\n" +
           "    Coin Unlocked {thankyou}\n" +
+          "    Reset Locked {lock}\n" +
           "  }\n" +
           "}\n"));
     }
