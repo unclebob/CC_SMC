@@ -4,12 +4,10 @@ import de.bechte.junit.runners.context.HierarchicalContextRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import smcsrc.smc.lexer.Lexer;
-import smcsrc.smc.parser.Parser;
-import smcsrc.smc.parser.SyntaxBuilder;
+import smc.lexer.Lexer;
 
 import static org.junit.Assert.assertEquals;
-import static smcsrc.smc.parser.ParserEvent.EOF;
+import static smc.parser.ParserEvent.EOF;
 
 @RunWith(HierarchicalContextRunner.class)
 public class ParserTest {

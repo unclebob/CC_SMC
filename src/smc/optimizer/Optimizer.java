@@ -1,7 +1,7 @@
-package smcsrc.smc.optimizer;
+package smc.optimizer;
 
-import smcsrc.smc.StateMachine;
-import smcsrc.smc.semanticAnalyzer.AbstractSyntaxTree;
+import smc.StateMachine;
+import smc.semanticAnalyzer.AbstractSyntaxTree;
 
 import java.util.*;
 

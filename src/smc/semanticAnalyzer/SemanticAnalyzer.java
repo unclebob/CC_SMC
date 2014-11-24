@@ -1,12 +1,12 @@
-package smcsrc.smc.semanticAnalyzer;
+package smc.semanticAnalyzer;
 
-import smcsrc.smc.parser.FsmSyntax;
+import smc.parser.FsmSyntax;
 
 import java.util.*;
 
-import static smcsrc.smc.parser.FsmSyntax.*;
-import static smcsrc.smc.semanticAnalyzer.AbstractSyntaxTree.*;
-import static smcsrc.smc.semanticAnalyzer.AbstractSyntaxTree.AnalysisError.ID.*;
+import static smc.parser.FsmSyntax.*;
+import static smc.semanticAnalyzer.AbstractSyntaxTree.*;
+import static smc.semanticAnalyzer.AbstractSyntaxTree.AnalysisError.ID.*;
 
 public class SemanticAnalyzer {
   private AbstractSyntaxTree ast;

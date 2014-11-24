@@ -1,4 +1,4 @@
-package smcsrc.smc.parser;
+package smc.parser;
 
 public interface Builder {
   void newHeaderWithName();

@@ -1,4 +1,4 @@
-package smcsrc.smc;
+package smc;
 
 import java.util.ArrayList;
 import java.util.List;

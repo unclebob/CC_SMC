@@ -1,4 +1,4 @@
-package smcsrc.smc.generators.nestedSwitchCaseGenerator;
+package smc.generators.nestedSwitchCaseGenerator;
 
 import java.util.ArrayList;
 import java.util.List;

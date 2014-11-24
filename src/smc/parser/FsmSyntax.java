@@ -1,4 +1,4 @@
-package smcsrc.smc.parser;
+package smc.parser;
 
 import java.util.ArrayList;
 import java.util.List;

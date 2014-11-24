@@ -1,7 +1,7 @@
-package smcsrc.smc.implementers;
+package smc.implementers;
 
-import smcsrc.smc.generators.nestedSwitchCaseGenerator.NSCNode;
-import smcsrc.smc.generators.nestedSwitchCaseGenerator.NSCNodeVisitor;
+import smc.generators.nestedSwitchCaseGenerator.NSCNode;
+import smc.generators.nestedSwitchCaseGenerator.NSCNodeVisitor;
 
 import java.util.List;
 

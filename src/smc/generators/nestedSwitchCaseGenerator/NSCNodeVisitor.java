@@ -1,4 +1,4 @@
-package smcsrc.smc.generators.nestedSwitchCaseGenerator;
+package smc.generators.nestedSwitchCaseGenerator;
 
 public interface NSCNodeVisitor {
   void visit(NSCNode.SwitchCaseNode switchCaseNode);

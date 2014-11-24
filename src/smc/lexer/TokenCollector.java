@@ -1,4 +1,4 @@
-package smcsrc.smc.lexer;
+package smc.lexer;
 
 public interface TokenCollector {
   void openBrace(int line, int pos);

@@ -4,11 +4,9 @@ import de.bechte.junit.runners.context.HierarchicalContextRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import smcsrc.smc.lexer.Lexer;
-import smcsrc.smc.parser.Parser;
-import smcsrc.smc.parser.SyntaxBuilder;
-import smcsrc.smc.semanticAnalyzer.AbstractSyntaxTree;
-import smcsrc.smc.semanticAnalyzer.SemanticAnalyzer;
+import smc.lexer.Lexer;
+import smc.parser.Parser;
+import smc.parser.SyntaxBuilder;
 
 import java.util.List;
 
@@ -19,11 +17,11 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.IsCollectionContaining.hasItems;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertEquals;
-import static smcsrc.smc.parser.FsmSyntax.Header;
-import static smcsrc.smc.parser.ParserEvent.EOF;
-import static smcsrc.smc.semanticAnalyzer.AbstractSyntaxTree.AnalysisError;
-import static smcsrc.smc.semanticAnalyzer.AbstractSyntaxTree.AnalysisError.ID.*;
-import static smcsrc.smc.semanticAnalyzer.AbstractSyntaxTree.State;
+import static smc.parser.FsmSyntax.Header;
+import static smc.parser.ParserEvent.EOF;
+import static smc.semanticAnalyzer.AbstractSyntaxTree.AnalysisError;
+import static smc.semanticAnalyzer.AbstractSyntaxTree.AnalysisError.ID.*;
+import static smc.semanticAnalyzer.AbstractSyntaxTree.State;
 
 @RunWith(HierarchicalContextRunner.class)
 public class SemanticAnalyzerTest {

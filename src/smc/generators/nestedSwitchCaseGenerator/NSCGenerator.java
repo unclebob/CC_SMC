@@ -1,6 +1,6 @@
-package smcsrc.smc.generators.nestedSwitchCaseGenerator;
+package smc.generators.nestedSwitchCaseGenerator;
 
-import smcsrc.smc.StateMachine;
+import smc.StateMachine;
 
 public class NSCGenerator {
   private NSCNode.EnumNode stateEnumNode;

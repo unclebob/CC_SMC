@@ -1,4 +1,4 @@
-package smcsrc.smc.semanticAnalyzer;
+package smc.semanticAnalyzer;
 
 import java.util.*;
 

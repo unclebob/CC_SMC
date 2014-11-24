@@ -1,4 +1,4 @@
-package smcsrc.smc.parser;
+package smc.parser;
 
 /*
 <FSM> ::= <header>* <logic>
@@ -24,7 +24,7 @@ package smcsrc.smc.parser;
 <event> ::= <name>
 */
 
-import smcsrc.smc.lexer.TokenCollector;
+import smc.lexer.TokenCollector;
 
 import java.util.function.Consumer;
 

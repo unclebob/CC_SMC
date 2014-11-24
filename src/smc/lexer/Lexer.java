@@ -1,4 +1,4 @@
-package smcsrc.smc.lexer;
+package smc.lexer;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

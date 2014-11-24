@@ -4,19 +4,18 @@ import de.bechte.junit.runners.context.HierarchicalContextRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import smcsrc.smc.StateMachine;
-import smcsrc.smc.lexer.Lexer;
-import smcsrc.smc.optimizer.Optimizer;
-import smcsrc.smc.parser.Parser;
-import smcsrc.smc.parser.SyntaxBuilder;
-import smcsrc.smc.semanticAnalyzer.AbstractSyntaxTree;
-import smcsrc.smc.semanticAnalyzer.SemanticAnalyzer;
+import smc.StateMachine;
+import smc.lexer.Lexer;
+import smc.parser.Parser;
+import smc.parser.SyntaxBuilder;
+import smc.semanticAnalyzer.AbstractSyntaxTree;
+import smc.semanticAnalyzer.SemanticAnalyzer;
 
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
-import static smcsrc.smc.parser.ParserEvent.EOF;
+import static smc.parser.ParserEvent.EOF;
 
 @RunWith(HierarchicalContextRunner.class)
 public class OptimizerTest {

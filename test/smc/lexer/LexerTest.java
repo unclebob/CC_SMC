@@ -4,8 +4,6 @@ import de.bechte.junit.runners.context.HierarchicalContextRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import smcsrc.smc.lexer.Lexer;
-import smcsrc.smc.lexer.TokenCollector;
 
 import static org.junit.Assert.assertEquals;
 

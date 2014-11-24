@@ -1,12 +1,12 @@
-import smcsrc.smc.StateMachine;
-import smcsrc.smc.generators.nestedSwitchCaseGenerator.NSCGenerator;
-import smcsrc.smc.implementers.JavaNestedSwitchCaseImplementer;
-import smcsrc.smc.lexer.Lexer;
-import smcsrc.smc.optimizer.Optimizer;
-import smcsrc.smc.parser.Parser;
-import smcsrc.smc.parser.SyntaxBuilder;
-import smcsrc.smc.semanticAnalyzer.AbstractSyntaxTree;
-import smcsrc.smc.semanticAnalyzer.SemanticAnalyzer;
+import smc.StateMachine;
+import smc.generators.nestedSwitchCaseGenerator.NSCGenerator;
+import smc.implementers.JavaNestedSwitchCaseImplementer;
+import smc.lexer.Lexer;
+import smc.optimizer.Optimizer;
+import smc.parser.Parser;
+import smc.parser.SyntaxBuilder;
+import smc.semanticAnalyzer.AbstractSyntaxTree;
+import smc.semanticAnalyzer.SemanticAnalyzer;
 
 import java.io.IOException;
 import java.nio.file.FileSystems;
@@ -14,7 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static smcsrc.smc.parser.ParserEvent.EOF;
+import static smc.parser.ParserEvent.EOF;
 
 public class smc {
   public static void main(String[] args) throws IOException {
