@@ -42,7 +42,7 @@ public class JavaNestedSwitchCaseImplementerTest {
 
   private void assertGenerated(String stt, String switchCase) {
     StateMachine sm = produceStateMachine(stt);
-    JavaNestedSwitchCaseImplementer implementer = new JavaNestedSwitchCaseImplementer();
+    JavaNestedSwitchCaseImplementer implementer = new JavaNestedSwitchCaseImplementer("thePackage");
     generator.generate(sm).accept(implementer);
     assertThat(implementer.getOutput(), equalTo(switchCase));
   }
@@ -58,6 +58,7 @@ public class JavaNestedSwitchCaseImplementerTest {
         "  I E I A" +
         "}",
       "" +
+        "package thePackage;\n" +
         "public abstract class fsm implements acts {\n" +
         "public abstract void unhandledTransition(String state, String event);\n" +
         "private enum State {I}\n" +

@@ -7,6 +7,11 @@ import java.util.List;
 
 public class JavaNestedSwitchCaseImplementer implements NSCNodeVisitor {
   private String output = "";
+  private String javaPackage;
+
+  public JavaNestedSwitchCaseImplementer(String javaPackage) {
+    this.javaPackage = javaPackage;
+  }
 
   private String commaList(List<String> names) {
     String commaList = "";
@@ -53,6 +58,8 @@ public class JavaNestedSwitchCaseImplementer implements NSCNodeVisitor {
   }
 
   public void visit(NSCNode.FSMClassNode fsmClassNode) {
+    if (javaPackage != null)
+      output += "package " + javaPackage + ";\n";
     output += String.format("public abstract class %s implements %s {\n", fsmClassNode.className, fsmClassNode.actionsName);
     output += "public abstract void unhandledTransition(String state, String event);\n";
     fsmClassNode.stateEnum.accept(this);

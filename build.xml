@@ -12,7 +12,7 @@
         <mkdir dir="build/jar"/>
         <jar destfile="build/jar/smc.jar" basedir="build/classes">
             <manifest>
-                <attribute name="Main-Class" value="smc"/>
+                <attribute name="Main-Class" value="smc/SMC"/>
             </manifest>
         </jar>
     </target>
