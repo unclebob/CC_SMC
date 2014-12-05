@@ -3,6 +3,9 @@ package smc.implementers;
 import smc.Utilities;
 import smc.generators.nestedSwitchCaseGenerator.NSCNodeVisitor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static smc.generators.nestedSwitchCaseGenerator.NSCNode.*;
 
 public class CNestedSwitchCaseImplementer implements NSCNodeVisitor {
@@ -10,6 +13,7 @@ public class CNestedSwitchCaseImplementer implements NSCNodeVisitor {
   private String actionsName;
   private String fsmHeader = "";
   private String fsmImplementation = "";
+  private List<Error> errors = new ArrayList<>();
 
   public void visit(SwitchCaseNode switchCaseNode) {
     fsmImplementation += String.format("switch (%s) {\n", switchCaseNode.variableName);
@@ -62,6 +66,10 @@ public class CNestedSwitchCaseImplementer implements NSCNodeVisitor {
   }
 
   public void visit(FSMClassNode fsmClassNode) {
+    if (fsmClassNode.actionsName == null) {
+      errors.add(Error.NO_ACTION);
+      return;
+    }
     actionsName = fsmClassNode.actionsName;
     fsmName = fsmClassNode.className;
 
@@ -121,4 +129,10 @@ public class CNestedSwitchCaseImplementer implements NSCNodeVisitor {
   public String getFsmImplementation() {
     return fsmImplementation;
   }
+
+  public List<Error> getErrors() {
+    return errors;
+  }
+
+  public enum Error {NO_ACTION}
 }

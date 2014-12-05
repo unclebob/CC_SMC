@@ -12,6 +12,7 @@ import smc.parser.SyntaxBuilder;
 import smc.semanticAnalyzer.AbstractSyntaxTree;
 import smc.semanticAnalyzer.SemanticAnalyzer;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static smc.parser.ParserEvent.EOF;
@@ -42,7 +43,23 @@ public class CNestedSwitchCaseImplementerTest {
   }
 
   @Test
-  public void oneTransitionWithPackageAndActions() throws Exception {
+  public void noAction_shouldBeError() throws Exception {
+    CNestedSwitchCaseImplementer implementer = new CNestedSwitchCaseImplementer();
+    StateMachine sm = produceStateMachine("" +
+      "Initial: I\n" +
+      "Fsm: fsm\n" +
+      "{" +
+      "  I E I A" +
+      "}");
+    NSCNode generatedFsm = generator.generate(sm);
+    generatedFsm.accept(implementer);
+    assertThat(implementer.getErrors().size(), is(1));
+    assertThat(implementer.getErrors().get(0), is(CNestedSwitchCaseImplementer.Error.NO_ACTION));
+  }
+
+
+  @Test
+  public void oneTransition() throws Exception {
     CNestedSwitchCaseImplementer implementer = new CNestedSwitchCaseImplementer();
     StateMachine sm = produceStateMachine("" +
       "Initial: I\n" +

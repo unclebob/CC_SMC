@@ -3,6 +3,7 @@ package smc;
 import com.cleancoder.args.Args;
 import com.cleancoder.args.ArgsException;
 import smc.generators.nestedSwitchCaseGenerator.NSCGenerator;
+import smc.implementers.CNestedSwitchCaseImplementer;
 import smc.implementers.JavaNestedSwitchCaseImplementer;
 import smc.lexer.Lexer;
 import smc.optimizer.Optimizer;
@@ -54,8 +55,8 @@ public class SMC {
       if (argParser.has('l'))
         language = argParser.getString('l');
 
-      String fileName = args[argParser.nextArgument()];
-      String smContent = new String(Files.readAllBytes(Paths.get(fileName)));
+      String sourceFileName = args[argParser.nextArgument()];
+      String smContent = new String(Files.readAllBytes(Paths.get(sourceFileName)));
 
       SyntaxBuilder syntaxBuilder = new SyntaxBuilder();
       Parser parser = new Parser(syntaxBuilder);
@@ -79,19 +80,39 @@ public class SMC {
         AbstractSyntaxTree ast = analyzer.analyze(fsm);
         smc.StateMachine stateMachine = optimizer.optimize(ast);
 
-        JavaNestedSwitchCaseImplementer implementer = new JavaNestedSwitchCaseImplementer(javaPackage);
-        generator.generate(stateMachine).accept(implementer);
+        if (language.equalsIgnoreCase("java")) {
+          JavaNestedSwitchCaseImplementer implementer = new JavaNestedSwitchCaseImplementer(javaPackage);
+          generator.generate(stateMachine).accept(implementer);
 
-        String outputFileName = stateMachine.header.fsm + ".java";
+          String outputFileName = stateMachine.header.fsm + ".java";
 
-        Path outputPath;
-        if (outputDirectory == null)
-          outputPath = FileSystems.getDefault().getPath(outputFileName);
-        else
-          outputPath = FileSystems.getDefault().getPath(outputDirectory, outputFileName);
+          Files.write(getOutputPath(outputFileName), implementer.getOutput().getBytes());
+        } else if (language.equalsIgnoreCase("c")) {
+          CNestedSwitchCaseImplementer implementer = new CNestedSwitchCaseImplementer();
+          generator.generate(stateMachine).accept(implementer);
+          if (implementer.getErrors().size() > 0) {
+            for (CNestedSwitchCaseImplementer.Error error : implementer.getErrors())
+              System.out.println("Implementation error: " + error.name());
+          } else {
+            String outputFilePrefix = stateMachine.header.fsm.toLowerCase();
+            String headerFileName = outputFilePrefix + ".h";
+            String implementationFileName = outputFilePrefix + ".c";
 
-        Files.write(outputPath, implementer.getOutput().getBytes());
+            Files.write(getOutputPath(headerFileName), implementer.getFsmHeader().getBytes());
+            Files.write(getOutputPath(implementationFileName), implementer.getFsmImplementation().getBytes());
+          }
+        }
+
       }
+    }
+
+    private Path getOutputPath(String outputFileName) {
+      Path outputPath;
+      if (outputDirectory == null)
+        outputPath = FileSystems.getDefault().getPath(outputFileName);
+      else
+        outputPath = FileSystems.getDefault().getPath(outputDirectory, outputFileName);
+      return outputPath;
     }
   }
 }
