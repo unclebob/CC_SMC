@@ -113,7 +113,6 @@ public class AbstractSyntaxTree {
 
   public static class AnalysisError {
     public enum ID {
-      NO_ACTIONS,
       NO_FSM,
       NO_INITIAL,
       INVALID_HEADER,

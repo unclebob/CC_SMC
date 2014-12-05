@@ -53,8 +53,6 @@ public class SemanticAnalyzer {
   }
 
   private void checkMissingHeaders() {
-    if (isNullHeader(actionsHeader))
-      ast.addError(new AnalysisError(AnalysisError.ID.NO_ACTIONS));
     if (isNullHeader(fsmHeader))
       ast.addError(new AnalysisError(AnalysisError.ID.NO_FSM));
     if (isNullHeader(initialHeader))
@@ -92,7 +90,8 @@ public class SemanticAnalyzer {
   private void addEventsToEventList(FsmSyntax fsm) {
     for (Transition t : fsm.logic)
       for (SubTransition st : t.subTransitions)
-        ast.events.add(st.event);
+        if (st.event != null)
+          ast.events.add(st.event);
   }
 
   private void addEntryAndExitActionsToActionList(FsmSyntax fsm) {

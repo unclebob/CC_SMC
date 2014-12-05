@@ -91,7 +91,7 @@ public class NSCGeneratorTest {
     }
 
     public void visit(DefaultCaseNode defaultCaseNode) {
-      output += " default unhandled;";
+      output += String.format(" default(%s);", defaultCaseNode.state);
     }
 
     public void visit(FSMClassNode fsmClassNode) {
@@ -113,7 +113,7 @@ public class NSCGeneratorTest {
     public void OneTransition() throws Exception {
       assertGenerated(
         "{I e I a}",
-        "s state {case I {s event {case e {setState(State.I) a() } default unhandled;}}}");
+        "s state {case I {s event {case e {setState(State.I) a() } default(I);}}}");
     }
 
     @Test
@@ -121,8 +121,8 @@ public class NSCGeneratorTest {
       assertGenerated("{I e1 S a1 S e2 I a2}",
         "" +
           "s state {" +
-          "case I {s event {case e1 {setState(State.S) a1() } default unhandled;}}" +
-          "case S {s event {case e2 {setState(State.I) a2() } default unhandled;}}" +
+          "case I {s event {case e1 {setState(State.S) a1() } default(I);}}" +
+          "case S {s event {case e2 {setState(State.I) a2() } default(S);}}" +
           "}");
     }
 
@@ -139,9 +139,9 @@ public class NSCGeneratorTest {
         "" +
           "s state {" +
           "case I {s event {case e1 {setState(State.S) a1() }" +
-          "case e2 {setState(State.I) a2() } default unhandled;}}" +
+          "case e2 {setState(State.I) a2() } default(I);}}" +
           "case S {s event {case e1 {setState(State.I) a3() }" +
-          "case e2 {setState(State.S) a4() } default unhandled;}}}");
+          "case e2 {setState(State.S) a4() } default(S);}}}");
     }
   } // SwitchCase Tests.
 

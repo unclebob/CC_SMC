@@ -1,9 +1,8 @@
 package smc.implementers;
 
+import smc.Utilities;
 import smc.generators.nestedSwitchCaseGenerator.NSCNode;
 import smc.generators.nestedSwitchCaseGenerator.NSCNodeVisitor;
-
-import java.util.List;
 
 public class JavaNestedSwitchCaseImplementer implements NSCNodeVisitor {
   private String output = "";
@@ -11,16 +10,6 @@ public class JavaNestedSwitchCaseImplementer implements NSCNodeVisitor {
 
   public JavaNestedSwitchCaseImplementer(String javaPackage) {
     this.javaPackage = javaPackage;
-  }
-
-  private String commaList(List<String> names) {
-    String commaList = "";
-    boolean first = true;
-    for (String name : names) {
-      commaList += (first ? "" : ",") + name;
-      first = false;
-    }
-    return commaList;
   }
 
   public void visit(NSCNode.SwitchCaseNode switchCaseNode) {
@@ -43,7 +32,7 @@ public class JavaNestedSwitchCaseImplementer implements NSCNodeVisitor {
   }
 
   public void visit(NSCNode.EnumNode enumNode) {
-    output += String.format("private enum %s {%s}\n", enumNode.name, commaList(enumNode.enumerators));
+    output += String.format("private enum %s {%s}\n", enumNode.name, Utilities.commaList(enumNode.enumerators));
 
   }
 
@@ -60,13 +49,23 @@ public class JavaNestedSwitchCaseImplementer implements NSCNodeVisitor {
   public void visit(NSCNode.FSMClassNode fsmClassNode) {
     if (javaPackage != null)
       output += "package " + javaPackage + ";\n";
-    output += String.format("public abstract class %s implements %s {\n", fsmClassNode.className, fsmClassNode.actionsName);
+
+    String actionsName = fsmClassNode.actionsName;
+    if (actionsName == null)
+      output += String.format("public abstract class %s {\n", fsmClassNode.className);
+    else
+      output += String.format("public abstract class %s implements %s {\n", fsmClassNode.className, actionsName);
+
     output += "public abstract void unhandledTransition(String state, String event);\n";
     fsmClassNode.stateEnum.accept(this);
     fsmClassNode.eventEnum.accept(this);
     fsmClassNode.stateProperty.accept(this);
     fsmClassNode.delegators.accept(this);
     fsmClassNode.handleEvent.accept(this);
+    if (actionsName == null) {
+      for (String action : fsmClassNode.actions)
+        output += String.format("protected abstract void %s();\n", action);
+    }
     output += "}\n";
   }
 

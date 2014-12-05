@@ -115,6 +115,7 @@ public interface NSCNode {
     public HandleEventNode handleEvent;
     public String className;
     public String actionsName;
+    public List<String> actions;
 
     public void accept(NSCNodeVisitor visitor) {
       visitor.visit(this);
@@ -148,6 +149,12 @@ public interface NSCNode {
   }
 
     public class DefaultCaseNode implements NSCNode {
+      public String state;
+
+      public DefaultCaseNode(String state) {
+        this.state = state;
+      }
+
       public void accept(NSCNodeVisitor visitor) {
         visitor.visit(this);
       }

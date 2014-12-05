@@ -55,7 +55,6 @@ public class SemanticAnalyzerTest {
       public void noHeaders() throws Exception {
         List<AnalysisError> errors = produceAst("{}").errors;
         assertThat(errors, hasItems(
-          new AnalysisError(NO_ACTIONS),
           new AnalysisError(NO_FSM),
           new AnalysisError(NO_INITIAL)));
       }
@@ -66,14 +65,12 @@ public class SemanticAnalyzerTest {
         assertThat(errors, not(hasItems(
           new AnalysisError(NO_FSM),
           new AnalysisError(NO_INITIAL))));
-        assertThat(errors, hasItems(new AnalysisError(NO_ACTIONS)));
       }
 
       @Test
       public void missingFsm() throws Exception {
         List<AnalysisError> errors = produceAst("actions:a Initial:i {}").errors;
         assertThat(errors, not(hasItems(
-          new AnalysisError(NO_ACTIONS),
           new AnalysisError(NO_INITIAL))));
         assertThat(errors, hasItems(new AnalysisError(NO_FSM)));
       }
@@ -81,9 +78,7 @@ public class SemanticAnalyzerTest {
       @Test
       public void missingInitial() throws Exception {
         List<AnalysisError> errors = produceAst("Actions:a Fsm:f {}").errors;
-        assertThat(errors, not(hasItems(
-          new AnalysisError(NO_ACTIONS),
-          new AnalysisError(NO_FSM))));
+        assertThat(errors, not(hasItems(new AnalysisError(NO_FSM))));
         assertThat(errors, hasItems(new AnalysisError(NO_INITIAL)));
       }
 
@@ -92,7 +87,6 @@ public class SemanticAnalyzerTest {
         List<AnalysisError> errors = produceAst("Initial: f Actions:a Fsm:f {}").errors;
         assertThat(errors, not(hasItems(
           new AnalysisError(NO_INITIAL),
-          new AnalysisError(NO_ACTIONS),
           new AnalysisError(NO_FSM))));
       }
 
@@ -350,6 +344,12 @@ public class SemanticAnalyzerTest {
       AbstractSyntaxTree ast = produceAst("{s1 e1 - - s2 e2 - - s3 e1 - -}");
       assertThat(ast.events, hasItems("e1", "e2"));
       assertThat(ast.events, hasSize(2));
+    }
+
+    @Test
+    public void noNullEvents() throws Exception {
+      AbstractSyntaxTree ast = produceAst("{(s1) - - -}");
+      assertThat(ast.events, hasSize(0));
     }
 
     @Test

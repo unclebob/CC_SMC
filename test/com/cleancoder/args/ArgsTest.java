@@ -1,16 +1,20 @@
 package com.cleancoder.args;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
 import static com.cleancoder.args.ArgsException.ErrorCode.*;
+import static org.junit.Assert.*;
 
-public class ArgsTest extends TestCase {
+public class ArgsTest {
+
+  @Test
   public void testCreateWithNoSchemaOrArguments() throws Exception {
     Args args = new Args("", new String[0]);
     assertEquals(0, args.nextArgument());
   }
 
 
+  @Test
   public void testWithNoSchemaButWithOneArgument() throws Exception {
     try {
       new Args("", new String[]{"-x"});
@@ -21,6 +25,7 @@ public class ArgsTest extends TestCase {
     }
   }
 
+  @Test
   public void testWithNoSchemaButWithMultipleArguments() throws Exception {
     try {
       new Args("", new String[]{"-x", "-y"});
@@ -32,6 +37,7 @@ public class ArgsTest extends TestCase {
 
   }
 
+  @Test
   public void testNonLetterSchema() throws Exception {
     try {
       new Args("*", new String[]{});
@@ -42,6 +48,7 @@ public class ArgsTest extends TestCase {
     }
   }
 
+  @Test
   public void testInvalidArgumentFormat() throws Exception {
     try {
       new Args("f~", new String[]{});
@@ -52,12 +59,14 @@ public class ArgsTest extends TestCase {
     }
   }
 
+  @Test
   public void testSimpleBooleanPresent() throws Exception {
     Args args = new Args("x", new String[]{"-x"});
     assertEquals(true, args.getBoolean('x'));
     assertEquals(1, args.nextArgument());
   }
 
+  @Test
   public void testSimpleStringPresent() throws Exception {
     Args args = new Args("x*", new String[]{"-x", "param"});
     assertTrue(args.has('x'));
@@ -65,6 +74,7 @@ public class ArgsTest extends TestCase {
     assertEquals(2, args.nextArgument());
   }
 
+  @Test
   public void testMissingStringArgument() throws Exception {
     try {
       new Args("x*", new String[]{"-x"});
@@ -75,6 +85,7 @@ public class ArgsTest extends TestCase {
     }
   }
 
+  @Test
   public void testSpacesInFormat() throws Exception {
     Args args = new Args("x, y", new String[]{"-xy"});
     assertTrue(args.has('x'));
@@ -82,6 +93,7 @@ public class ArgsTest extends TestCase {
     assertEquals(1, args.nextArgument());
   }
 
+  @Test
   public void testSimpleIntPresent() throws Exception {
     Args args = new Args("x#", new String[]{"-x", "42"});
     assertTrue(args.has('x'));
@@ -89,6 +101,7 @@ public class ArgsTest extends TestCase {
     assertEquals(2, args.nextArgument());
   }
 
+  @Test
   public void testInvalidInteger() throws Exception {
     try {
       new Args("x#", new String[]{"-x", "Forty two"});
@@ -101,6 +114,7 @@ public class ArgsTest extends TestCase {
 
   }
 
+  @Test
   public void testMissingInteger() throws Exception {
     try {
       new Args("x#", new String[]{"-x"});
@@ -111,12 +125,14 @@ public class ArgsTest extends TestCase {
     }
   }
 
+  @Test
   public void testSimpleDoublePresent() throws Exception {
     Args args = new Args("x##", new String[]{"-x", "42.3"});
     assertTrue(args.has('x'));
     assertEquals(42.3, args.getDouble('x'), .001);
   }
 
+  @Test
   public void testInvalidDouble() throws Exception {
     try {
       new Args("x##", new String[]{"-x", "Forty two"});
@@ -128,6 +144,7 @@ public class ArgsTest extends TestCase {
     }
   }
 
+  @Test
   public void testMissingDouble() throws Exception {
     try {
       new Args("x##", new String[]{"-x"});
@@ -138,6 +155,7 @@ public class ArgsTest extends TestCase {
     }
   }
 
+  @Test
   public void testStringArray() throws Exception {
     Args args = new Args("x[*]", new String[]{"-x", "alpha"});
     assertTrue(args.has('x'));
@@ -146,6 +164,7 @@ public class ArgsTest extends TestCase {
     assertEquals("alpha", result[0]);
   }
 
+  @Test
   public void testMissingStringArrayElement() throws Exception {
     try {
       new Args("x[*]", new String[] {"-x"});
@@ -156,6 +175,19 @@ public class ArgsTest extends TestCase {
     }
   }
 
+  @Test
+  public void manyStringArrayElements() throws Exception {
+    Args args = new Args("x[*]", new String[]{"-x", "alpha", "-x", "beta", "-x", "gamma"});
+    assertTrue(args.has('x'));
+    String[] result = args.getStringArray('x');
+    assertEquals(3, result.length);
+    assertEquals("alpha", result[0]);
+    assertEquals("beta", result[1]);
+    assertEquals("gamma", result[2]);
+
+  }
+
+  @Test
   public void testExtraArguments() throws Exception {
     Args args = new Args("x,y*", new String[]{"-x", "-y", "alpha", "beta"});
     assertTrue(args.getBoolean('x'));
@@ -163,6 +195,7 @@ public class ArgsTest extends TestCase {
     assertEquals(3, args.nextArgument());
   }
 
+  @Test
   public void testExtraArgumentsThatLookLikeFlags() throws Exception {
     Args args = new Args("x,y", new String[]{"-x", "alpha", "-y", "beta"});
     assertTrue(args.has('x'));

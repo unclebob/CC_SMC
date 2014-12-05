@@ -77,6 +77,10 @@ public class FsmSyntax {
       this.position = position;
     }
 
+    public String toString() {
+      return String.format("Syntax Error Line: %d, Position: %d.  (%s) %s", lineNumber, position, type.name(), msg);
+    }
+
     public enum Type {HEADER, STATE, TRANSITION, TRANSITION_GROUP, END, SYNTAX}
   }
 

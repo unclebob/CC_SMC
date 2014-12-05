@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import smc.StateMachine;
 import smc.generators.nestedSwitchCaseGenerator.NSCGenerator;
+import smc.generators.nestedSwitchCaseGenerator.NSCNode;
 import smc.lexer.Lexer;
 import smc.optimizer.Optimizer;
 import smc.parser.Parser;
@@ -11,7 +12,7 @@ import smc.parser.SyntaxBuilder;
 import smc.semanticAnalyzer.AbstractSyntaxTree;
 import smc.semanticAnalyzer.SemanticAnalyzer;
 
-import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static smc.parser.ParserEvent.EOF;
 
@@ -40,24 +41,19 @@ public class JavaNestedSwitchCaseImplementerTest {
     return optimizer.optimize(ast);
   }
 
-  private void assertGenerated(String stt, String switchCase) {
-    StateMachine sm = produceStateMachine(stt);
-    JavaNestedSwitchCaseImplementer implementer = new JavaNestedSwitchCaseImplementer("thePackage");
-    generator.generate(sm).accept(implementer);
-    assertThat(implementer.getOutput(), equalTo(switchCase));
-  }
-
   @Test
-  public void oneTransition() throws Exception {
-    assertGenerated(
-      "" +
+  public void oneTransitionWithPackageAndActions() throws Exception {
+    JavaNestedSwitchCaseImplementer implementer = new JavaNestedSwitchCaseImplementer("thePackage");
+    StateMachine sm = produceStateMachine("" +
         "Initial: I\n" +
         "Fsm: fsm\n" +
         "Actions: acts\n" +
         "{" +
         "  I E I A" +
-        "}",
-      "" +
+        "}");
+    NSCNode generatedFsm = generator.generate(sm);
+    generatedFsm.accept(implementer);
+    assertThat(implementer.getOutput(), equalTo("" +
         "package thePackage;\n" +
         "public abstract class fsm implements acts {\n" +
         "public abstract void unhandledTransition(String state, String event);\n" +
@@ -79,6 +75,40 @@ public class JavaNestedSwitchCaseImplementerTest {
         "break;\n" +
         "}\n" +
         "}\n" +
-        "}\n");
+        "}\n"));
   }
+
+  @Test
+  public void oneTransitionWithActionsButNoPackage() throws Exception {
+    JavaNestedSwitchCaseImplementer implementer = new JavaNestedSwitchCaseImplementer(null);
+    StateMachine sm = produceStateMachine("" +
+        "Initial: I\n" +
+        "Fsm: fsm\n" +
+        "Actions: acts\n" +
+        "{" +
+        "  I E I A" +
+        "}");
+    NSCNode generatedFsm = generator.generate(sm);
+    generatedFsm.accept(implementer);
+    assertThat(implementer.getOutput(), startsWith("" +
+      "public abstract class fsm implements acts {\n"));
+  }
+
+  @Test
+  public void oneTransitionWithNoActionsAndNoPackage() throws Exception {
+    JavaNestedSwitchCaseImplementer implementer = new JavaNestedSwitchCaseImplementer(null);
+    StateMachine sm = produceStateMachine("" +
+        "Initial: I\n" +
+        "Fsm: fsm\n" +
+        "{" +
+        "  I E I A" +
+        "}");
+    NSCNode generatedFsm = generator.generate(sm);
+    generatedFsm.accept(implementer);
+    String output = implementer.getOutput();
+    assertThat(output, startsWith("" +
+      "public abstract class fsm {\n"));
+    assertThat(output, containsString("protected abstract void A();\n"));
+  }
+
 }

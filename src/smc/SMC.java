@@ -6,6 +6,7 @@ import smc.generators.nestedSwitchCaseGenerator.NSCGenerator;
 import smc.implementers.JavaNestedSwitchCaseImplementer;
 import smc.lexer.Lexer;
 import smc.optimizer.Optimizer;
+import smc.parser.FsmSyntax;
 import smc.parser.Parser;
 import smc.parser.SyntaxBuilder;
 import smc.semanticAnalyzer.AbstractSyntaxTree;
@@ -22,7 +23,7 @@ import static smc.parser.ParserEvent.EOF;
 public class SMC {
   public static void main(String[] args) throws IOException {
     Args argParser;
-    String argSchema = "a,p*,o*";
+    String argSchema = "a,p*,o*,l*";
     try {
       argParser = new Args(argSchema, args);
       new SmcCompiler(args, argParser).run();
@@ -36,9 +37,9 @@ public class SMC {
   private static class SmcCompiler {
     private String[] args;
     private Args argParser;
-    private boolean generateActionInterface;
     private String javaPackage = null;
     private String outputDirectory = null;
+    private String language = "Java";
 
     public SmcCompiler(String[] args, Args argParser) {
       this.args = args;
@@ -46,18 +47,18 @@ public class SMC {
     }
 
     public void run() throws IOException {
-      generateActionInterface = argParser.getBoolean('a');
-
       if (argParser.has('p'))
         javaPackage = argParser.getString('p');
       if (argParser.has('o'))
         outputDirectory = argParser.getString('o');
+      if (argParser.has('l'))
+        language = argParser.getString('l');
 
       String fileName = args[argParser.nextArgument()];
       String smContent = new String(Files.readAllBytes(Paths.get(fileName)));
 
-      SyntaxBuilder builder = new SyntaxBuilder();
-      Parser parser = new Parser(builder);
+      SyntaxBuilder syntaxBuilder = new SyntaxBuilder();
+      Parser parser = new Parser(syntaxBuilder);
       Lexer lexer = new Lexer(parser);
       SemanticAnalyzer analyzer = new SemanticAnalyzer();
       Optimizer optimizer = new Optimizer();
@@ -65,21 +66,32 @@ public class SMC {
 
       lexer.lex(smContent);
       parser.handleEvent(EOF, -1, -1);
-      AbstractSyntaxTree ast = analyzer.analyze(builder.getFsm());
-      smc.StateMachine stateMachine = optimizer.optimize(ast);
 
-      JavaNestedSwitchCaseImplementer implementer = new JavaNestedSwitchCaseImplementer(javaPackage);
-      generator.generate(stateMachine).accept(implementer);
+      FsmSyntax fsm = syntaxBuilder.getFsm();
+      int syntaxErrorCount = fsm.errors.size();
 
-      String outputFileName = stateMachine.header.fsm + ".java";
+      System.out.println(String.format("Compiled with %d syntax error%s.", syntaxErrorCount, (syntaxErrorCount == 1 ? "" : "s")));
 
-      Path outputPath;
-      if (outputDirectory == null)
-        outputPath = FileSystems.getDefault().getPath(outputFileName);
-      else
-        outputPath = FileSystems.getDefault().getPath(outputDirectory, outputFileName);
+      for (FsmSyntax.SyntaxError error : fsm.errors)
+        System.out.println(error.toString());
 
-      Files.write(outputPath, implementer.getOutput().getBytes());
+      if (syntaxErrorCount == 0) {
+        AbstractSyntaxTree ast = analyzer.analyze(fsm);
+        smc.StateMachine stateMachine = optimizer.optimize(ast);
+
+        JavaNestedSwitchCaseImplementer implementer = new JavaNestedSwitchCaseImplementer(javaPackage);
+        generator.generate(stateMachine).accept(implementer);
+
+        String outputFileName = stateMachine.header.fsm + ".java";
+
+        Path outputPath;
+        if (outputDirectory == null)
+          outputPath = FileSystems.getDefault().getPath(outputFileName);
+        else
+          outputPath = FileSystems.getDefault().getPath(outputDirectory, outputFileName);
+
+        Files.write(outputPath, implementer.getOutput().getBytes());
+      }
     }
   }
 }
