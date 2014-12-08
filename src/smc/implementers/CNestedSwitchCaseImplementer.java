@@ -60,7 +60,7 @@ public class CNestedSwitchCaseImplementer implements NSCNodeVisitor {
 
       fsmImplementation += String.format("" +
         "void %s_%s(struct %s* fsm) {\n" +
-        "\tprocessEvent(fsm, %s, fsm, \"%s\");\n" +
+        "\tprocessEvent(fsm->state, %s, fsm, \"%s\");\n" +
         "}\n", fsmName, event, fsmName, event, event);
     }
   }
@@ -88,9 +88,9 @@ public class CNestedSwitchCaseImplementer implements NSCNodeVisitor {
 
     for (String action : fsmClassNode.actions) {
       fsmImplementation += String.format("" +
-        "static void %s(struct turnstile *fsm) {\n" +
+        "static void %s(struct %s *fsm) {\n" +
         "\tfsm->actions->%s();\n" +
-        "}\n\n", action, action);
+        "}\n\n", action, fsmName, action);
     }
     fsmClassNode.handleEvent.accept(this);
 
@@ -118,7 +118,7 @@ public class CNestedSwitchCaseImplementer implements NSCNodeVisitor {
   public void visit(DefaultCaseNode defaultCaseNode) {
     fsmImplementation += String.format("" +
       "default:\n" +
-      "(fsm->actions->unexpected_transition)(\"%s\", event);\n" +
+      "(fsm->actions->unexpected_transition)(\"%s\", event_name);\n" +
       "break;\n", defaultCaseNode.state);
   }
 

@@ -103,7 +103,7 @@ public class CNestedSwitchCaseImplementerTest {
       "\tfsm->state = state;\n" +
       "}\n" +
       "\n" +
-      "static void A(struct turnstile *fsm) {\n" +
+      "static void A(struct fsm *fsm) {\n" +
       "\tfsm->actions->A();\n" +
       "}\n" +
       "\n" +
@@ -117,7 +117,7 @@ public class CNestedSwitchCaseImplementerTest {
       "break;\n" +
       "\n" +
       "default:\n" +
-      "(fsm->actions->unexpected_transition)(\"I\", event);\n" +
+      "(fsm->actions->unexpected_transition)(\"I\", event_name);\n" +
       "break;\n" +
       "}\n" +
       "break;\n\n" +
@@ -125,7 +125,7 @@ public class CNestedSwitchCaseImplementerTest {
       "}\n" +
       "\n" +
       "void fsm_E(struct fsm* fsm) {\n" +
-      "\tprocessEvent(fsm, E, fsm, \"E\");\n" +
+      "\tprocessEvent(fsm->state, E, fsm, \"E\");\n" +
       "}\n"));
   }
 }

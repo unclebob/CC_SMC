@@ -23,10 +23,10 @@ import static smc.parser.ParserEvent.EOF;
 
 public class SMC {
   public static void main(String[] args) throws IOException {
-    Args argParser;
-    String argSchema = "a,p*,o*,l*";
+    String argSchema = "p*,o*,l*";
+
     try {
-      argParser = new Args(argSchema, args);
+      Args argParser = new Args(argSchema, args);
       new SmcCompiler(args, argParser).run();
     } catch (ArgsException e) {
       System.out.println("usage: " + argSchema + " file");
@@ -57,7 +57,7 @@ public class SMC {
       int syntaxErrorCount = reportSyntaxErrors(fsm);
 
       if (syntaxErrorCount == 0)
-        generateCode(fsm);
+        new CodeGenerator(optimize(fsm)).generateCode();
     }
 
     private void extractCommandLineArguments() {
@@ -93,56 +93,55 @@ public class SMC {
       return syntaxErrorCount;
     }
 
-    private void generateCode(FsmSyntax fsm) throws IOException {
-      StateMachine stateMachine = optimize(fsm);
-
-      NSCGenerator generator = new NSCGenerator();
-      if (language.equalsIgnoreCase("java"))
-        generateJava(stateMachine, generator);
-       else if (language.equalsIgnoreCase("c"))
-        generateC(stateMachine, generator);
-    }
-
-    private void generateC(StateMachine stateMachine, NSCGenerator generator) throws IOException {
-      CNestedSwitchCaseImplementer implementer = new CNestedSwitchCaseImplementer();
-      generator.generate(stateMachine).accept(implementer);
-      if (implementer.getErrors().size() > 0) {
-        for (CNestedSwitchCaseImplementer.Error error : implementer.getErrors())
-          System.out.println("Implementation error: " + error.name());
-      } else {
-        String outputFilePrefix = stateMachine.header.fsm.toLowerCase();
-        String headerFileName = outputFilePrefix + ".h";
-        String implementationFileName = outputFilePrefix + ".c";
-
-        Files.write(getOutputPath(headerFileName), implementer.getFsmHeader().getBytes());
-        Files.write(getOutputPath(implementationFileName), implementer.getFsmImplementation().getBytes());
-      }
-    }
-
-    private void generateJava(StateMachine stateMachine, NSCGenerator generator) throws IOException {
-      JavaNestedSwitchCaseImplementer implementer = new JavaNestedSwitchCaseImplementer(javaPackage);
-      generator.generate(stateMachine).accept(implementer);
-
-      String outputFileName = stateMachine.header.fsm + ".java";
-
-      Files.write(getOutputPath(outputFileName), implementer.getOutput().getBytes());
-    }
-
     private StateMachine optimize(FsmSyntax fsm) {
-      SemanticAnalyzer analyzer = new SemanticAnalyzer();
-      Optimizer optimizer = new Optimizer();
-
-      AbstractSyntaxTree ast = analyzer.analyze(fsm);
-      return optimizer.optimize(ast);
+      AbstractSyntaxTree ast = new SemanticAnalyzer().analyze(fsm);
+      return new Optimizer().optimize(ast);
     }
 
-    private Path getOutputPath(String outputFileName) {
-      Path outputPath;
-      if (outputDirectory == null)
-        outputPath = FileSystems.getDefault().getPath(outputFileName);
-      else
-        outputPath = FileSystems.getDefault().getPath(outputDirectory, outputFileName);
-      return outputPath;
+    private class CodeGenerator {
+      private StateMachine stateMachine;
+
+      public CodeGenerator(StateMachine stateMachine) {
+        this.stateMachine = stateMachine;
+      }
+
+      public void generateCode() throws IOException {
+        if (language.equalsIgnoreCase("java"))
+          generateJava(stateMachine);
+         else if (language.equalsIgnoreCase("c"))
+          generateC(stateMachine);
+      }
+
+      private void generateJava(StateMachine stateMachine) throws IOException {
+        NSCGenerator generator = new NSCGenerator();
+        JavaNestedSwitchCaseImplementer implementer = new JavaNestedSwitchCaseImplementer(javaPackage);
+        generator.generate(stateMachine).accept(implementer);
+        String outputFileName = stateMachine.header.fsm + ".java";
+        Files.write(getOutputPath(outputFileName), implementer.getOutput().getBytes());
+      }
+
+      private void generateC(StateMachine stateMachine) throws IOException {
+        NSCGenerator generator = new NSCGenerator();
+        CNestedSwitchCaseImplementer implementer = new CNestedSwitchCaseImplementer();
+        generator.generate(stateMachine).accept(implementer);
+        if (implementer.getErrors().size() > 0) {
+          for (CNestedSwitchCaseImplementer.Error error : implementer.getErrors())
+            System.out.println("Implementation error: " + error.name());
+        } else {
+          String fileName = stateMachine.header.fsm.toLowerCase();
+          Files.write(getOutputPath(fileName + ".h"), implementer.getFsmHeader().getBytes());
+          Files.write(getOutputPath(fileName + ".c"), implementer.getFsmImplementation().getBytes());
+        }
+      }
+
+      private Path getOutputPath(String outputFileName) {
+        Path outputPath;
+        if (outputDirectory == null)
+          outputPath = FileSystems.getDefault().getPath(outputFileName);
+        else
+          outputPath = FileSystems.getDefault().getPath(outputDirectory, outputFileName);
+        return outputPath;
+      }
     }
   }
 }
