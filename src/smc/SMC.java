@@ -4,6 +4,7 @@ import com.cleancoder.args.Args;
 import com.cleancoder.args.ArgsException;
 import smc.generators.nestedSwitchCaseGenerator.NSCGenerator;
 import smc.implementers.CNestedSwitchCaseImplementer;
+import smc.implementers.CppNestedSwitchCaseImplementer;
 import smc.implementers.JavaNestedSwitchCaseImplementer;
 import smc.lexer.Lexer;
 import smc.optimizer.Optimizer;
@@ -108,8 +109,13 @@ public class SMC {
       public void generateCode() throws IOException {
         if (language.equalsIgnoreCase("java"))
           generateJava(stateMachine);
-         else if (language.equalsIgnoreCase("c"))
+        else if (language.equalsIgnoreCase("c"))
           generateC(stateMachine);
+        else if (language.equalsIgnoreCase("c++"))
+          generateCpp(stateMachine);
+        else
+          System.out.println("Unknown language: " + language);
+
       }
 
       private void generateJava(StateMachine stateMachine) throws IOException {
@@ -117,6 +123,14 @@ public class SMC {
         JavaNestedSwitchCaseImplementer implementer = new JavaNestedSwitchCaseImplementer(javaPackage);
         generator.generate(stateMachine).accept(implementer);
         String outputFileName = stateMachine.header.fsm + ".java";
+        Files.write(getOutputPath(outputFileName), implementer.getOutput().getBytes());
+      }
+
+      private void generateCpp(StateMachine stateMachine) throws IOException {
+        NSCGenerator generator = new NSCGenerator();
+        CppNestedSwitchCaseImplementer implementer = new CppNestedSwitchCaseImplementer();
+        generator.generate(stateMachine).accept(implementer);
+        String outputFileName = stateMachine.header.fsm + ".h";
         Files.write(getOutputPath(outputFileName), implementer.getOutput().getBytes());
       }
 

@@ -40,7 +40,7 @@ public class NSCGenerator {
   }
 
   private void addStateCase(NSCNode.SwitchCaseNode stateSwitch, StateMachine.Transition t) {
-    NSCNode.CaseNode stateCaseNode = new NSCNode.CaseNode(t.currentState);
+    NSCNode.CaseNode stateCaseNode = new NSCNode.CaseNode("State", t.currentState);
     addEventCases(stateCaseNode, t);
     stateSwitch.caseNodes.add(stateCaseNode);
   }
@@ -54,7 +54,7 @@ public class NSCGenerator {
   }
 
   private void addEventCase(NSCNode.CaseNode stateCaseNode, NSCNode.SwitchCaseNode eventSwitch, StateMachine.SubTransition st) {
-    NSCNode.CaseNode eventCaseNode = new NSCNode.CaseNode(st.event);
+    NSCNode.CaseNode eventCaseNode = new NSCNode.CaseNode("Event", st.event);
     addActions(st, eventCaseNode);
     eventSwitch.caseNodes.add(eventCaseNode);
   }

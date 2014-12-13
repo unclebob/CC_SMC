@@ -153,8 +153,9 @@ public class NSCGeneratorTest {
     }
 
     public void visit(CaseNode caseNode) {
-      output += String.format("case %s {", caseNode.caseName);
-      caseNode.caseActionNode.accept(implementer);
+      output += "case " + caseNode.caseName;
+      output += " {";
+      caseNode.caseActionNode.accept(this);
       output += "}";
     }
 

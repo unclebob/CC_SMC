@@ -26,10 +26,12 @@ public interface NSCNode {
   }
 
   public static class CaseNode implements NSCNode {
+    public String switchName;
     public String caseName;
     public NSCNode caseActionNode;
 
-    public CaseNode(String caseName) {
+    public CaseNode(String SwitchName, String caseName){
+      switchName = SwitchName;
       this.caseName = caseName;
     }
 

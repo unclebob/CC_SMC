@@ -127,7 +127,8 @@ public class Optimizer {
 
   private void addStates() {
     for (AbstractSyntaxTree.State s : ast.states.values())
-      sm.states.add(s.name);
+      if (!s.abstractState)
+        sm.states.add(s.name);
   }
 
   private void addEvents() {

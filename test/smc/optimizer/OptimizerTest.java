@@ -11,8 +11,7 @@ import smc.parser.SyntaxBuilder;
 import smc.semanticAnalyzer.AbstractSyntaxTree;
 import smc.semanticAnalyzer.SemanticAnalyzer;
 
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.*;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
 import static smc.parser.ParserEvent.EOF;
@@ -64,6 +63,12 @@ public class OptimizerTest {
     public void statesArePreserved() throws Exception {
       StateMachine sm = produceStateMachineWithHeader("{i e s - s e i -}");
       assertThat(sm.states, contains("i", "s"));
+    }
+
+    @Test
+    public void abstractStatesAreRemoved() throws Exception {
+      StateMachine sm = produceStateMachineWithHeader("{(b) - - - i:b e i -}");
+      assertThat(sm.states, not(hasItems("b")));
     }
 
     @Test

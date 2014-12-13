@@ -1,5 +1,6 @@
 package smc;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Utilities {
@@ -11,5 +12,12 @@ public class Utilities {
       first = false;
     }
     return commaList;
+  }
+
+  public static List<String> addPrefix(String prefix, List<String> list) {
+    List<String> result = new ArrayList<>();
+    for (String element : list)
+      result.add(prefix + element);
+    return result;
   }
 }

@@ -106,7 +106,7 @@ public class CNestedSwitchCaseImplementer implements NSCNodeVisitor {
   public void visit(HandleEventNode handleEventNode) {
     fsmImplementation += String.format("" +
         "static void processEvent(enum State state, enum Event event, struct %s *fsm, char *event_name) {\n",
-      fsmName, fsmName);
+      fsmName);
     handleEventNode.switchCase.accept(this);
     fsmImplementation += "}\n\n";
   }
