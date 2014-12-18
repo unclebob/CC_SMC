@@ -37,6 +37,8 @@ public class Args {
       marshalers.put(elementId, new DoubleArgumentMarshaler());
     else if (elementTail.equals("[*]"))
       marshalers.put(elementId, new StringArrayArgumentMarshaler());
+    else if (elementTail.equals("&"))
+      marshalers.put(elementId, new MapArgumentMarshaler());
     else
       throw new ArgsException(INVALID_ARGUMENT_FORMAT, elementId, elementTail);
   }
@@ -104,5 +106,9 @@ public class Args {
 
   public String[] getStringArray(char arg) {
     return StringArrayArgumentMarshaler.getValue(marshalers.get(arg));
+  }
+
+  public Map<String, String> getMap(char arg) {
+    return MapArgumentMarshaler.getValue(marshalers.get(arg));
   }
 }
