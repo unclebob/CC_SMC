@@ -12,6 +12,9 @@ import smc.parser.SyntaxBuilder;
 import smc.semanticAnalyzer.AbstractSyntaxTree;
 import smc.semanticAnalyzer.SemanticAnalyzer;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static smc.parser.ParserEvent.EOF;
@@ -23,6 +26,7 @@ public class JavaNestedSwitchCaseImplementerTest {
   private SemanticAnalyzer analyzer;
   private Optimizer optimizer;
   private NSCGenerator generator;
+  private Map<String, String> emptyFlags = new HashMap<>();
 
   @Before
   public void setUp() throws Exception {
@@ -43,7 +47,9 @@ public class JavaNestedSwitchCaseImplementerTest {
 
   @Test
   public void oneTransitionWithPackageAndActions() throws Exception {
-    JavaNestedSwitchCaseImplementer implementer = new JavaNestedSwitchCaseImplementer("thePackage");
+    Map<String, String> flags = new HashMap<>();
+    flags.put("package", "thePackage");
+    JavaNestedSwitchCaseImplementer implementer = new JavaNestedSwitchCaseImplementer(flags);
     StateMachine sm = produceStateMachine("" +
         "Initial: I\n" +
         "Fsm: fsm\n" +
@@ -80,7 +86,7 @@ public class JavaNestedSwitchCaseImplementerTest {
 
   @Test
   public void oneTransitionWithActionsButNoPackage() throws Exception {
-    JavaNestedSwitchCaseImplementer implementer = new JavaNestedSwitchCaseImplementer(null);
+    JavaNestedSwitchCaseImplementer implementer = new JavaNestedSwitchCaseImplementer(emptyFlags);
     StateMachine sm = produceStateMachine("" +
         "Initial: I\n" +
         "Fsm: fsm\n" +
@@ -96,7 +102,7 @@ public class JavaNestedSwitchCaseImplementerTest {
 
   @Test
   public void oneTransitionWithNoActionsAndNoPackage() throws Exception {
-    JavaNestedSwitchCaseImplementer implementer = new JavaNestedSwitchCaseImplementer(null);
+    JavaNestedSwitchCaseImplementer implementer = new JavaNestedSwitchCaseImplementer(emptyFlags);
     StateMachine sm = produceStateMachine("" +
         "Initial: I\n" +
         "Fsm: fsm\n" +

@@ -19,12 +19,14 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 
 import static smc.parser.ParserEvent.EOF;
 
 public class SMC {
   public static void main(String[] args) throws IOException {
-    String argSchema = "p*,o*,l*";
+    String argSchema = "o*,l*,f&";
 
     try {
       Args argParser = new Args(argSchema, args);
@@ -39,9 +41,9 @@ public class SMC {
   private static class SmcCompiler {
     private String[] args;
     private Args argParser;
-    private String javaPackage = null;
     private String outputDirectory = null;
     private String language = "Java";
+    Map<String, String> flags = new HashMap<>();
     private SyntaxBuilder syntaxBuilder;
     private Parser parser;
     private Lexer lexer;
@@ -62,12 +64,12 @@ public class SMC {
     }
 
     private void extractCommandLineArguments() {
-      if (argParser.has('p'))
-        javaPackage = argParser.getString('p');
       if (argParser.has('o'))
         outputDirectory = argParser.getString('o');
       if (argParser.has('l'))
         language = argParser.getString('l');
+      if (argParser.has('f'))
+        flags = argParser.getMap('f');
     }
 
     private String getSourceCode() throws IOException {
@@ -120,7 +122,7 @@ public class SMC {
 
       private void generateJava(StateMachine stateMachine) throws IOException {
         NSCGenerator generator = new NSCGenerator();
-        JavaNestedSwitchCaseImplementer implementer = new JavaNestedSwitchCaseImplementer(javaPackage);
+        JavaNestedSwitchCaseImplementer implementer = new JavaNestedSwitchCaseImplementer(flags);
         generator.generate(stateMachine).accept(implementer);
         String outputFileName = stateMachine.header.fsm + ".java";
         Files.write(getOutputPath(outputFileName), implementer.getOutput().getBytes());
@@ -128,7 +130,7 @@ public class SMC {
 
       private void generateCpp(StateMachine stateMachine) throws IOException {
         NSCGenerator generator = new NSCGenerator();
-        CppNestedSwitchCaseImplementer implementer = new CppNestedSwitchCaseImplementer();
+        CppNestedSwitchCaseImplementer implementer = new CppNestedSwitchCaseImplementer(flags);
         generator.generate(stateMachine).accept(implementer);
         String outputFileName = stateMachine.header.fsm + ".h";
         Files.write(getOutputPath(outputFileName), implementer.getOutput().getBytes());
@@ -136,7 +138,7 @@ public class SMC {
 
       private void generateC(StateMachine stateMachine) throws IOException {
         NSCGenerator generator = new NSCGenerator();
-        CNestedSwitchCaseImplementer implementer = new CNestedSwitchCaseImplementer();
+        CNestedSwitchCaseImplementer implementer = new CNestedSwitchCaseImplementer(flags);
         generator.generate(stateMachine).accept(implementer);
         if (implementer.getErrors().size() > 0) {
           for (CNestedSwitchCaseImplementer.Error error : implementer.getErrors())

@@ -12,6 +12,8 @@ import smc.parser.SyntaxBuilder;
 import smc.semanticAnalyzer.AbstractSyntaxTree;
 import smc.semanticAnalyzer.SemanticAnalyzer;
 
+import java.util.HashMap;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
@@ -24,6 +26,7 @@ public class CNestedSwitchCaseImplementerTest {
   private SemanticAnalyzer analyzer;
   private Optimizer optimizer;
   private NSCGenerator generator;
+  private CNestedSwitchCaseImplementer implementer;
 
   @Before
   public void setUp() throws Exception {
@@ -33,6 +36,7 @@ public class CNestedSwitchCaseImplementerTest {
     analyzer = new SemanticAnalyzer();
     optimizer = new Optimizer();
     generator = new NSCGenerator();
+    implementer = new CNestedSwitchCaseImplementer(new HashMap<>());
   }
 
   private StateMachine produceStateMachine(String fsmSyntax) {
@@ -44,7 +48,6 @@ public class CNestedSwitchCaseImplementerTest {
 
   @Test
   public void noAction_shouldBeError() throws Exception {
-    CNestedSwitchCaseImplementer implementer = new CNestedSwitchCaseImplementer();
     StateMachine sm = produceStateMachine("" +
       "Initial: I\n" +
       "Fsm: fsm\n" +
@@ -60,7 +63,6 @@ public class CNestedSwitchCaseImplementerTest {
 
   @Test
   public void oneTransition() throws Exception {
-    CNestedSwitchCaseImplementer implementer = new CNestedSwitchCaseImplementer();
     StateMachine sm = produceStateMachine("" +
       "Initial: I\n" +
       "Fsm: fsm\n" +

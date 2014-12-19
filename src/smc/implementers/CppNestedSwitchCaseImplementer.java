@@ -5,6 +5,7 @@ import smc.generators.nestedSwitchCaseGenerator.NSCNodeVisitor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static smc.generators.nestedSwitchCaseGenerator.NSCNode.*;
 
@@ -13,6 +14,11 @@ public class CppNestedSwitchCaseImplementer implements NSCNodeVisitor {
   private String actionsName;
   private String output = "";
   private List<Error> errors = new ArrayList<>();
+  private Map<String, String> flags;
+
+  public CppNestedSwitchCaseImplementer(Map<String, String> flags) {
+    this.flags = flags;
+  }
 
   public void visit(SwitchCaseNode switchCaseNode) {
     output += String.format("switch (%s) {\n", switchCaseNode.variableName);
@@ -53,7 +59,7 @@ public class CppNestedSwitchCaseImplementer implements NSCNodeVisitor {
 
   public void visit(FSMClassNode fsmClassNode) {
     if (fsmClassNode.actionsName == null) {
-      errors.add(Error.NO_ACTION);
+      errors.add(Error.NO_ACTIONS);
       return;
     }
 
@@ -80,8 +86,6 @@ public class CppNestedSwitchCaseImplementer implements NSCNodeVisitor {
     fsmClassNode.handleEvent.accept(this);
 
     output += "};\n\n";
-
-
     output += "#endif\n";
   }
 
@@ -110,5 +114,5 @@ public class CppNestedSwitchCaseImplementer implements NSCNodeVisitor {
     return errors;
   }
 
-  public enum Error {NO_ACTION}
+  public enum Error {NO_ACTIONS}
 }

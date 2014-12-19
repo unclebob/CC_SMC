@@ -5,6 +5,7 @@ import smc.generators.nestedSwitchCaseGenerator.NSCNodeVisitor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static smc.generators.nestedSwitchCaseGenerator.NSCNode.*;
 
@@ -14,6 +15,11 @@ public class CNestedSwitchCaseImplementer implements NSCNodeVisitor {
   private String fsmHeader = "";
   private String fsmImplementation = "";
   private List<Error> errors = new ArrayList<>();
+  private Map<String, String> flags;
+
+  public CNestedSwitchCaseImplementer(Map<String, String> flags) {
+    this.flags = flags;
+  }
 
   public void visit(SwitchCaseNode switchCaseNode) {
     fsmImplementation += String.format("switch (%s) {\n", switchCaseNode.variableName);
