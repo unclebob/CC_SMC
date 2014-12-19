@@ -83,6 +83,7 @@ public class CNestedSwitchCaseImplementerTest {
       "#endif\n"));
 
     assertThat(implementer.getFsmImplementation(), equalTo("" +
+      "#include <stdlib.h>\n" +
       "#include \"acts.h\"\n" +
       "#include \"fsm.h\"\n" +
       "\n" +

@@ -79,6 +79,7 @@ public class CNestedSwitchCaseImplementer implements NSCNodeVisitor {
     actionsName = fsmClassNode.actionsName;
     fsmName = fsmClassNode.className;
 
+    fsmImplementation += "#include <stdlib.h>\n";
     fsmImplementation += String.format("#include \"%s.h\"\n", actionsName);
     fsmImplementation += String.format("#include \"%s.h\"\n\n", fsmName);
     fsmClassNode.eventEnum.accept(this);

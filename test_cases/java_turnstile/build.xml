@@ -1,0 +1,25 @@
+<project>
+    <target name="clean">
+        <delete dir="build"/>
+        <delete dir="out"/>
+    </target>
+
+    <target name="smc">
+        <exec executable="java">
+            <arg value="-jar"/>
+            <arg value="../../build/jar/smc.jar"/>
+            <arg value="-o"/>
+            <arg value="src"/>
+            <arg value="src/twoCoinTurnstile.sm"/>
+        </exec>
+    </target>
+
+    <target name="compile" depends="smc">
+        <mkdir dir="build/classes"/>
+        <javac srcdir="src" destdir="build/classes"/>
+    </target>
+
+    <target name="run">
+        <java jar="build/jar/smc.jar" fork="true"/>
+    </target>
+</project>
