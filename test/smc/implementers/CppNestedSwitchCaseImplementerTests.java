@@ -19,6 +19,7 @@ import java.util.HashMap;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
+import static smc.Utilities.compressWhiteSpace;
 import static smc.parser.ParserEvent.EOF;
 
 @RunWith(HierarchicalContextRunner.class)
@@ -48,7 +49,12 @@ public class CppNestedSwitchCaseImplementerTests {
     return optimizer.optimize(ast);
   }
 
+  private void assertWhitespaceEquivalent(String generatedCode, String expected) {
+    assertThat(compressWhiteSpace(generatedCode), equalTo(compressWhiteSpace(expected)));
+  }
+
   public class TestsWithNoFlags {
+
     @Before
     public void setup() {
       implementer = new CppNestedSwitchCaseImplementer(new HashMap<>());
@@ -67,7 +73,6 @@ public class CppNestedSwitchCaseImplementerTests {
       assertThat(implementer.getErrors().size(), is(1));
       assertThat(implementer.getErrors().get(0), is(CppNestedSwitchCaseImplementer.Error.NO_ACTIONS));
     }
-
     @Test
     public void oneTransition() throws Exception {
       StateMachine sm = produceStateMachine("" +
@@ -80,43 +85,45 @@ public class CppNestedSwitchCaseImplementerTests {
       NSCNode generatedFsm = generator.generate(sm);
       generatedFsm.accept(implementer);
 
-      assertThat(implementer.getOutput(), equalTo("" +
+      assertWhitespaceEquivalent(implementer.getOutput(), "" +
         "#ifndef FSM_H\n" +
         "#define FSM_H\n" +
-        "\n" +
         "#include \"acts.h\"\n" +
-        "\n" +
+        "" +
         "class fsm : public acts {\n" +
         "public:\n" +
-        "\tfsm()\n" +
-        "\t: state(State_I)\n" +
-        "\t{}\n\n" +
-        "\tvoid E() {processEvent(Event_E, \"E\");}\n" +
-        "\n" +
+        "  fsm()\n" +
+        "  : state(State_I)\n" +
+        "  {}\n" +
+        "" +
+        "  void E() {processEvent(Event_E, \"E\");}\n" +
+        "" +
         "private:\n" +
-        "\tenum State {State_I};\n" +
-        "\tState state;\n" +
-        "\tvoid setState(State s) {state=s;}\n" +
-        "\tenum Event {Event_E};\n" +
-        "\tvoid processEvent(Event event, const char* eventName) {\n" +
-        "switch (state) {\n" +
-        "case State_I:\n" +
-        "switch (event) {\n" +
-        "case Event_E:\n" +
-        "setState(State_I);\n" +
-        "A();\n" +
-        "break;\n" +
-        "\n" +
-        "default:\n" +
-        "unexpected_transition(\"I\", eventName);\n" +
-        "break;\n" +
-        "}\n" +
-        "break;\n\n" +
-        "}\n" +
-        "}\n\n" +
+        "  enum State {State_I};\n" +
+        "  State state;\n" +
+        "" +
+        "  void setState(State s) {state=s;}\n" +
+        "" +
+        "  enum Event {Event_E};\n" +
+        "" +
+        "  void processEvent(Event event, const char* eventName) {\n" +
+        "    switch (state) {\n" +
+        "      case State_I:\n" +
+        "        switch (event) {\n" +
+        "          case Event_E:\n" +
+        "            setState(State_I);\n" +
+        "            A();\n" +
+        "            break;\n" +
+        "" +
+        "          default:\n" +
+        "            unexpected_transition(\"I\", eventName);\n" +
+        "            break;\n" +
+        "        }\n" +
+        "        break;\n" +
+        "    }\n" +
+        "  }\n" +
         "};\n" +
-        "\n" +
-        "#endif\n"));
+        "#endif\n");
     }
   } // no flags
 }

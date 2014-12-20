@@ -17,6 +17,7 @@ import java.util.HashMap;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
+import static smc.Utilities.compressWhiteSpace;
 import static smc.parser.ParserEvent.EOF;
 
 public class CNestedSwitchCaseImplementerTest {
@@ -27,6 +28,10 @@ public class CNestedSwitchCaseImplementerTest {
   private Optimizer optimizer;
   private NSCGenerator generator;
   private CNestedSwitchCaseImplementer implementer;
+
+  private void assertWhiteSpaceEquivalent(String generated, String expected) {
+    assertThat(compressWhiteSpace(generated), equalTo(compressWhiteSpace(expected)));
+  }
 
   @Before
   public void setUp() throws Exception {
@@ -46,6 +51,7 @@ public class CNestedSwitchCaseImplementerTest {
     return optimizer.optimize(ast);
   }
 
+
   @Test
   public void noAction_shouldBeError() throws Exception {
     StateMachine sm = produceStateMachine("" +
@@ -60,7 +66,6 @@ public class CNestedSwitchCaseImplementerTest {
     assertThat(implementer.getErrors().get(0), is(CNestedSwitchCaseImplementer.Error.NO_ACTION));
   }
 
-
   @Test
   public void oneTransition() throws Exception {
     StateMachine sm = produceStateMachine("" +
@@ -72,63 +77,61 @@ public class CNestedSwitchCaseImplementerTest {
       "}");
     NSCNode generatedFsm = generator.generate(sm);
     generatedFsm.accept(implementer);
-    assertThat(implementer.getFsmHeader(), equalTo("" +
+    assertWhiteSpaceEquivalent(implementer.getFsmHeader(), "" +
       "#ifndef FSM_H\n" +
       "#define FSM_H\n" +
-      "\n" +
       "struct acts;\n" +
       "struct fsm;\n" +
       "struct fsm *make_fsm(struct acts*);\n" +
       "void fsm_E(struct fsm*);\n" +
-      "#endif\n"));
+      "#endif\n");
 
-    assertThat(implementer.getFsmImplementation(), equalTo("" +
+    assertWhiteSpaceEquivalent(implementer.getFsmImplementation(), "" +
       "#include <stdlib.h>\n" +
       "#include \"acts.h\"\n" +
       "#include \"fsm.h\"\n" +
-      "\n" +
+      "" +
       "enum Event {E};\n" +
       "enum State {I};\n" +
-      "\n" +
+      "" +
       "struct fsm {\n" +
-      "\tenum State state;\n" +
-      "\tstruct acts *actions;\n" +
+      "  enum State state;\n" +
+      "  struct acts *actions;\n" +
       "};\n" +
-      "\n" +
+      "" +
       "struct fsm *make_fsm(struct acts* actions) {\n" +
-      "\tstruct fsm *fsm = malloc(sizeof(struct fsm));\n" +
-      "\tfsm->actions = actions;\n" +
-      "\tfsm->state = I;\n" +
-      "\treturn fsm;\n" +
+      "  struct fsm *fsm = malloc(sizeof(struct fsm));\n" +
+      "  fsm->actions = actions;\n" +
+      "  fsm->state = I;\n" +
+      "  return fsm;\n" +
       "}\n" +
-      "\n" +
+      "" +
       "static void setState(struct fsm *fsm, enum State state) {\n" +
-      "\tfsm->state = state;\n" +
+      "  fsm->state = state;\n" +
       "}\n" +
-      "\n" +
+      "" +
       "static void A(struct fsm *fsm) {\n" +
-      "\tfsm->actions->A();\n" +
+      "  fsm->actions->A();\n" +
       "}\n" +
-      "\n" +
+      "" +
       "static void processEvent(enum State state, enum Event event, struct fsm *fsm, char *event_name) {\n" +
-      "switch (state) {\n" +
-      "case I:\n" +
-      "switch (event) {\n" +
-      "case E:\n" +
-      "setState(fsm, I);\n" +
-      "A(fsm);\n" +
-      "break;\n" +
-      "\n" +
-      "default:\n" +
-      "(fsm->actions->unexpected_transition)(\"I\", event_name);\n" +
-      "break;\n" +
+      "  switch (state) {\n" +
+      "    case I:\n" +
+      "      switch (event) {\n" +
+      "        case E:\n" +
+      "          setState(fsm, I);\n" +
+      "          A(fsm);\n" +
+      "          break;\n" +
+      "        default:\n" +
+      "          (fsm->actions->unexpected_transition)(\"I\", event_name);\n" +
+      "          break;\n" +
+      "      }\n" +
+      "      break;\n" +
+      "  }\n" +
       "}\n" +
-      "break;\n\n" +
-      "}\n" +
-      "}\n" +
-      "\n" +
+      "" +
       "void fsm_E(struct fsm* fsm) {\n" +
-      "\tprocessEvent(fsm->state, E, fsm, \"E\");\n" +
-      "}\n"));
+      "  processEvent(fsm->state, E, fsm, \"E\");\n" +
+      "}\n");
   }
 }

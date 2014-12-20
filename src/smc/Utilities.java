@@ -20,4 +20,8 @@ public class Utilities {
       result.add(prefix + element);
     return result;
   }
+
+  public static String compressWhiteSpace(String s) {
+    return s.replaceAll("\\n+", "\n").replaceAll("[\t ]+", " ").replaceAll(" *\n *", "\n");
+  }
 }
