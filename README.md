@@ -35,7 +35,7 @@ One of the goals of SMC is to produce code that the programmer never needs to lo
 
 The output of SMC is two sets of functions: The _Event_ functions and the _Actions_ functions.  For most languages these functions will be arranged into an abstract class in which the _Event_ functions are public, and the _Action_ functions are protected and abstract.  
 
-The programmer derives an implementation class from the generated class, and implements all the action functions.  The programmer then creates an instance of the implementation class and ivokes the appropriate event functions as those events occur.  The generated code will make sure that the appropriate action functions are called in response to those events.
+The programmer derives an implementation class from the generated class, and implements all the action functions.  The programmer then creates an instance of the implementation class and invokes the appropriate event functions as those events occur.  The generated code will make sure that the appropriate action functions are called in response to those events.
 
 The state of the generated state machine is opaque to the programmer and kept private to the generated code.  From the programmer's point of view the generated code is a black box that translates events into actions.  
 
@@ -66,8 +66,8 @@ Here is the Java code that SMC will generate for this state machine.  It is an a
 
     public abstract class Turnstile {
     	public abstract void unhandledTransition(String state, String event);
-      private enum State {Locked,Unlocked}
-      private enum Event {Coin,Pass}
+        private enum State {Locked,Unlocked}
+        private enum Event {Coin,Pass}
     	private State state = State.Locked;
     	private void setState(State s) {state = s;}
     	public void Coin() {handleEvent(Event.Coin);}
@@ -192,7 +192,7 @@ Now let's add an `Alarming` state that must be reset by a repairman:
       }
     }
     
-We use the _dash_ (`-`) character for two purposes.  When used as an action it means that there are no actions to perform.  When used as the _next-state_ it means that the state does not change.  Note: the _star_ (`*`) character is a synonym for _dash_.  
+We use the _dash_ (`-`) character for two purposes.  When used as an action it means that there are no actions to perform.  When used as the _next-state_ it means that the state does not change.  Note: the _star_ (`*`) character can be used as a synonym for _dash_.  
 
 When more than one action should be performed, they can be grouped together in braces (`{}`).
 
@@ -254,6 +254,8 @@ The _less-than_ (`<`) character denote an _entry-action_.  It is invoked wheneve
 
 In the above example, notice that nearly all the actions have been restated as _entry-_ and _exit-actions_.  You may find that this makes the state machine more readable.  
 
+The _Entry-_ and _Exit-actions_ of superstates are inherited by their derivative states.
+
 ### Semantic Differences with _Entry-_ and _Exit-actions_.
 Note also that there is a slight semantic difference between the last two examples.  If we are in the `Locked` state, and we get a `Reset` event, then the `lock` action will be invoked even though we are already in the locked state.  This is because _every_ transition invokes all the _exit-_ and _entry-actions_, regardless of whether the state is actually changing.  Thus, when we are in the `Unlocked` state, and we get a `Coin` event, even though we stay in the `Unlocked` state, the `unlock` action will be invoked.
 
@@ -268,13 +270,38 @@ The internal structure of SMC is a simple traditional compiler.  Here is a pictu
 This closely reflects the package structure of the java code.
 
 * The _Lexer_ translates the source code into a stream of lexical tokens which act as events going into the Parser.
-* The _Parser_ is a simple finite state machine that implements the Bakus-Naur description of the source code (See below).  That state machine is implemented as a simple state transition table held within a Java array of `Transition` objects.  The actions of that parser state machine use the _Builder_ pattern to create a _Syntax Data Structure_.
+* The _Parser_ is a simple finite state machine that implements the Backus-Naur description of the source code (See below).  That state machine is implemented as a simple state transition table held within a Java array of `Transition` objects.  The actions of that parser state machine use the _Builder_ pattern to create a _Syntax Data Structure_.
 * The _Semantic Analyzer_ ensures that the _Syntax Data Structure_ describes a true finite state machine, and if so, translates it into a _Semantic Data Structure_ that can only hold true finite state machines.
 * The Optimizer then translates the _Semantic Data Structure_ into a simple state transition table.  It reduces all the super state inheritance, and the _entry-_ and _exit-actions_ back into vanilla states, events, and actions.
 * The _Generator_ converts the optimized state transition table into a set of code-generation-nodes that represent a _Nested Switch Case_ statement in a language agnostic way.
 * Finally, the _Implementing Visitors_ translate the code-generation-nodes into a true programming language, like Java.
 
 The upshot of all this is that you can generate a new language, like C#, by simply writing a new _Implementing Visitor_, which is a relatively trivial task.
+
+### BNF
+
+The Backus-Naur form (BNF) of the SMC source code is: 
+
+    <FSM> ::= <header>* <logic>
+    <header> ::= <name> ":" <name>
+        
+    <logic> ::= "{" <transition>* "}"
+    <transition> ::= <state-spec> <subtransition>
+                 |   <state-spec> "{" <subtransition>* "}"
+    <state-spec> :== <state> <state-modifier>*	
+    <state> ::= <name> | "(" <name> ")"	
+    <state-modifier> :== ":" <name>
+                     |   "<" <name>
+                     |   ">" <name>
+    <subtransition> :: <event> <next-state> <action>
+    <action> ::= <name> | "{" <name>* "}" | "-"
+    <next-state> ::= <state> | "-"
+    <event> :: <name> | "-"
+
+### License
+You may use this program and source code for any purpose at all at your own risk.  It is not copyrighted.  Have fun!
+
+
 
 
 
