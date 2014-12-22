@@ -1,0 +1,10 @@
+Initial: Locked
+FSM: Turnstile
+{
+  Locked    Coin    Unlocked    unlock
+  Locked    Pass    Locked      alarm
+  Unlocked  Coin    Unlocked    thankyou
+  Unlocked  Pass    Locked      lock
+}
+
+
