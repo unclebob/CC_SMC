@@ -107,6 +107,11 @@ public class LexerTest implements TokenCollector {
     }
 
     @Test
+    public void findStarAsDash() throws Exception {
+      assertLexResult("*", "D");
+    }
+
+    @Test
     public void findsColon() throws Exception {
       assertLexResult(":", "C");
     }
@@ -134,6 +139,18 @@ public class LexerTest implements TokenCollector {
     @Test
     public void whiteSpaceBefore() throws Exception {
       assertLexResult("  \t\n  -", "D");
+    }
+  }
+
+  public class CommentTests {
+    @Test
+    public void commentAfterToken() throws Exception {
+      assertLexResult("-//comment\n", "D");
+    }
+
+    @Test
+    public void commentLines() throws Exception {
+      assertLexResult("//comment 1\n-//comment2\n//comment2\n-//comment4;", "D,D");
     }
   }
 

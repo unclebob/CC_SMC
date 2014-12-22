@@ -41,13 +41,18 @@ public class Lexer {
   }
 
   private static Pattern whitePattern = Pattern.compile("^\\s+");
+  private static Pattern commentPattern = Pattern.compile("^//.*$");
+  private static Pattern[] whitePatterns = new Pattern[] {whitePattern, commentPattern};
 
   private boolean findWhiteSpace(String line) {
-    Matcher whiteMatcher = whitePattern.matcher(line.substring(position));
-    if (whiteMatcher.find()) {
-      position += whiteMatcher.end();
-      return true;
+    for (Pattern pattern : whitePatterns) {
+      Matcher matcher = pattern.matcher(line.substring(position));
+      if (matcher.find()) {
+        position += matcher.end();
+        return true;
+      }
     }
+
     return false;
   }
 
@@ -73,6 +78,9 @@ public class Lexer {
         collector.closedAngle(lineNumber, position);
         break;
       case "-":
+        collector.dash(lineNumber, position);
+        break;
+      case "*":
         collector.dash(lineNumber, position);
         break;
       case ":":
