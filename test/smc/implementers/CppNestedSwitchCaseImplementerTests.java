@@ -4,14 +4,14 @@ import de.bechte.junit.runners.context.HierarchicalContextRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import smc.StateMachine;
+import smc.OptimizedStateMachine;
 import smc.generators.nestedSwitchCaseGenerator.NSCGenerator;
 import smc.generators.nestedSwitchCaseGenerator.NSCNode;
 import smc.lexer.Lexer;
 import smc.optimizer.Optimizer;
 import smc.parser.Parser;
 import smc.parser.SyntaxBuilder;
-import smc.semanticAnalyzer.AbstractSyntaxTree;
+import smc.semanticAnalyzer.SemanticStateMachine;
 import smc.semanticAnalyzer.SemanticAnalyzer;
 
 import java.util.HashMap;
@@ -42,10 +42,10 @@ public class CppNestedSwitchCaseImplementerTests {
     generator = new NSCGenerator();
   }
 
-  private StateMachine produceStateMachine(String fsmSyntax) {
+  private OptimizedStateMachine produceStateMachine(String fsmSyntax) {
     lexer.lex(fsmSyntax);
     parser.handleEvent(EOF, -1, -1);
-    AbstractSyntaxTree ast = analyzer.analyze(builder.getFsm());
+    SemanticStateMachine ast = analyzer.analyze(builder.getFsm());
     return optimizer.optimize(ast);
   }
 
@@ -62,7 +62,7 @@ public class CppNestedSwitchCaseImplementerTests {
 
     @Test
     public void noActions_shouldBeError() throws Exception {
-      StateMachine sm = produceStateMachine("" +
+      OptimizedStateMachine sm = produceStateMachine("" +
         "Initial: I\n" +
         "Fsm: fsm\n" +
         "{" +
@@ -75,7 +75,7 @@ public class CppNestedSwitchCaseImplementerTests {
     }
     @Test
     public void oneTransition() throws Exception {
-      StateMachine sm = produceStateMachine("" +
+      OptimizedStateMachine sm = produceStateMachine("" +
         "Initial: I\n" +
         "Fsm: fsm\n" +
         "Actions: acts\n" +

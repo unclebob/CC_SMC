@@ -4,16 +4,17 @@ import de.bechte.junit.runners.context.HierarchicalContextRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import smc.StateMachine;
+import smc.OptimizedStateMachine;
 import smc.lexer.Lexer;
 import smc.parser.Parser;
 import smc.parser.SyntaxBuilder;
-import smc.semanticAnalyzer.AbstractSyntaxTree;
 import smc.semanticAnalyzer.SemanticAnalyzer;
+import smc.semanticAnalyzer.SemanticStateMachine;
 
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
+import static smc.Utilities.compressWhiteSpace;
 import static smc.parser.ParserEvent.EOF;
 
 @RunWith(HierarchicalContextRunner.class)
@@ -23,6 +24,7 @@ public class OptimizerTest {
   private SyntaxBuilder builder;
   private SemanticAnalyzer analyzer;
   private Optimizer optimizer;
+  private OptimizedStateMachine optimizedStateMachine;
 
   @Before
   public void setUp() throws Exception {
@@ -33,27 +35,29 @@ public class OptimizerTest {
     optimizer = new Optimizer();
   }
 
-  private StateMachine produceStateMachineWithHeader(String s) {
+  private OptimizedStateMachine produceStateMachineWithHeader(String s) {
     String fsmSyntax = "fsm:f initial:i actions:a " + s;
     return produceStateMachine(fsmSyntax);
   }
 
-  private StateMachine produceStateMachine(String fsmSyntax) {
+  private OptimizedStateMachine produceStateMachine(String fsmSyntax) {
     lexer.lex(fsmSyntax);
     parser.handleEvent(EOF, -1, -1);
-    AbstractSyntaxTree ast = analyzer.analyze(builder.getFsm());
+    SemanticStateMachine ast = analyzer.analyze(builder.getFsm());
     return optimizer.optimize(ast);
   }
 
   private void assertOptimization(String syntax, String stateMachine) {
-    StateMachine sm = produceStateMachineWithHeader(syntax);
-    assertThat(sm.transitionsToString(), equalTo(stateMachine));
+    optimizedStateMachine = produceStateMachineWithHeader(syntax);
+    assertThat(
+      compressWhiteSpace(optimizedStateMachine.transitionsToString()),
+      equalTo(compressWhiteSpace(stateMachine)));
   }
 
   public class BasicOptimizerFunctions {
     @Test
     public void header() throws Exception {
-      StateMachine sm = produceStateMachineWithHeader("{i e i -}");
+      OptimizedStateMachine sm = produceStateMachineWithHeader("{i e i -}");
       assertThat(sm.header.fsm, equalTo("f"));
       assertThat(sm.header.initial, equalTo("i"));
       assertThat(sm.header.actions, equalTo("a"));
@@ -61,36 +65,39 @@ public class OptimizerTest {
 
     @Test
     public void statesArePreserved() throws Exception {
-      StateMachine sm = produceStateMachineWithHeader("{i e s - s e i -}");
+      OptimizedStateMachine sm = produceStateMachineWithHeader("{i e s - s e i -}");
       assertThat(sm.states, contains("i", "s"));
     }
 
     @Test
     public void abstractStatesAreRemoved() throws Exception {
-      StateMachine sm = produceStateMachineWithHeader("{(b) - - - i:b e i -}");
+      OptimizedStateMachine sm = produceStateMachineWithHeader("{(b) - - - i:b e i -}");
       assertThat(sm.states, not(hasItems("b")));
     }
 
     @Test
     public void eventsArePreserved() throws Exception {
-      StateMachine sm = produceStateMachineWithHeader("{i e1 s - s e2 i -}");
+      OptimizedStateMachine sm = produceStateMachineWithHeader("{i e1 s - s e2 i -}");
       assertThat(sm.events, contains("e1", "e2"));
     }
 
     @Test
     public void actionsArePreserved() throws Exception {
-      StateMachine sm = produceStateMachineWithHeader("{i e1 s a1 s e2 i a2}");
+      OptimizedStateMachine sm = produceStateMachineWithHeader("{i e1 s a1 s e2 i a2}");
       assertThat(sm.actions, contains("a1", "a2"));
     }
 
     @Test
     public void simpleStateMachine() throws Exception {
-      StateMachine sm = produceStateMachineWithHeader("{i e i a1}");
-      assertThat(sm.transitions, hasSize(1));
-      assertThat(sm.transitions.get(0).toString(), equalTo(
-        "i {\n" +
+      assertOptimization(
+        "" +
+          "{i e i a1}",
+
+        "" +
+          "i {\n" +
           "  e i {a1}\n" +
-          "}"));
+          "}\n");
+        assertThat(optimizedStateMachine.transitions, hasSize(1));
 
     }
   } // Basic Optimizer Functions
@@ -338,30 +345,29 @@ public class OptimizerTest {
   public class AcceptanceTests {
     @Test
     public void turnstyle3() throws Exception {
-      StateMachine sm = produceStateMachine(
+      OptimizedStateMachine sm = produceStateMachine(
         "" +
           "Actions: Turnstile\n" +
           "FSM: TwoCoinTurnstile\n" +
           "Initial: Locked\n" +
-          "{\n" +
-          "    (Base)\tReset\tLocked\tlock\n" +
-          "\n" +
-          "\tLocked : Base {\n" +
-          "\t\tPass\tAlarming\t-\n" +
-          "\t\tCoin\tFirstCoin\t-\n" +
-          "\t}\n" +
-          "\t\n" +
-          "\tAlarming : Base\t<alarmOn >alarmOff -\t-\t-\n" +
-          "\t\n" +
-          "\tFirstCoin : Base {\n" +
-          "\t\tPass\tAlarming\t-\n" +
-          "\t\tCoin\tUnlocked\tunlock\n" +
-          "\t}\n" +
-          "\t\n" +
-          "\tUnlocked : Base {\n" +
-          "\t\tPass\tLocked\tlock\n" +
-          "\t\tCoin\t-\t\tthankyou\n" +
-          "\t}\n" +
+          "{" +
+          "    (Base)  Reset  Locked  lock" +
+          "" +
+          "  Locked : Base {" +
+          "    Pass  Alarming  -" +
+          "    Coin  FirstCoin -" +
+          "  }" +
+          "" +
+          "  Alarming : Base <alarmOn >alarmOff -  -  -" +
+          "" +
+          "  FirstCoin : Base {" +
+          "    Pass  Alarming  -" +
+          "    Coin  Unlocked  unlock" +
+          "  }" +
+          "" +
+          "  Unlocked : Base {" +
+          "    Pass  Locked  lock" +
+          "    Coin  -       thankyou" +
           "}");
       assertThat(sm.toString(), equalTo(
         "" +

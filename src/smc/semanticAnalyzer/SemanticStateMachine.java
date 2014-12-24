@@ -2,13 +2,13 @@ package smc.semanticAnalyzer;
 
 import java.util.*;
 
-public class AbstractSyntaxTree {
+public class SemanticStateMachine {
   public List<AnalysisError> errors = new ArrayList<>();
   public List<AnalysisError> warnings = new ArrayList<>();
-  public SortedMap<String, State> states = new TreeMap<>();
+  public SortedMap<String, SemanticState> states = new TreeMap<>();
   public Set<String> events = new HashSet<>();
   public Set<String> actions = new HashSet<>();
-  public State initialState;
+  public SemanticState initialState;
   public String actionClass;
   public String fsmName;
 
@@ -29,27 +29,27 @@ public class AbstractSyntaxTree {
 
   public String statesToString() {
     String statesString = "{";
-    for (State s : states.values()) {
+    for (SemanticState s : states.values()) {
       statesString += s.toString();
     }
     return statesString + "}\n";
   }
 
-  public static class State implements Comparable<State> {
+  public static class SemanticState implements Comparable<SemanticState> {
     public String name;
     public List<String> entryActions = new ArrayList<>();
     public List<String> exitActions = new ArrayList<>();
     public boolean abstractState = false;
-    public SortedSet<State> superStates = new TreeSet<>();
+    public SortedSet<SemanticState> superStates = new TreeSet<>();
     public List<SemanticTransition> transitions = new ArrayList<>();
 
-    public State(String name) {
+    public SemanticState(String name) {
       this.name = name;
     }
 
     public boolean equals(Object obj) {
-      if (obj instanceof State) {
-        State other = (State) obj;
+      if (obj instanceof SemanticState) {
+        SemanticState other = (SemanticState) obj;
         return
           Objects.equals(other.name, name) &&
             Objects.equals(other.entryActions, entryActions) &&
@@ -97,7 +97,7 @@ public class AbstractSyntaxTree {
     private String makeStateNameWithAdornments() {
       String stateName = "";
       stateName += abstractState ? ("(" + name + ")") : name;
-      for (State superState : superStates)
+      for (SemanticState superState : superStates)
         stateName += " :" + superState.name;
       for (String entryAction : entryActions)
         stateName += " <" + entryAction;
@@ -106,7 +106,7 @@ public class AbstractSyntaxTree {
       return stateName;
     }
 
-    public int compareTo(State s) {
+    public int compareTo(SemanticState s) {
       return name.compareTo(s.name);
     }
   }
@@ -158,7 +158,7 @@ public class AbstractSyntaxTree {
 
   public static class SemanticTransition {
     public String event;
-    public State nextState;
+    public SemanticState nextState;
     public List<String> actions = new ArrayList<>();
   }
 }

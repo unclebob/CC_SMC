@@ -4,12 +4,12 @@ import de.bechte.junit.runners.context.HierarchicalContextRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import smc.StateMachine;
+import smc.OptimizedStateMachine;
 import smc.lexer.Lexer;
 import smc.optimizer.Optimizer;
 import smc.parser.Parser;
 import smc.parser.SyntaxBuilder;
-import smc.semanticAnalyzer.AbstractSyntaxTree;
+import smc.semanticAnalyzer.SemanticStateMachine;
 import smc.semanticAnalyzer.SemanticAnalyzer;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -39,19 +39,19 @@ public class NSCGeneratorTest {
     generator = new NSCGenerator();
   }
 
-  private StateMachine produceStateMachine(String fsmSyntax) {
+  private OptimizedStateMachine produceStateMachine(String fsmSyntax) {
     lexer.lex(fsmSyntax);
     parser.handleEvent(EOF, -1, -1);
-    AbstractSyntaxTree ast = analyzer.analyze(builder.getFsm());
+    SemanticStateMachine ast = analyzer.analyze(builder.getFsm());
     return optimizer.optimize(ast);
   }
 
-  private StateMachine headerAndSttToSm(String header, String stt) {
+  private OptimizedStateMachine headerAndSttToSm(String header, String stt) {
     return produceStateMachine(header + " " + stt);
   }
 
   private void assertGenerated(String stt, String switchCase) {
-    StateMachine sm = headerAndSttToSm(stdHead, stt);
+    OptimizedStateMachine sm = headerAndSttToSm(stdHead, stt);
     generator.generate(sm).accept(implementer);
     assertThat(output, equalTo(switchCase));
   }

@@ -1,6 +1,6 @@
 package smc.generators.nestedSwitchCaseGenerator;
 
-import smc.StateMachine;
+import smc.OptimizedStateMachine;
 
 public class NSCGenerator {
   private NSCNode.EnumNode stateEnumNode;
@@ -10,7 +10,7 @@ public class NSCGenerator {
   private NSCNode.HandleEventNode handleEventNode;
   private NSCNode.SwitchCaseNode stateSwitch;
 
-  public NSCNode generate(StateMachine sm) {
+  public NSCNode generate(OptimizedStateMachine sm) {
     eventDelegatorsNode = new NSCNode.EventDelegatorsNode(sm.events);
     statePropertyNode = new NSCNode.StatePropertyNode(sm.header.initial);
     stateEnumNode = new NSCNode.EnumNode("State", sm.states);
@@ -21,7 +21,7 @@ public class NSCGenerator {
     return makeFsmNode(sm);
   }
 
-  private NSCNode.FSMClassNode makeFsmNode(StateMachine sm) {
+  private NSCNode.FSMClassNode makeFsmNode(OptimizedStateMachine sm) {
     NSCNode.FSMClassNode fsm = new NSCNode.FSMClassNode();
     fsm.className = sm.header.fsm;
     fsm.actionsName = sm.header.actions;
@@ -34,32 +34,32 @@ public class NSCGenerator {
     return fsm;
   }
 
-  private void addStateCases(StateMachine sm) {
-    for (StateMachine.Transition t : sm.transitions)
+  private void addStateCases(OptimizedStateMachine sm) {
+    for (OptimizedStateMachine.Transition t : sm.transitions)
       addStateCase(stateSwitch, t);
   }
 
-  private void addStateCase(NSCNode.SwitchCaseNode stateSwitch, StateMachine.Transition t) {
+  private void addStateCase(NSCNode.SwitchCaseNode stateSwitch, OptimizedStateMachine.Transition t) {
     NSCNode.CaseNode stateCaseNode = new NSCNode.CaseNode("State", t.currentState);
     addEventCases(stateCaseNode, t);
     stateSwitch.caseNodes.add(stateCaseNode);
   }
 
-  private void addEventCases(NSCNode.CaseNode stateCaseNode, StateMachine.Transition t) {
+  private void addEventCases(NSCNode.CaseNode stateCaseNode, OptimizedStateMachine.Transition t) {
     NSCNode.SwitchCaseNode eventSwitch = new NSCNode.SwitchCaseNode("event");
     stateCaseNode.caseActionNode = eventSwitch;
-    for (StateMachine.SubTransition st : t.subTransitions)
+    for (OptimizedStateMachine.SubTransition st : t.subTransitions)
       addEventCase(stateCaseNode, eventSwitch, st);
     eventSwitch.caseNodes.add(new NSCNode.DefaultCaseNode(t.currentState));
   }
 
-  private void addEventCase(NSCNode.CaseNode stateCaseNode, NSCNode.SwitchCaseNode eventSwitch, StateMachine.SubTransition st) {
+  private void addEventCase(NSCNode.CaseNode stateCaseNode, NSCNode.SwitchCaseNode eventSwitch, OptimizedStateMachine.SubTransition st) {
     NSCNode.CaseNode eventCaseNode = new NSCNode.CaseNode("Event", st.event);
     addActions(st, eventCaseNode);
     eventSwitch.caseNodes.add(eventCaseNode);
   }
 
-  private void addActions(StateMachine.SubTransition st, NSCNode.CaseNode eventCaseNode) {
+  private void addActions(OptimizedStateMachine.SubTransition st, NSCNode.CaseNode eventCaseNode) {
     NSCNode.CompositeNode actions = new NSCNode.CompositeNode();
     addSetStateNode(st.nextState, actions);
     for (String action : st.actions)

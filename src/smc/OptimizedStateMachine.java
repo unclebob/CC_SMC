@@ -6,7 +6,7 @@ import java.util.List;
 // This is the final output of the finite state machine parser.
 // Code generators will use this format as their input.
 
-public class StateMachine {
+public class OptimizedStateMachine {
   public List<String> states = new ArrayList<>();
   public List<String> events = new ArrayList<>();
   public List<String> actions = new ArrayList<>();
@@ -16,7 +16,7 @@ public class StateMachine {
   public String transitionsToString() {
     String result = "";
     for (Transition t : transitions)
-      result += t + "\n";
+      result += t;
     return result;
   }
 
@@ -38,7 +38,7 @@ public class StateMachine {
       String result = String.format("%s {\n", currentState);
       for (SubTransition st : subTransitions)
         result += st.toString();
-      result += "}";
+      result += "}\n";
       return result;
     }
 

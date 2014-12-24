@@ -2,14 +2,14 @@ package smc.implementers;
 
 import org.junit.Before;
 import org.junit.Test;
-import smc.StateMachine;
+import smc.OptimizedStateMachine;
 import smc.generators.nestedSwitchCaseGenerator.NSCGenerator;
 import smc.generators.nestedSwitchCaseGenerator.NSCNode;
 import smc.lexer.Lexer;
 import smc.optimizer.Optimizer;
 import smc.parser.Parser;
 import smc.parser.SyntaxBuilder;
-import smc.semanticAnalyzer.AbstractSyntaxTree;
+import smc.semanticAnalyzer.SemanticStateMachine;
 import smc.semanticAnalyzer.SemanticAnalyzer;
 
 import java.util.HashMap;
@@ -39,10 +39,10 @@ public class JavaNestedSwitchCaseImplementerTest {
     generator = new NSCGenerator();
   }
 
-  private StateMachine produceStateMachine(String fsmSyntax) {
+  private OptimizedStateMachine produceStateMachine(String fsmSyntax) {
     lexer.lex(fsmSyntax);
     parser.handleEvent(EOF, -1, -1);
-    AbstractSyntaxTree ast = analyzer.analyze(builder.getFsm());
+    SemanticStateMachine ast = analyzer.analyze(builder.getFsm());
     return optimizer.optimize(ast);
   }
 
@@ -51,7 +51,7 @@ public class JavaNestedSwitchCaseImplementerTest {
     Map<String, String> flags = new HashMap<>();
     flags.put("package", "thePackage");
     JavaNestedSwitchCaseImplementer implementer = new JavaNestedSwitchCaseImplementer(flags);
-    StateMachine sm = produceStateMachine("" +
+    OptimizedStateMachine sm = produceStateMachine("" +
         "Initial: I\n" +
         "Fsm: fsm\n" +
         "Actions: acts\n" +
@@ -93,7 +93,7 @@ public class JavaNestedSwitchCaseImplementerTest {
   @Test
   public void oneTransitionWithActionsButNoPackage() throws Exception {
     JavaNestedSwitchCaseImplementer implementer = new JavaNestedSwitchCaseImplementer(emptyFlags);
-    StateMachine sm = produceStateMachine("" +
+    OptimizedStateMachine sm = produceStateMachine("" +
         "Initial: I\n" +
         "Fsm: fsm\n" +
         "Actions: acts\n" +
@@ -109,7 +109,7 @@ public class JavaNestedSwitchCaseImplementerTest {
   @Test
   public void oneTransitionWithNoActionsAndNoPackage() throws Exception {
     JavaNestedSwitchCaseImplementer implementer = new JavaNestedSwitchCaseImplementer(emptyFlags);
-    StateMachine sm = produceStateMachine("" +
+    OptimizedStateMachine sm = produceStateMachine("" +
         "Initial: I\n" +
         "Fsm: fsm\n" +
         "{" +

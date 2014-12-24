@@ -19,9 +19,8 @@ import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertEquals;
 import static smc.parser.FsmSyntax.Header;
 import static smc.parser.ParserEvent.EOF;
-import static smc.semanticAnalyzer.AbstractSyntaxTree.AnalysisError;
-import static smc.semanticAnalyzer.AbstractSyntaxTree.AnalysisError.ID.*;
-import static smc.semanticAnalyzer.AbstractSyntaxTree.State;
+import static smc.semanticAnalyzer.SemanticStateMachine.AnalysisError;
+import static smc.semanticAnalyzer.SemanticStateMachine.AnalysisError.ID.*;
 
 @RunWith(HierarchicalContextRunner.class)
 public class SemanticAnalyzerTest {
@@ -38,15 +37,15 @@ public class SemanticAnalyzerTest {
     analyzer = new SemanticAnalyzer();
   }
 
-  private AbstractSyntaxTree produceAst(String s) {
+  private SemanticStateMachine produceAst(String s) {
     lexer.lex(s);
     parser.handleEvent(EOF, -1, -1);
     return analyzer.analyze(builder.getFsm());
   }
 
   private void assertSemanticResult(String s, String expected) {
-    AbstractSyntaxTree abstractSyntaxTree = produceAst(s);
-    assertEquals(expected, abstractSyntaxTree.toString());
+    SemanticStateMachine semanticStateMachine = produceAst(s);
+    assertEquals(expected, semanticStateMachine.toString());
   }
 
   public class SemanticErrors {
@@ -311,57 +310,57 @@ public class SemanticAnalyzerTest {
   public class Lists {
     @Test
     public void oneState() throws Exception {
-      AbstractSyntaxTree ast = produceAst("{s - - -}");
-      assertThat(ast.states.values(), contains(new State("s")));
+      SemanticStateMachine ast = produceAst("{s - - -}");
+      assertThat(ast.states.values(), contains(new SemanticStateMachine.SemanticState("s")));
     }
 
     @Test
     public void manyStates() throws Exception {
-      AbstractSyntaxTree ast = produceAst("{s1 - - - s2 - - - s3 - - -}");
+      SemanticStateMachine ast = produceAst("{s1 - - - s2 - - - s3 - - -}");
       assertThat(ast.states.values(), hasItems(
-        new State("s1"),
-        new State("s2"),
-        new State("s3")));
+        new SemanticStateMachine.SemanticState("s1"),
+        new SemanticStateMachine.SemanticState("s2"),
+        new SemanticStateMachine.SemanticState("s3")));
     }
 
     @Test
     public void statesAreKeyedByName() throws Exception {
-      AbstractSyntaxTree ast = produceAst("{s1 - - - s2 - - - s3 - - -}");
-      assertThat(ast.states.get("s1"), equalTo(new State("s1")));
-      assertThat(ast.states.get("s2"), equalTo(new State("s2")));
-      assertThat(ast.states.get("s3"), equalTo(new State("s3")));
+      SemanticStateMachine ast = produceAst("{s1 - - - s2 - - - s3 - - -}");
+      assertThat(ast.states.get("s1"), equalTo(new SemanticStateMachine.SemanticState("s1")));
+      assertThat(ast.states.get("s2"), equalTo(new SemanticStateMachine.SemanticState("s2")));
+      assertThat(ast.states.get("s3"), equalTo(new SemanticStateMachine.SemanticState("s3")));
     }
 
     @Test
     public void manyEvents() throws Exception {
-      AbstractSyntaxTree ast = produceAst("{s1 e1 - - s2 e2 - - s3 e3 - -}");
+      SemanticStateMachine ast = produceAst("{s1 e1 - - s2 e2 - - s3 e3 - -}");
       assertThat(ast.events, hasItems("e1", "e2", "e3"));
       assertThat(ast.events, hasSize(3));
     }
 
     @Test
     public void manyEventsButNoDuplicates() throws Exception {
-      AbstractSyntaxTree ast = produceAst("{s1 e1 - - s2 e2 - - s3 e1 - -}");
+      SemanticStateMachine ast = produceAst("{s1 e1 - - s2 e2 - - s3 e1 - -}");
       assertThat(ast.events, hasItems("e1", "e2"));
       assertThat(ast.events, hasSize(2));
     }
 
     @Test
     public void noNullEvents() throws Exception {
-      AbstractSyntaxTree ast = produceAst("{(s1) - - -}");
+      SemanticStateMachine ast = produceAst("{(s1) - - -}");
       assertThat(ast.events, hasSize(0));
     }
 
     @Test
     public void manyActionsButNoDuplicates() throws Exception {
-      AbstractSyntaxTree ast = produceAst("{s1 e1 - {a1 a2} s2 e2 - {a3 a1}}");
+      SemanticStateMachine ast = produceAst("{s1 e1 - {a1 a2} s2 e2 - {a3 a1}}");
       assertThat(ast.actions, hasItems("a1", "a2", "a3"));
       assertThat(ast.actions, hasSize(3));
     }
 
     @Test
     public void entryAndExitActionsAreCountedAsActions() throws Exception {
-      AbstractSyntaxTree ast = produceAst("{s <ea >xa - - a}");
+      SemanticStateMachine ast = produceAst("{s <ea >xa - - a}");
       assertThat(ast.actions, hasItems("ea", "xa"));
     }
   } // Lists
@@ -457,7 +456,7 @@ public class SemanticAnalyzerTest {
   public class AcceptanceTests {
     @Test
     public void subwayTurnstileOne() throws Exception {
-      AbstractSyntaxTree ast = produceAst(
+      SemanticStateMachine ast = produceAst(
         "" +
           "Actions: Turnstile\n" +
           "FSM: OneCoinTurnstile\n" +
@@ -487,7 +486,7 @@ public class SemanticAnalyzerTest {
 
     @Test
     public void subwayTurnstileTwo() throws Exception {
-      AbstractSyntaxTree ast = produceAst(
+      SemanticStateMachine ast = produceAst(
         "" +
           "Actions: Turnstile\n" +
           "FSM: TwoCoinTurnstile\n" +
@@ -545,7 +544,7 @@ public class SemanticAnalyzerTest {
 
     @Test
     public void subwayTurnstileThree() throws Exception {
-      AbstractSyntaxTree ast = produceAst(
+      SemanticStateMachine ast = produceAst(
         "" +
           "Actions: Turnstile\n" +
           "FSM: TwoCoinTurnstile\n" +

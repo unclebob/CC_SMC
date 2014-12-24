@@ -11,7 +11,7 @@ import smc.optimizer.Optimizer;
 import smc.parser.FsmSyntax;
 import smc.parser.Parser;
 import smc.parser.SyntaxBuilder;
-import smc.semanticAnalyzer.AbstractSyntaxTree;
+import smc.semanticAnalyzer.SemanticStateMachine;
 import smc.semanticAnalyzer.SemanticAnalyzer;
 
 import java.io.IOException;
@@ -96,55 +96,55 @@ public class SMC {
       return syntaxErrorCount;
     }
 
-    private StateMachine optimize(FsmSyntax fsm) {
-      AbstractSyntaxTree ast = new SemanticAnalyzer().analyze(fsm);
+    private OptimizedStateMachine optimize(FsmSyntax fsm) {
+      SemanticStateMachine ast = new SemanticAnalyzer().analyze(fsm);
       return new Optimizer().optimize(ast);
     }
 
     private class CodeGenerator {
-      private StateMachine stateMachine;
+      private OptimizedStateMachine optimizedStateMachine;
 
-      public CodeGenerator(StateMachine stateMachine) {
-        this.stateMachine = stateMachine;
+      public CodeGenerator(OptimizedStateMachine optimizedStateMachine) {
+        this.optimizedStateMachine = optimizedStateMachine;
       }
 
       public void generateCode() throws IOException {
         if (language.equalsIgnoreCase("java"))
-          generateJava(stateMachine);
+          generateJava(optimizedStateMachine);
         else if (language.equalsIgnoreCase("c"))
-          generateC(stateMachine);
+          generateC(optimizedStateMachine);
         else if (language.equalsIgnoreCase("c++"))
-          generateCpp(stateMachine);
+          generateCpp(optimizedStateMachine);
         else
           System.out.println("Unknown language: " + language);
 
       }
 
-      private void generateJava(StateMachine stateMachine) throws IOException {
+      private void generateJava(OptimizedStateMachine optimizedStateMachine) throws IOException {
         NSCGenerator generator = new NSCGenerator();
         JavaNestedSwitchCaseImplementer implementer = new JavaNestedSwitchCaseImplementer(flags);
-        generator.generate(stateMachine).accept(implementer);
-        String outputFileName = stateMachine.header.fsm + ".java";
+        generator.generate(optimizedStateMachine).accept(implementer);
+        String outputFileName = optimizedStateMachine.header.fsm + ".java";
         Files.write(getOutputPath(outputFileName), implementer.getOutput().getBytes());
       }
 
-      private void generateCpp(StateMachine stateMachine) throws IOException {
+      private void generateCpp(OptimizedStateMachine optimizedStateMachine) throws IOException {
         NSCGenerator generator = new NSCGenerator();
         CppNestedSwitchCaseImplementer implementer = new CppNestedSwitchCaseImplementer(flags);
-        generator.generate(stateMachine).accept(implementer);
-        String outputFileName = stateMachine.header.fsm + ".h";
+        generator.generate(optimizedStateMachine).accept(implementer);
+        String outputFileName = optimizedStateMachine.header.fsm + ".h";
         Files.write(getOutputPath(outputFileName), implementer.getOutput().getBytes());
       }
 
-      private void generateC(StateMachine stateMachine) throws IOException {
+      private void generateC(OptimizedStateMachine optimizedStateMachine) throws IOException {
         NSCGenerator generator = new NSCGenerator();
         CNestedSwitchCaseImplementer implementer = new CNestedSwitchCaseImplementer(flags);
-        generator.generate(stateMachine).accept(implementer);
+        generator.generate(optimizedStateMachine).accept(implementer);
         if (implementer.getErrors().size() > 0) {
           for (CNestedSwitchCaseImplementer.Error error : implementer.getErrors())
             System.out.println("Implementation error: " + error.name());
         } else {
-          String fileName = stateMachine.header.fsm.toLowerCase();
+          String fileName = optimizedStateMachine.header.fsm.toLowerCase();
           Files.write(getOutputPath(fileName + ".h"), implementer.getFsmHeader().getBytes());
           Files.write(getOutputPath(fileName + ".c"), implementer.getFsmImplementation().getBytes());
         }
