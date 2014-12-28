@@ -7,6 +7,6 @@ clean :
 	rm -f *.o TwoCoinTurnstile.h turnstile_test
 
 TwoCoinTurnstile.h : twoCoinTurnstile.sm
-	java -jar ../../build/jar/smc.jar -l c++ twoCoinTurnstile.sm
+	java -jar ../../build/jar/smc.jar -l Cpp twoCoinTurnstile.sm
 
 

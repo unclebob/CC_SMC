@@ -7,7 +7,7 @@ SMC is a Java application that translates a state transition table into a progra
 ###Command Line
 `java -jar smc.jar -l <language> -o <directory> -f <flags>`
 
- * `<language>` is either `C`, `C++`, or `Java`.  
+ * `<language>` is either `C`, `Cpp`, or `Java`.  
  * `<directory>` is the output directory.  Your new state machine will be written there.
  * `<flags>` currently for Java only.  `package:package_name` will put the appropriate `package` statement in the generated code.
 
@@ -276,7 +276,19 @@ This closely reflects the package structure of the java code.
 * The _Generator_ converts the optimized state transition table into a set of code-generation-nodes that represent a _Nested Switch Case_ statement in a language agnostic way.
 * Finally, the _Implementing Visitors_ translate the code-generation-nodes into a true programming language, like Java.
 
-The upshot of all this is that you can generate a new language, like C#, by simply writing a new _Implementing Visitor_, which is a relatively trivial task.
+The upshot of all this is that you can generate a new language, like C#, by simply writing a new _Implementing Visitor_, which is a relatively trivial task. (See Below)
+
+### Writing a Code Generator
+
+The value of the -l command line argument is used to find a class whose name is:
+ 
+`smc.generators.<LANGUAGE>CodeGenerator`.  
+	
+This class decides which _Implementing Visitor_ to create, and how the output files should be written.
+	
+You can create your own by deriving your class from `smc.generators.CodeGenerator`.  Check out the source code for the Java code generator.  It's pretty straightforward.
+
+
 
 ### BNF
 
