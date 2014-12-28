@@ -3,6 +3,7 @@ package smc;
 import com.cleancoder.args.Args;
 import com.cleancoder.args.ArgsException;
 import smc.generators.nestedSwitchCaseGenerator.NSCGenerator;
+import smc.generators.nestedSwitchCaseGenerator.NSCNodeVisitor;
 import smc.implementers.CNestedSwitchCaseImplementer;
 import smc.implementers.CppNestedSwitchCaseImplementer;
 import smc.implementers.JavaNestedSwitchCaseImplementer;
@@ -59,8 +60,21 @@ public class SMC {
       FsmSyntax fsm = compile(getSourceCode());
       int syntaxErrorCount = reportSyntaxErrors(fsm);
 
-      if (syntaxErrorCount == 0)
-        new CodeGenerator(optimize(fsm)).generateCode();
+      if (syntaxErrorCount == 0) {
+        OptimizedStateMachine optimizedStateMachine = optimize(fsm);
+        CodeGenerator generator = null;
+        if (language.equalsIgnoreCase("java"))
+          generator = new JavaCodeGenerator(optimizedStateMachine);
+        else if (language.equalsIgnoreCase("c++"))
+          generator = new CppCodeGenerator(optimizedStateMachine);
+        else if (language.equalsIgnoreCase("c"))
+          generator = new CCodeGenerator(optimizedStateMachine);
+        else {
+          System.out.println("Unknown language: " + language);
+          System.exit(0);
+        }
+        generator.generate();
+      }
     }
 
     private void extractCommandLineArguments() {
@@ -101,45 +115,84 @@ public class SMC {
       return new Optimizer().optimize(ast);
     }
 
-    private class CodeGenerator {
-      private OptimizedStateMachine optimizedStateMachine;
+    public abstract class CodeGenerator {
+      protected OptimizedStateMachine optimizedStateMachine;
 
       public CodeGenerator(OptimizedStateMachine optimizedStateMachine) {
         this.optimizedStateMachine = optimizedStateMachine;
       }
 
-      public void generateCode() throws IOException {
-        if (language.equalsIgnoreCase("java"))
-          generateJava(optimizedStateMachine);
-        else if (language.equalsIgnoreCase("c"))
-          generateC(optimizedStateMachine);
-        else if (language.equalsIgnoreCase("c++"))
-          generateCpp(optimizedStateMachine);
+      protected Path getOutputPath(String outputFileName) {
+        Path outputPath;
+        if (outputDirectory == null)
+          outputPath = FileSystems.getDefault().getPath(outputFileName);
         else
-          System.out.println("Unknown language: " + language);
-
+          outputPath = FileSystems.getDefault().getPath(outputDirectory, outputFileName);
+        return outputPath;
       }
 
-      private void generateJava(OptimizedStateMachine optimizedStateMachine) throws IOException {
-        NSCGenerator generator = new NSCGenerator();
-        JavaNestedSwitchCaseImplementer implementer = new JavaNestedSwitchCaseImplementer(flags);
-        generator.generate(optimizedStateMachine).accept(implementer);
+      protected void generate() throws IOException{
+        NSCGenerator nscGenerator = new NSCGenerator();
+        nscGenerator.generate(optimizedStateMachine).accept(getImplementer());
+        writeFiles();
+      }
+
+      protected abstract NSCNodeVisitor getImplementer();
+
+      protected abstract void writeFiles() throws IOException;
+    }
+
+    class JavaCodeGenerator extends CodeGenerator {
+     private JavaNestedSwitchCaseImplementer implementer;
+
+      public JavaCodeGenerator(OptimizedStateMachine optimizedStateMachine) {
+        super(optimizedStateMachine);
+        implementer = new JavaNestedSwitchCaseImplementer(flags);
+      }
+
+      protected NSCNodeVisitor getImplementer() {
+        return implementer;
+      }
+
+      public void writeFiles() throws IOException {
         String outputFileName = optimizedStateMachine.header.fsm + ".java";
         Files.write(getOutputPath(outputFileName), implementer.getOutput().getBytes());
       }
+    }
 
-      private void generateCpp(OptimizedStateMachine optimizedStateMachine) throws IOException {
-        NSCGenerator generator = new NSCGenerator();
-        CppNestedSwitchCaseImplementer implementer = new CppNestedSwitchCaseImplementer(flags);
-        generator.generate(optimizedStateMachine).accept(implementer);
+    class CppCodeGenerator extends CodeGenerator {
+
+      private CppNestedSwitchCaseImplementer implementer;
+
+      public CppCodeGenerator(OptimizedStateMachine optimizedStateMachine) {
+        super(optimizedStateMachine);
+        implementer = new CppNestedSwitchCaseImplementer(flags);
+      }
+
+      protected NSCNodeVisitor getImplementer() {
+        return implementer;
+      }
+
+      public void writeFiles() throws IOException {
         String outputFileName = optimizedStateMachine.header.fsm + ".h";
         Files.write(getOutputPath(outputFileName), implementer.getOutput().getBytes());
       }
+    }
 
-      private void generateC(OptimizedStateMachine optimizedStateMachine) throws IOException {
-        NSCGenerator generator = new NSCGenerator();
-        CNestedSwitchCaseImplementer implementer = new CNestedSwitchCaseImplementer(flags);
-        generator.generate(optimizedStateMachine).accept(implementer);
+
+    class CCodeGenerator extends CodeGenerator {
+      private CNestedSwitchCaseImplementer implementer;
+
+      public CCodeGenerator(OptimizedStateMachine optimizedStateMachine) {
+        super(optimizedStateMachine);
+        implementer = new CNestedSwitchCaseImplementer(flags);
+      }
+
+      protected NSCNodeVisitor getImplementer() {
+        return implementer;
+      }
+
+      public void writeFiles() throws IOException {
         if (implementer.getErrors().size() > 0) {
           for (CNestedSwitchCaseImplementer.Error error : implementer.getErrors())
             System.out.println("Implementation error: " + error.name());
@@ -148,15 +201,6 @@ public class SMC {
           Files.write(getOutputPath(fileName + ".h"), implementer.getFsmHeader().getBytes());
           Files.write(getOutputPath(fileName + ".c"), implementer.getFsmImplementation().getBytes());
         }
-      }
-
-      private Path getOutputPath(String outputFileName) {
-        Path outputPath;
-        if (outputDirectory == null)
-          outputPath = FileSystems.getDefault().getPath(outputFileName);
-        else
-          outputPath = FileSystems.getDefault().getPath(outputDirectory, outputFileName);
-        return outputPath;
       }
     }
   }
