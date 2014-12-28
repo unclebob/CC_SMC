@@ -280,13 +280,13 @@ The upshot of all this is that you can generate a new language, like C#, by simp
 
 ### Writing a Code Generator
 
-The value of the -l command line argument is used to find a class whose name is:
+The value of the `-l` command line argument is used to find a class whose name is:
  
 `smc.generators.<LANGUAGE>CodeGenerator`.  
 	
 This class decides which _Implementing Visitor_ to create, and how the output files should be written.
 	
-You can create your own by deriving your class from `smc.generators.CodeGenerator`.  Check out the source code for the Java code generator.  It's pretty straightforward.
+You can create a generator for a new language by deriving that class from `smc.generators.CodeGenerator` and putting it in the classpath.  Check out the source code for the Java code generator.  It's pretty straightforward.
 
 
 
