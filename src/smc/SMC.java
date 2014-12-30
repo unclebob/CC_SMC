@@ -121,10 +121,7 @@ public class SMC {
       } catch (NoSuchMethodException e) {
         System.out.printf("Appropriate constructor for %s not found", generatorClassName);
         System.exit(0);
-      } catch (InvocationTargetException e) {
-        e.printStackTrace();
-        System.exit(0);
-      } catch (InstantiationException e) {
+      } catch (InvocationTargetException | InstantiationException e) {
         e.printStackTrace();
         System.exit(0);
       } catch (IllegalAccessException e) {
