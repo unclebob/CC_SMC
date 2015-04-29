@@ -1,8 +1,11 @@
 package com.cleancoder.args;
 
-import static com.cleancoder.args.ArgsException.ErrorCode.*;
+import static com.cleancoder.args.ArgsException.ErrorCode.MISSING_STRING;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.NoSuchElementException;
 
 public class StringArrayArgumentMarshaler implements ArgumentMarshaler {
   private List<String> strings = new ArrayList<String>();

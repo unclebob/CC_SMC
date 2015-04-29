@@ -39,13 +39,15 @@ public class NSCGenerator {
       addStateCase(stateSwitch, t);
   }
 
-  private void addStateCase(NSCNode.SwitchCaseNode stateSwitch, OptimizedStateMachine.Transition t) {
+  private void addStateCase(NSCNode.SwitchCaseNode stateSwitch,
+      OptimizedStateMachine.Transition t) {
     NSCNode.CaseNode stateCaseNode = new NSCNode.CaseNode("State", t.currentState);
     addEventCases(stateCaseNode, t);
     stateSwitch.caseNodes.add(stateCaseNode);
   }
 
-  private void addEventCases(NSCNode.CaseNode stateCaseNode, OptimizedStateMachine.Transition t) {
+  private void addEventCases(NSCNode.CaseNode stateCaseNode,
+      OptimizedStateMachine.Transition t) {
     NSCNode.SwitchCaseNode eventSwitch = new NSCNode.SwitchCaseNode("event");
     stateCaseNode.caseActionNode = eventSwitch;
     for (OptimizedStateMachine.SubTransition st : t.subTransitions)
@@ -53,13 +55,15 @@ public class NSCGenerator {
     eventSwitch.caseNodes.add(new NSCNode.DefaultCaseNode(t.currentState));
   }
 
-  private void addEventCase(NSCNode.SwitchCaseNode eventSwitch, OptimizedStateMachine.SubTransition st) {
+  private void addEventCase(NSCNode.SwitchCaseNode eventSwitch,
+      OptimizedStateMachine.SubTransition st) {
     NSCNode.CaseNode eventCaseNode = new NSCNode.CaseNode("Event", st.event);
     addActions(st, eventCaseNode);
     eventSwitch.caseNodes.add(eventCaseNode);
   }
 
-  private void addActions(OptimizedStateMachine.SubTransition st, NSCNode.CaseNode eventCaseNode) {
+  private void addActions(OptimizedStateMachine.SubTransition st,
+      NSCNode.CaseNode eventCaseNode) {
     NSCNode.CompositeNode actions = new NSCNode.CompositeNode();
     addSetStateNode(st.nextState, actions);
     for (String action : st.actions)
@@ -70,7 +74,8 @@ public class NSCGenerator {
 
   private void addSetStateNode(String stateName, NSCNode.CompositeNode actions) {
     NSCNode.EnumeratorNode enumeratorNode = new NSCNode.EnumeratorNode("State", stateName);
-    NSCNode.FunctionCallNode setStateNode = new NSCNode.FunctionCallNode("setState", enumeratorNode);
+    NSCNode.FunctionCallNode setStateNode = new NSCNode.FunctionCallNode("setState",
+        enumeratorNode);
     actions.add(setStateNode);
   }
 }

@@ -1,6 +1,6 @@
 package smc.parser;
 
-public enum ParserEvent {
+public enum ParserEvent {//@formatter:off
   NAME,
   OPEN_BRACE,
   CLOSED_BRACE,
@@ -11,4 +11,4 @@ public enum ParserEvent {
   DASH,
   EOF,
   COLON
-}
+} //@formatter:ons

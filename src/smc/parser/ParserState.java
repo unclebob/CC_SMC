@@ -1,6 +1,6 @@
 package smc.parser;
 
-public enum ParserState {
+public enum ParserState {//@formatter:off
   HEADER,
   HEADER_COLON,
   HEADER_VALUE,
@@ -23,4 +23,4 @@ public enum ParserState {
   MULTIPLE_ENTRY_ACTIONS,
   MULTIPLE_EXIT_ACTIONS,
   END
-  }
+} //@formatter:on

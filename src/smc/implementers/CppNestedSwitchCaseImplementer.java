@@ -1,13 +1,21 @@
 package smc.implementers;
 
-import smc.Utilities;
-import smc.generators.nestedSwitchCaseGenerator.NSCNodeVisitor;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static smc.generators.nestedSwitchCaseGenerator.NSCNode.*;
+import smc.Utilities;
+import smc.generators.nestedSwitchCaseGenerator.NSCNode.CaseNode;
+import smc.generators.nestedSwitchCaseGenerator.NSCNode.DefaultCaseNode;
+import smc.generators.nestedSwitchCaseGenerator.NSCNode.EnumNode;
+import smc.generators.nestedSwitchCaseGenerator.NSCNode.EnumeratorNode;
+import smc.generators.nestedSwitchCaseGenerator.NSCNode.EventDelegatorsNode;
+import smc.generators.nestedSwitchCaseGenerator.NSCNode.FSMClassNode;
+import smc.generators.nestedSwitchCaseGenerator.NSCNode.FunctionCallNode;
+import smc.generators.nestedSwitchCaseGenerator.NSCNode.HandleEventNode;
+import smc.generators.nestedSwitchCaseGenerator.NSCNode.StatePropertyNode;
+import smc.generators.nestedSwitchCaseGenerator.NSCNode.SwitchCaseNode;
+import smc.generators.nestedSwitchCaseGenerator.NSCNodeVisitor;
 
 public class CppNestedSwitchCaseImplementer implements NSCNodeVisitor {
   private String fsmName;
@@ -28,7 +36,7 @@ public class CppNestedSwitchCaseImplementer implements NSCNodeVisitor {
   }
 
   public void visit(CaseNode caseNode) {
-    output += String.format("case %s_%s:\n",caseNode.switchName, caseNode.caseName);
+    output += String.format("case %s_%s:\n", caseNode.switchName, caseNode.caseName);
     caseNode.caseActionNode.accept(this);
     output += "break;\n\n";
   }
@@ -42,19 +50,18 @@ public class CppNestedSwitchCaseImplementer implements NSCNodeVisitor {
   }
 
   public void visit(EnumNode enumNode) {
-    output += String.format(
-      "\tenum %s {%s};\n",
-      enumNode.name,
-      Utilities.commaList(Utilities.addPrefix(enumNode.name + "_", enumNode.enumerators)));
+    output += String.format("\tenum %s {%s};\n", enumNode.name, Utilities
+        .commaList(Utilities.addPrefix(enumNode.name + "_", enumNode.enumerators)));
   }
 
   public void visit(StatePropertyNode statePropertyNode) {
-    output += "State_"+statePropertyNode.initialState;
+    output += "State_" + statePropertyNode.initialState;
   }
 
   public void visit(EventDelegatorsNode eventDelegatorsNode) {
     for (String event : eventDelegatorsNode.events) {
-      output += String.format("\tvoid %s() {processEvent(Event_%s, \"%s\");}\n", event, event, event);
+      output += String.format("\tvoid %s() {processEvent(Event_%s, \"%s\");}\n", event,
+          event, event);
     }
   }
 
@@ -71,10 +78,10 @@ public class CppNestedSwitchCaseImplementer implements NSCNodeVisitor {
     actionsName = fsmClassNode.actionsName;
     output += String.format("#include \"%s.h\"\n", actionsName);
 
-    output += String.format("\n" +
-      "class %s : public %s {\n" +
-      "public:\n" +
-      "\t%s()\n\t: state(", fsmName, actionsName,fsmName);
+    output += String.format("\n" +//@formatter:off
+        "class %s : public %s {\n" +
+        "public:\n" +
+        "\t%s()\n\t: state(", fsmName, actionsName, fsmName);//@formatter:on
     fsmClassNode.stateProperty.accept(this);
     output += ")\n\t{}\n\n";
 
@@ -101,10 +108,10 @@ public class CppNestedSwitchCaseImplementer implements NSCNodeVisitor {
   }
 
   public void visit(DefaultCaseNode defaultCaseNode) {
-    output += String.format("" +
-      "default:\n" +
-      "unexpected_transition(\"%s\", eventName);\n" +
-      "break;\n", defaultCaseNode.state);
+    output += String.format("" +//@formatter:off
+        "default:\n" +
+        "unexpected_transition(\"%s\", eventName);\n" +
+        "break;\n", defaultCaseNode.state);//@formatter:on
   }
 
   public String getOutput() {
@@ -115,5 +122,7 @@ public class CppNestedSwitchCaseImplementer implements NSCNodeVisitor {
     return errors;
   }
 
-  public enum Error {NO_ACTIONS}
+  public enum Error {
+    NO_ACTIONS
+  }
 }

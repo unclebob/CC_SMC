@@ -1,19 +1,18 @@
 package smc.generators;
 
-import smc.OptimizedStateMachine;
-import smc.generators.nestedSwitchCaseGenerator.NSCNodeVisitor;
-import smc.implementers.CNestedSwitchCaseImplementer;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Map;
+
+import smc.OptimizedStateMachine;
+import smc.generators.nestedSwitchCaseGenerator.NSCNodeVisitor;
+import smc.implementers.CNestedSwitchCaseImplementer;
 
 public class CCodeGenerator extends CodeGenerator {
   private CNestedSwitchCaseImplementer implementer;
 
   public CCodeGenerator(OptimizedStateMachine optimizedStateMachine,
-                        String outputDirectory,
-                        Map<String, String> flags) {
+      String outputDirectory, Map<String, String> flags) {
     super(optimizedStateMachine, outputDirectory, flags);
     implementer = new CNestedSwitchCaseImplementer(flags);
   }
@@ -29,7 +28,8 @@ public class CCodeGenerator extends CodeGenerator {
     } else {
       String fileName = optimizedStateMachine.header.fsm.toLowerCase();
       Files.write(getOutputPath(fileName + ".h"), implementer.getFsmHeader().getBytes());
-      Files.write(getOutputPath(fileName + ".c"), implementer.getFsmImplementation().getBytes());
+      Files.write(getOutputPath(fileName + ".c"), implementer.getFsmImplementation()
+          .getBytes());
     }
   }
 }

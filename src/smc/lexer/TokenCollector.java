@@ -1,6 +1,6 @@
 package smc.lexer;
 
-public interface TokenCollector {
+public interface TokenCollector {//@formatter:off
   void openBrace(int line, int pos);
   void closedBrace(int line, int pos);
   void openParen(int line, int pos);
@@ -11,4 +11,4 @@ public interface TokenCollector {
   void colon(int line, int pos);
   void name(String name, int line, int pos);
   void error(int line, int pos);
-}
+}//@formatter:on

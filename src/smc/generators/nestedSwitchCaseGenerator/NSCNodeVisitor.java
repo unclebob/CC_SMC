@@ -1,6 +1,6 @@
 package smc.generators.nestedSwitchCaseGenerator;
 
-public interface NSCNodeVisitor {
+public interface NSCNodeVisitor {//@formatter:off
   void visit(NSCNode.SwitchCaseNode switchCaseNode);
   void visit(NSCNode.CaseNode caseNode);
   void visit(NSCNode.FunctionCallNode functionCallNode);
@@ -11,4 +11,4 @@ public interface NSCNodeVisitor {
   void visit(NSCNode.HandleEventNode handleEventNode);
   void visit(NSCNode.EnumeratorNode enumeratorNode);
   void visit(NSCNode.DefaultCaseNode defaultCaseNode);
-}
+}//@formatter:on

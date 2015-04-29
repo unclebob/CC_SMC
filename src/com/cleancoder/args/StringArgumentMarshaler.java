@@ -1,9 +1,9 @@
 package com.cleancoder.args;
 
+import static com.cleancoder.args.ArgsException.ErrorCode.MISSING_STRING;
+
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-
-import static com.cleancoder.args.ArgsException.ErrorCode.MISSING_STRING;
 
 public class StringArgumentMarshaler implements ArgumentMarshaler {
   private String stringValue = "";

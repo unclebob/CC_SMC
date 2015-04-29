@@ -1,13 +1,18 @@
 package smc.optimizer;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import smc.OptimizedStateMachine;
+import smc.OptimizedStateMachine.Header;
+import smc.OptimizedStateMachine.SubTransition;
+import smc.OptimizedStateMachine.Transition;
 import smc.semanticAnalyzer.SemanticStateMachine;
-
-import java.util.*;
-
-import static smc.OptimizedStateMachine.*;
-import static smc.semanticAnalyzer.SemanticStateMachine.SemanticState;
-import static smc.semanticAnalyzer.SemanticStateMachine.SemanticTransition;
+import smc.semanticAnalyzer.SemanticStateMachine.SemanticState;
+import smc.semanticAnalyzer.SemanticStateMachine.SemanticTransition;
 
 public class Optimizer {
   private OptimizedStateMachine optimizedStateMachine;
@@ -66,7 +71,8 @@ public class Optimizer {
       return event != null && !eventsForThisState.contains(event);
     }
 
-    private void addSubTransition(SemanticTransition semanticTransition, Transition transition) {
+    private void addSubTransition(SemanticTransition semanticTransition,
+        Transition transition) {
       eventsForThisState.add(semanticTransition.event);
       SubTransition subTransition = new SubTransition();
       new SubTransitionOptimizer(semanticTransition, subTransition).optimize();
@@ -77,7 +83,8 @@ public class Optimizer {
       private SemanticTransition semanticTransition;
       private SubTransition subTransition;
 
-      public SubTransitionOptimizer(SemanticTransition semanticTransition, SubTransition subTransition) {
+      public SubTransitionOptimizer(SemanticTransition semanticTransition,
+          SubTransition subTransition) {
         this.semanticTransition = semanticTransition;
         this.subTransition = subTransition;
       }
@@ -109,7 +116,8 @@ public class Optimizer {
     } // SubTransitionOptimizer
   } // StateOptimizer
 
-  private void addAllStatesInHiearchyLeafFirst(SemanticState state, List<SemanticState> hierarchy) {
+  private void addAllStatesInHiearchyLeafFirst(SemanticState state,
+      List<SemanticState> hierarchy) {
     for (SemanticState superState : state.superStates) {
       if (!hierarchy.contains(superState))
         addAllStatesInHiearchyLeafFirst(superState, hierarchy);

@@ -1,6 +1,6 @@
 package smc.parser;
 
-public interface Builder {
+public interface Builder {//@formatter:off
   void newHeaderWithName();
   void addHeaderWithValue();
   void setStateName();
@@ -24,4 +24,4 @@ public interface Builder {
   void endError(ParserState state, ParserEvent event, int line, int pos);
   void syntaxError(int line, int pos);
   void setName(String name);
-}
+}//@formatter:on

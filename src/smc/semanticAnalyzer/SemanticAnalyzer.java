@@ -1,12 +1,31 @@
 package smc.semanticAnalyzer;
 
+import static smc.semanticAnalyzer.SemanticStateMachine.AnalysisError.ID.ABSTRACT_STATE_USED_AS_NEXT_STATE;
+import static smc.semanticAnalyzer.SemanticStateMachine.AnalysisError.ID.CONFLICTING_SUPERSTATES;
+import static smc.semanticAnalyzer.SemanticStateMachine.AnalysisError.ID.DUPLICATE_TRANSITION;
+import static smc.semanticAnalyzer.SemanticStateMachine.AnalysisError.ID.EXTRA_HEADER_IGNORED;
+import static smc.semanticAnalyzer.SemanticStateMachine.AnalysisError.ID.INCONSISTENT_ABSTRACTION;
+import static smc.semanticAnalyzer.SemanticStateMachine.AnalysisError.ID.INVALID_HEADER;
+import static smc.semanticAnalyzer.SemanticStateMachine.AnalysisError.ID.STATE_ACTIONS_MULTIPLY_DEFINED;
+import static smc.semanticAnalyzer.SemanticStateMachine.AnalysisError.ID.UNDEFINED_STATE;
+import static smc.semanticAnalyzer.SemanticStateMachine.AnalysisError.ID.UNDEFINED_SUPER_STATE;
+import static smc.semanticAnalyzer.SemanticStateMachine.AnalysisError.ID.UNUSED_STATE;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+
 import smc.parser.FsmSyntax;
-
-import java.util.*;
-
-import static smc.parser.FsmSyntax.*;
-import static smc.semanticAnalyzer.SemanticStateMachine.*;
-import static smc.semanticAnalyzer.SemanticStateMachine.AnalysisError.ID.*;
+import smc.parser.FsmSyntax.Header;
+import smc.parser.FsmSyntax.SubTransition;
+import smc.parser.FsmSyntax.Transition;
+import smc.semanticAnalyzer.SemanticStateMachine.AnalysisError;
+import smc.semanticAnalyzer.SemanticStateMachine.SemanticState;
+import smc.semanticAnalyzer.SemanticStateMachine.SemanticTransition;
 
 public class SemanticAnalyzer {
   private SemanticStateMachine semanticStateMachine;
@@ -119,8 +138,10 @@ public class SemanticAnalyzer {
         checkUndefinedState(st.nextState, UNDEFINED_STATE);
     }
 
-    if (initialHeader.value != null && !semanticStateMachine.states.containsKey(initialHeader.value))
-      semanticStateMachine.errors.add(new AnalysisError(UNDEFINED_STATE, "initial: " + initialHeader.value));
+    if (initialHeader.value != null
+        && !semanticStateMachine.states.containsKey(initialHeader.value))
+      semanticStateMachine.errors.add(new AnalysisError(UNDEFINED_STATE, "initial: "
+          + initialHeader.value));
   }
 
   private void checkForUnusedStates(FsmSyntax fsm) {
@@ -178,10 +199,9 @@ public class SemanticAnalyzer {
     for (Transition t : fsm.logic)
       for (SubTransition st : t.subTransitions)
         if (abstractStates.contains(st.nextState))
-          semanticStateMachine.errors.add(
-            new AnalysisError(
-              ABSTRACT_STATE_USED_AS_NEXT_STATE,
-              String.format("%s(%s)->%s", t.state.name, st.event, st.nextState)));
+          semanticStateMachine.errors.add(new AnalysisError(
+              ABSTRACT_STATE_USED_AS_NEXT_STATE, String.format("%s(%s)->%s",
+                  t.state.name, st.event, st.nextState)));
   }
 
   private Set<String> findAbstractStates(FsmSyntax fsm) {
@@ -196,7 +216,8 @@ public class SemanticAnalyzer {
     Set<String> abstractStates = findAbstractStates(fsm);
     for (Transition t : fsm.logic)
       if (!t.state.abstractState && abstractStates.contains(t.state.name))
-        semanticStateMachine.warnings.add(new AnalysisError(INCONSISTENT_ABSTRACTION, t.state.name));
+        semanticStateMachine.warnings.add(new AnalysisError(INCONSISTENT_ABSTRACTION,
+            t.state.name));
   }
 
   private void checkForMultiplyDefinedStateActions(FsmSyntax fsm) {
@@ -206,7 +227,8 @@ public class SemanticAnalyzer {
         String actionsKey = makeActionsKey(t);
         if (firstActionsForState.containsKey(t.state.name)) {
           if (!firstActionsForState.get(t.state.name).equals(actionsKey))
-            semanticStateMachine.errors.add(new AnalysisError(STATE_ACTIONS_MULTIPLY_DEFINED, t.state.name));
+            semanticStateMachine.errors.add(new AnalysisError(
+                STATE_ACTIONS_MULTIPLY_DEFINED, t.state.name));
         } else
           firstActionsForState.put(t.state.name, actionsKey);
       }
@@ -235,7 +257,8 @@ public class SemanticAnalyzer {
   }
 
   private void checkUndefinedState(String referencedState, AnalysisError.ID errorCode) {
-    if (referencedState != null && !semanticStateMachine.states.containsKey(referencedState)) {
+    if (referencedState != null
+        && !semanticStateMachine.states.containsKey(referencedState)) {
       semanticStateMachine.errors.add(new AnalysisError(errorCode, referencedState));
     }
   }
@@ -253,7 +276,8 @@ public class SemanticAnalyzer {
   }
 
   private void compileHeaders() {
-    semanticStateMachine.initialState = semanticStateMachine.states.get(initialHeader.value);
+    semanticStateMachine.initialState = semanticStateMachine.states
+        .get(initialHeader.value);
     semanticStateMachine.actionClass = actionsHeader.value;
     semanticStateMachine.fsmName = fsmHeader.value;
   }
@@ -276,14 +300,16 @@ public class SemanticAnalyzer {
   private void compileTransition(SemanticState state, SubTransition st) {
     SemanticTransition semanticTransition = new SemanticTransition();
     semanticTransition.event = st.event;
-    semanticTransition.nextState = st.nextState == null ? state : semanticStateMachine.states.get(st.nextState);
+    semanticTransition.nextState = st.nextState == null ? state
+        : semanticStateMachine.states.get(st.nextState);
     semanticTransition.actions.addAll(st.actions);
     state.transitions.add(semanticTransition);
   }
 
   private class SuperClassCrawler {
     class TransitionTuple {
-      TransitionTuple(String currentState, String event, String nextState, List<String> actions) {
+      TransitionTuple(String currentState, String event, String nextState,
+          List<String> actions) {
         this.currentState = currentState;
         this.event = event;
         this.nextState = nextState;
@@ -297,11 +323,10 @@ public class SemanticAnalyzer {
       public boolean equals(Object obj) {
         if (obj instanceof TransitionTuple) {
           TransitionTuple tt = (TransitionTuple) obj;
-          return
-            Objects.equals(currentState, tt.currentState) &&
-              Objects.equals(event, tt.event) &&
-              Objects.equals(nextState, tt.nextState) &&
-              Objects.equals(actions, tt.actions);
+          return Objects.equals(currentState, tt.currentState)
+              && Objects.equals(event, tt.event)
+              && Objects.equals(nextState, tt.nextState)
+              && Objects.equals(actions, tt.actions);
         }
         return false;
       }
@@ -336,32 +361,37 @@ public class SemanticAnalyzer {
         checkTransitionForPreviousDefinition(state, st);
     }
 
-    private void checkTransitionForPreviousDefinition(SemanticState state, SemanticTransition st) {
-      TransitionTuple thisTuple = new TransitionTuple(state.name, st.event, st.nextState.name, st.actions);
+    private void checkTransitionForPreviousDefinition(SemanticState state,
+        SemanticTransition st) {
+      TransitionTuple thisTuple = new TransitionTuple(state.name, st.event,
+          st.nextState.name, st.actions);
       if (transitionTuples.containsKey(thisTuple.event)) {
         determineIfThePreviousDefinitionIsAnError(state, thisTuple);
       } else
         transitionTuples.put(thisTuple.event, thisTuple);
     }
 
-    private void determineIfThePreviousDefinitionIsAnError(SemanticState state, TransitionTuple thisTuple) {
+    private void determineIfThePreviousDefinitionIsAnError(SemanticState state,
+        TransitionTuple thisTuple) {
       TransitionTuple previousTuple = transitionTuples.get(thisTuple.event);
       if (!transitionsHaveSameOutcomes(thisTuple, previousTuple))
         checkForOverriddenTransition(state, thisTuple, previousTuple);
     }
 
-    private void checkForOverriddenTransition(SemanticState state, TransitionTuple thisTuple, TransitionTuple previousTuple) {
-      SemanticState definingState = semanticStateMachine.states.get(previousTuple.currentState);
+    private void checkForOverriddenTransition(SemanticState state,
+        TransitionTuple thisTuple, TransitionTuple previousTuple) {
+      SemanticState definingState = semanticStateMachine.states
+          .get(previousTuple.currentState);
       if (!isSuperStateOf(definingState, state)) {
-        semanticStateMachine.errors.add(new AnalysisError(CONFLICTING_SUPERSTATES, concreteState.name + "|" + thisTuple.event));
+        semanticStateMachine.errors.add(new AnalysisError(CONFLICTING_SUPERSTATES,
+            concreteState.name + "|" + thisTuple.event));
       } else
         transitionTuples.put(thisTuple.event, thisTuple);
     }
 
     private boolean transitionsHaveSameOutcomes(TransitionTuple t1, TransitionTuple t2) {
-      return
-        Objects.equals(t1.nextState, t2.nextState) &&
-          Objects.equals(t1.actions, t2.actions);
+      return Objects.equals(t1.nextState, t2.nextState)
+          && Objects.equals(t1.actions, t2.actions);
     }
   }
 
