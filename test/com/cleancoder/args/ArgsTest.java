@@ -199,7 +199,7 @@ public class ArgsTest {
 
   @Test(expected=ArgsException.class)
   public void malFormedMapArgument() throws Exception {
-    Args args = new Args("f&", new String[] {"-f", "key1:val1,key2"});
+    new Args("f&", new String[] {"-f", "key1:val1,key2"});
   }
 
   @Test
