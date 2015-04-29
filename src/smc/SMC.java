@@ -1,15 +1,7 @@
 package smc;
 
-import com.cleancoder.args.Args;
-import com.cleancoder.args.ArgsException;
-import smc.generators.CodeGenerator;
-import smc.lexer.Lexer;
-import smc.optimizer.Optimizer;
-import smc.parser.FsmSyntax;
-import smc.parser.Parser;
-import smc.parser.SyntaxBuilder;
-import smc.semanticAnalyzer.SemanticAnalyzer;
-import smc.semanticAnalyzer.SemanticStateMachine;
+import static java.lang.String.format;
+import static smc.parser.ParserEvent.EOF;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
@@ -19,7 +11,17 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
-import static smc.parser.ParserEvent.EOF;
+import smc.generators.CodeGenerator;
+import smc.lexer.Lexer;
+import smc.optimizer.Optimizer;
+import smc.parser.FsmSyntax;
+import smc.parser.Parser;
+import smc.parser.SyntaxBuilder;
+import smc.semanticAnalyzer.SemanticAnalyzer;
+import smc.semanticAnalyzer.SemanticStateMachine;
+
+import com.cleancoder.args.Args;
+import com.cleancoder.args.ArgsException;
 
 public class SMC {
   public static void main(String[] args) throws Exception {
@@ -87,9 +89,8 @@ public class SMC {
 
     private int reportSyntaxErrors(FsmSyntax fsm) {
       int syntaxErrorCount = fsm.errors.size();
-      System.out.println(String.format(
-        "Compiled with %d syntax error%s.",
-        syntaxErrorCount, (syntaxErrorCount == 1 ? "" : "s")));
+      System.out.println(String.format("Compiled with %d syntax error%s.",
+          syntaxErrorCount, (syntaxErrorCount == 1 ? "" : "s")));
 
       for (FsmSyntax.SyntaxError error : fsm.errors)
         System.out.println(error.toString());
@@ -101,20 +102,23 @@ public class SMC {
       return new Optimizer().optimize(ast);
     }
 
-    private void generateCode(OptimizedStateMachine optimizedStateMachine) throws IOException {
-      String generatorClassName = String.format("smc.generators.%sCodeGenerator", language);
-      CodeGenerator generator = createGenerator(generatorClassName, optimizedStateMachine, outputDirectory, flags);
+    private void generateCode(OptimizedStateMachine optimizedStateMachine)
+        throws IOException {
+      String generatorClassName = format("smc.generators.%sCodeGenerator", language);
+      CodeGenerator generator = createGenerator(generatorClassName,
+          optimizedStateMachine, outputDirectory, flags);
       generator.generate();
     }
 
     private CodeGenerator createGenerator(String generatorClassName,
-                                          OptimizedStateMachine optimizedStateMachine,
-                                          String outputDirectory,
-                                          Map<String, String> flags) {
+        OptimizedStateMachine optimizedStateMachine, String outputDirectory,
+        Map<String, String> flags) {
       try {
-        Class generatorClass = Class.forName(generatorClassName);
-        Constructor constructor = generatorClass.getConstructor(OptimizedStateMachine.class, String.class, Map.class);
-        return (CodeGenerator) constructor.newInstance(optimizedStateMachine, outputDirectory, flags);
+        Class<?> generatorClass = Class.forName(generatorClassName);
+        Constructor<?> constructor = generatorClass.getConstructor(
+            OptimizedStateMachine.class, String.class, Map.class);
+        return (CodeGenerator) constructor.newInstance(optimizedStateMachine,
+            outputDirectory, flags);
       } catch (ClassNotFoundException e) {
         System.out.printf("The class %s was not found.\n", generatorClassName);
         System.exit(0);

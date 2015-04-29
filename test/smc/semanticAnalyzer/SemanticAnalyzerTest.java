@@ -1,9 +1,11 @@
 package smc.semanticAnalyzer;
 
 import de.bechte.junit.runners.context.HierarchicalContextRunner;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import smc.lexer.Lexer;
 import smc.parser.Parser;
 import smc.parser.SyntaxBuilder;
@@ -43,6 +45,7 @@ public class SemanticAnalyzerTest {
     return analyzer.analyze(builder.getFsm());
   }
 
+  @SuppressWarnings("unused")
   private void assertSemanticResult(String s, String expected) {
     SemanticStateMachine semanticStateMachine = produceAst(s);
     assertEquals(expected, semanticStateMachine.toString());

@@ -1,11 +1,12 @@
 package smc;
 
+import static java.lang.String.format;
+
 import java.util.ArrayList;
 import java.util.List;
 
-// This is the final output of the finite state machine parser.
-// Code generators will use this format as their input.
-
+/* This is the final output of the finite state machine parser.
+ Code generators will use this format as their input. */
 public class OptimizedStateMachine {
   public List<String> states = new ArrayList<>();
   public List<String> events = new ArrayList<>();
@@ -22,9 +23,10 @@ public class OptimizedStateMachine {
 
   public String toString() {
     String transitionsString = transitionsToString().replaceAll("\n", "\n  ");
-    transitionsString = transitionsString.substring(0, transitionsString.length()-2);
+    transitionsString = transitionsString.substring(0,
+        transitionsString.length() - 2);
     return String.format("Initial: %s\nFsm: %s\nActions:%s\n{\n  %s}\n",
-      header.initial, header.fsm, header.actions, transitionsString);
+        header.initial, header.fsm, header.actions, transitionsString);
   }
 
   public static class Header {
@@ -48,7 +50,7 @@ public class OptimizedStateMachine {
 
   public static class SubTransition {
     public String toString() {
-      return String.format("  %s %s {%s}\n", event, nextState, actionsToString());
+      return format("  %s %s {%s}\n", event, nextState, actionsToString());
     }
 
     private String actionsToString() {
@@ -57,7 +59,7 @@ public class OptimizedStateMachine {
         return result;
       for (String action : actions)
         result += action + " ";
-      return result.substring(0, result.length()-1);
+      return result.substring(0, result.length() - 1);
     }
 
     public String event;

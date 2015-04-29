@@ -1,5 +1,7 @@
 package smc.parser;
 
+import static java.lang.String.format;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -78,18 +80,17 @@ public class FsmSyntax {
     }
 
     public String toString() {
-      return String.format("Syntax Error Line: %d, Position: %d.  (%s) %s", lineNumber, position, type.name(), msg);
+      String template = "Syntax Error Line: %d, Position: %d.  (%s) %s";
+      return String.format(template, lineNumber, position, type.name(), msg);
     }
 
-    public enum Type {HEADER, STATE, TRANSITION, TRANSITION_GROUP, END, SYNTAX}
+    public enum Type {
+      HEADER, STATE, TRANSITION, TRANSITION_GROUP, END, SYNTAX
+    }
   }
 
   public String toString() {
-    return
-      formatHeaders() +
-        formatLogic() +
-        (done ? ".\n" : "") +
-        formatErrors();
+    return formatHeaders() + formatLogic() + (done ? ".\n" : "") + formatErrors();
   }
 
   private String formatHeaders() {
@@ -118,14 +119,12 @@ public class FsmSyntax {
   }
 
   private String formatTransition(Transition transition) {
-    return
-      String.format("  %s %s\n",
-        formatStateName(transition.state),
-        formatSubTransitions(transition));
+    return String.format("  %s %s\n",
+        formatStateName(transition.state), formatSubTransitions(transition));
   }
 
   private String formatStateName(StateSpec stateSpec) {
-    String stateName = String.format(stateSpec.abstractState ? "(%s)" : "%s", stateSpec.name);
+    String stateName = format(stateSpec.abstractState ? "(%s)" : "%s", stateSpec.name);
     for (String superState : stateSpec.superStates)
       stateName += ":" + superState;
     for (String entryAction : stateSpec.entryActions)
@@ -149,11 +148,8 @@ public class FsmSyntax {
   }
 
   private String formatSubTransition(SubTransition subtransition) {
-    return String.format(
-      "%s %s %s",
-      subtransition.event,
-      subtransition.nextState,
-      formatActions(subtransition));
+    return String.format("%s %s %s",
+        subtransition.event, subtransition.nextState, formatActions(subtransition));
   }
 
   private String formatActions(SubTransition subtransition) {
@@ -179,12 +175,8 @@ public class FsmSyntax {
   }
 
   private String formatError(SyntaxError error) {
-    return String.format(
-      "Syntax error: %s. %s. line %d, position %d.\n",
-      error.type.toString(),
-      error.msg,
-      error.lineNumber,
-      error.position);
+    return format("Syntax error: %s. %s. line %d, position %d.\n",
+        error.type.toString(), error.msg, error.lineNumber, error.position);
   }
 
   public String getError() {

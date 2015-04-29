@@ -1,7 +1,16 @@
 package smc.parser;
 
-import static smc.parser.FsmSyntax.*;
-import static smc.parser.FsmSyntax.SyntaxError.Type.*;
+import static smc.parser.FsmSyntax.SyntaxError.Type.END;
+import static smc.parser.FsmSyntax.SyntaxError.Type.HEADER;
+import static smc.parser.FsmSyntax.SyntaxError.Type.STATE;
+import static smc.parser.FsmSyntax.SyntaxError.Type.SYNTAX;
+import static smc.parser.FsmSyntax.SyntaxError.Type.TRANSITION;
+import static smc.parser.FsmSyntax.SyntaxError.Type.TRANSITION_GROUP;
+import smc.parser.FsmSyntax.Header;
+import smc.parser.FsmSyntax.StateSpec;
+import smc.parser.FsmSyntax.SubTransition;
+import smc.parser.FsmSyntax.SyntaxError;
+import smc.parser.FsmSyntax.Transition;
 
 public class SyntaxBuilder implements Builder {
   private FsmSyntax fsm;
@@ -86,24 +95,24 @@ public class SyntaxBuilder implements Builder {
   }
 
   public void headerError(ParserState state, ParserEvent event, int line, int pos) {
-    fsm.errors.add(new SyntaxError(HEADER, state+"|"+event, line, pos));
+    fsm.errors.add(new SyntaxError(HEADER, state + "|" + event, line, pos));
   }
 
   public void stateSpecError(ParserState state, ParserEvent event, int line, int pos) {
-    fsm.errors.add(new SyntaxError(STATE, state+"|"+event, line, pos));
+    fsm.errors.add(new SyntaxError(STATE, state + "|" + event, line, pos));
 
   }
 
   public void transitionError(ParserState state, ParserEvent event, int line, int pos) {
-    fsm.errors.add(new SyntaxError(TRANSITION, state+"|"+event, line, pos));
+    fsm.errors.add(new SyntaxError(TRANSITION, state + "|" + event, line, pos));
   }
 
   public void transitionGroupError(ParserState state, ParserEvent event, int line, int pos) {
-    fsm.errors.add(new SyntaxError(TRANSITION_GROUP, state+"|"+event, line, pos));
+    fsm.errors.add(new SyntaxError(TRANSITION_GROUP, state + "|" + event, line, pos));
   }
 
   public void endError(ParserState state, ParserEvent event, int line, int pos) {
-    fsm.errors.add(new SyntaxError(END, state+"|"+event, line, pos));
+    fsm.errors.add(new SyntaxError(END, state + "|" + event, line, pos));
   }
 
   public void syntaxError(int line, int pos) {

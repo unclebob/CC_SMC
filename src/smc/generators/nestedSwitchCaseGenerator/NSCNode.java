@@ -30,7 +30,7 @@ public interface NSCNode {
     public String caseName;
     public NSCNode caseActionNode;
 
-    public CaseNode(String SwitchName, String caseName){
+    public CaseNode(String SwitchName, String caseName) {
       switchName = SwitchName;
       this.caseName = caseName;
     }
@@ -150,15 +150,15 @@ public interface NSCNode {
     }
   }
 
-    public class DefaultCaseNode implements NSCNode {
-      public String state;
+  public class DefaultCaseNode implements NSCNode {
+    public String state;
 
-      public DefaultCaseNode(String state) {
-        this.state = state;
-      }
-
-      public void accept(NSCNodeVisitor visitor) {
-        visitor.visit(this);
-      }
+    public DefaultCaseNode(String state) {
+      this.state = state;
     }
+
+    public void accept(NSCNodeVisitor visitor) {
+      visitor.visit(this);
+    }
+  }
 }

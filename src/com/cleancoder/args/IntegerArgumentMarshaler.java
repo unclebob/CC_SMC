@@ -1,8 +1,10 @@
 package com.cleancoder.args;
 
-import static com.cleancoder.args.ArgsException.ErrorCode.*;
+import static com.cleancoder.args.ArgsException.ErrorCode.INVALID_INTEGER;
+import static com.cleancoder.args.ArgsException.ErrorCode.MISSING_INTEGER;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 public class IntegerArgumentMarshaler implements ArgumentMarshaler {
   private int intValue = 0;

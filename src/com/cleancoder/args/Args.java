@@ -1,18 +1,23 @@
 package com.cleancoder.args;
 
-import java.util.*;
+import static com.cleancoder.args.ArgsException.ErrorCode.INVALID_ARGUMENT_FORMAT;
+import static com.cleancoder.args.ArgsException.ErrorCode.INVALID_ARGUMENT_NAME;
+import static com.cleancoder.args.ArgsException.ErrorCode.UNEXPECTED_ARGUMENT;
 
-import static com.cleancoder.args.ArgsException.ErrorCode.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
+import java.util.Set;
 
 public class Args {
-  private Map<Character, ArgumentMarshaler> marshalers;
-  private Set<Character> argsFound;
+  private Map<Character, ArgumentMarshaler> marshalers = new HashMap<>();
+  private Set<Character> argsFound= new HashSet<>();
   private ListIterator<String> currentArgument;
 
   public Args(String schema, String[] args) throws ArgsException {
-    marshalers = new HashMap<Character, ArgumentMarshaler>();
-    argsFound = new HashSet<Character>();
-
     parseSchema(schema);
     parseArgumentStrings(Arrays.asList(args));
   }

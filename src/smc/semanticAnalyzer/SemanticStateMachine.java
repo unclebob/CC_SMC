@@ -1,6 +1,14 @@
 package smc.semanticAnalyzer;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.SortedSet;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 public class SemanticStateMachine {
   public List<AnalysisError> errors = new ArrayList<>();
@@ -13,14 +21,13 @@ public class SemanticStateMachine {
   public String fsmName;
 
   public String toString() {
-    return String.format(
-      "" +
+    return String.format("" +
+// @formatter:off
         "Actions: %s\n" +
         "FSM: %s\n" +
         "Initial: %s" +
-        "%s",
-      actionClass, fsmName, initialState.name, statesToString());
-
+        "%s", // @formatter:on
+        actionClass, fsmName, initialState.name, statesToString());
   }
 
   public void addError(AnalysisError analysisError) {
@@ -50,21 +57,18 @@ public class SemanticStateMachine {
     public boolean equals(Object obj) {
       if (obj instanceof SemanticState) {
         SemanticState other = (SemanticState) obj;
-        return
-          Objects.equals(other.name, name) &&
-            Objects.equals(other.entryActions, entryActions) &&
-            Objects.equals(other.exitActions, exitActions) &&
-            Objects.equals(other.superStates, superStates) &&
-            Objects.equals(other.transitions, transitions) &&
-            other.abstractState == abstractState;
+        return Objects.equals(other.name, name)
+            && Objects.equals(other.entryActions, entryActions)
+            && Objects.equals(other.exitActions, exitActions)
+            && Objects.equals(other.superStates, superStates)
+            && Objects.equals(other.transitions, transitions)
+            && other.abstractState == abstractState;
       } else
         return false;
     }
 
     public String toString() {
-      return
-        String.format("\n  %s {\n%s  }\n",
-          makeStateNameWithAdornments(),
+      return String.format("\n  %s {\n%s  }\n", makeStateNameWithAdornments(),
           makeTransitionStrings());
     }
 
@@ -77,7 +81,8 @@ public class SemanticStateMachine {
     }
 
     private String makeTransitionString(SemanticTransition st) {
-      return String.format("    %s %s {%s}\n", st.event, makeNextStateName(st), makeActions(st));
+      return String.format("    %s %s {%s}\n", st.event, makeNextStateName(st),
+          makeActions(st));
     }
 
     private String makeActions(SemanticTransition st) {
@@ -113,19 +118,20 @@ public class SemanticStateMachine {
 
   public static class AnalysisError {
     public enum ID {
-      NO_FSM,
-      NO_INITIAL,
-      INVALID_HEADER,
-      EXTRA_HEADER_IGNORED,
-      UNDEFINED_STATE,
-      UNDEFINED_SUPER_STATE,
-      UNUSED_STATE,
-      DUPLICATE_TRANSITION,
-      ABSTRACT_STATE_USED_AS_NEXT_STATE,
-      INCONSISTENT_ABSTRACTION,
-      STATE_ACTIONS_MULTIPLY_DEFINED,
+      //@formatter:off
+      NO_FSM, 
+      NO_INITIAL, 
+      INVALID_HEADER, 
+      EXTRA_HEADER_IGNORED, 
+      UNDEFINED_STATE, 
+      UNDEFINED_SUPER_STATE, 
+      UNUSED_STATE, 
+      DUPLICATE_TRANSITION, 
+      ABSTRACT_STATE_USED_AS_NEXT_STATE, 
+      INCONSISTENT_ABSTRACTION, 
+      STATE_ACTIONS_MULTIPLY_DEFINED, 
       CONFLICTING_SUPERSTATES,
-    }
+    } // @formatter:on
 
     private ID id;
     private Object extra;

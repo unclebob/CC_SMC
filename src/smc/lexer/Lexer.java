@@ -22,7 +22,7 @@ public class Lexer {
   }
 
   private void lexLine(String line) {
-    for (position = 0; position < line.length(); )
+    for (position = 0; position < line.length();)
       lexToken(line);
   }
 
@@ -34,15 +34,12 @@ public class Lexer {
   }
 
   private boolean findToken(String line) {
-    return
-      findWhiteSpace(line) ||
-        findSingleCharacterToken(line) ||
-        findName(line);
+    return findWhiteSpace(line) || findSingleCharacterToken(line) || findName(line);
   }
 
   private static Pattern whitePattern = Pattern.compile("^\\s+");
   private static Pattern commentPattern = Pattern.compile("^//.*$");
-  private static Pattern[] whitePatterns = new Pattern[] {whitePattern, commentPattern};
+  private static Pattern[] whitePatterns = new Pattern[] { whitePattern, commentPattern };
 
   private boolean findWhiteSpace(String line) {
     for (Pattern pattern : whitePatterns) {
@@ -59,35 +56,35 @@ public class Lexer {
   private boolean findSingleCharacterToken(String line) {
     String c = line.substring(position, position + 1);
     switch (c) {
-      case "{":
-        collector.openBrace(lineNumber, position);
-        break;
-      case "}":
-        collector.closedBrace(lineNumber, position);
-        break;
-      case "(":
-        collector.openParen(lineNumber, position);
-        break;
-      case ")":
-        collector.closedParen(lineNumber, position);
-        break;
-      case "<":
-        collector.openAngle(lineNumber, position);
-        break;
-      case ">":
-        collector.closedAngle(lineNumber, position);
-        break;
-      case "-":
-        collector.dash(lineNumber, position);
-        break;
-      case "*":
-        collector.dash(lineNumber, position);
-        break;
-      case ":":
-        collector.colon(lineNumber, position);
-        break;
-      default:
-        return false;
+    case "{":
+      collector.openBrace(lineNumber, position);
+      break;
+    case "}":
+      collector.closedBrace(lineNumber, position);
+      break;
+    case "(":
+      collector.openParen(lineNumber, position);
+      break;
+    case ")":
+      collector.closedParen(lineNumber, position);
+      break;
+    case "<":
+      collector.openAngle(lineNumber, position);
+      break;
+    case ">":
+      collector.closedAngle(lineNumber, position);
+      break;
+    case "-":
+      collector.dash(lineNumber, position);
+      break;
+    case "*":
+      collector.dash(lineNumber, position);
+      break;
+    case ":":
+      collector.colon(lineNumber, position);
+      break;
+    default:
+      return false;
     }
     position++;
     return true;
