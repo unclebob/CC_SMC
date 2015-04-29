@@ -2,6 +2,7 @@ package smc;
 
 import com.cleancoder.args.Args;
 import com.cleancoder.args.ArgsException;
+
 import smc.generators.CodeGenerator;
 import smc.lexer.Lexer;
 import smc.optimizer.Optimizer;
@@ -112,8 +113,8 @@ public class SMC {
                                           String outputDirectory,
                                           Map<String, String> flags) {
       try {
-        Class generatorClass = Class.forName(generatorClassName);
-        Constructor constructor = generatorClass.getConstructor(OptimizedStateMachine.class, String.class, Map.class);
+        Class<?> generatorClass = Class.forName(generatorClassName);
+        Constructor<?> constructor = generatorClass.getConstructor(OptimizedStateMachine.class, String.class, Map.class);
         return (CodeGenerator) constructor.newInstance(optimizedStateMachine, outputDirectory, flags);
       } catch (ClassNotFoundException e) {
         System.out.printf("The class %s was not found.\n", generatorClassName);

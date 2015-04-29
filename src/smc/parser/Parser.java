@@ -192,6 +192,8 @@ public class Parser implements TokenCollector {
       case END:
         builder.endError(state, event, line, pos);
         break;
+      default:
+        break;
     }
   }
 }

@@ -3,6 +3,7 @@ package com.cleancoder.args;
 import static com.cleancoder.args.ArgsException.ErrorCode.*;
 
 public class ArgsException extends Exception {
+  private static final long serialVersionUID = 4211725500805170404L;
   private char errorArgumentId = '\0';
   private String errorParameter = null;
   private ErrorCode errorCode = OK;
@@ -70,8 +71,9 @@ public class ArgsException extends Exception {
         return String.format("'%c' is not a valid argument name.", errorArgumentId);
       case INVALID_ARGUMENT_FORMAT:
         return String.format("'%s' is not a valid argument format.", errorParameter);
+      default:
+    	  return "";
     }
-    return "";
   }
 
   public enum ErrorCode {

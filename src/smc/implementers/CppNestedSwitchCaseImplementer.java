@@ -14,6 +14,7 @@ public class CppNestedSwitchCaseImplementer implements NSCNodeVisitor {
   private String actionsName;
   private String output = "";
   private List<Error> errors = new ArrayList<>();
+  @SuppressWarnings("unused")
   private Map<String, String> flags;
 
   public CppNestedSwitchCaseImplementer(Map<String, String> flags) {
