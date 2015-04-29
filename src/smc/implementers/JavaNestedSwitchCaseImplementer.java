@@ -10,14 +10,13 @@ import smc.generators.nestedSwitchCaseGenerator.NSCNodeVisitor;
 
 public class JavaNestedSwitchCaseImplementer implements NSCNodeVisitor {
   private String output = "";
-  @SuppressWarnings("unused")
   private Map<String, String> flags;
   private String javaPackage = null;
 
   public JavaNestedSwitchCaseImplementer(Map<String, String> flags) {
     this.flags = flags;
-    if (flags.containsKey("package"))
-      javaPackage = flags.get("package");
+    if (this.flags.containsKey("package"))
+      javaPackage = this.flags.get("package");
   }
 
   public void visit(NSCNode.SwitchCaseNode switchCaseNode) {

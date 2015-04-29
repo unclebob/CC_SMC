@@ -1,12 +1,26 @@
 package com.cleancoder.args;
 
-import org.junit.Test;
+import static com.cleancoder.args.ArgsException.ErrorCode.INVALID_ARGUMENT_FORMAT;
+import static com.cleancoder.args.ArgsException.ErrorCode.INVALID_ARGUMENT_NAME;
+import static com.cleancoder.args.ArgsException.ErrorCode.INVALID_DOUBLE;
+import static com.cleancoder.args.ArgsException.ErrorCode.INVALID_INTEGER;
+import static com.cleancoder.args.ArgsException.ErrorCode.MISSING_DOUBLE;
+import static com.cleancoder.args.ArgsException.ErrorCode.MISSING_INTEGER;
+import static com.cleancoder.args.ArgsException.ErrorCode.MISSING_STRING;
+import static com.cleancoder.args.ArgsException.ErrorCode.UNEXPECTED_ARGUMENT;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.Map;
 
-import static com.cleancoder.args.ArgsException.ErrorCode.*;
-import static org.junit.Assert.*;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
+import de.bechte.junit.runners.context.HierarchicalContextRunner;
+
+@RunWith(HierarchicalContextRunner.class)
 public class ArgsTest {
 
   @Test
@@ -71,8 +85,7 @@ public class ArgsTest {
   @Test
   public void testSimpleStringPresent() throws Exception {
     Args args = new Args("x*", new String[]{"-x", "param"});
-    assertTrue(args.has('x'));
-    assertEquals("param", args.getString('x'));
+    assertString(args, 'x', "param");
     assertEquals(2, args.nextArgument());
   }
 
@@ -214,7 +227,7 @@ public class ArgsTest {
   public void testExtraArguments() throws Exception {
     Args args = new Args("x,y*", new String[]{"-x", "-y", "alpha", "beta"});
     assertTrue(args.getBoolean('x'));
-    assertEquals("alpha", args.getString('y'));
+    assertString(args, 'y',"alpha");
     assertEquals(3, args.nextArgument());
   }
 
@@ -226,5 +239,29 @@ public class ArgsTest {
     assertTrue(args.getBoolean('x'));
     assertFalse(args.getBoolean('y'));
     assertEquals(1, args.nextArgument());
+  }
+  
+
+  private void assertString(Args args, char arg, String expected) {
+    assertTrue(args.has(arg));
+    assertEquals(expected,  args.getString(arg));
+  }
+
+  private void assertMap(Args args, char arg, String key, String expectedValue) {
+    assertTrue(args.has(arg));
+    Map<String, String> map = args.getMap(arg);
+    assertEquals(expectedValue, map.get(key));
+  }
+
+  public class AcceptanceTests {
+    @Test
+    public void testSMC() throws Exception {
+      String argSchema = "o*,l*,f&";
+      Args args = new Args(argSchema, new String[]{"-l", "Java", "-o", "/", "-f", "package:package.name"});
+      
+      assertString(args, 'l', "Java");
+      assertString(args, 'o', "/");
+      assertMap(args, 'f', "package", "package.name");
+    }
   }
 }

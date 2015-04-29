@@ -57,7 +57,7 @@ public class ArgsException extends Exception {
   public String errorMessage() {
     switch (errorCode) {
     case OK:
-      return "TILT: Should not get here.";
+      throw new AssertionError("TILT: Should not get here.");
     case UNEXPECTED_ARGUMENT:
       return String.format("Argument -%c unexpected.", errorArgumentId);
     case MISSING_STRING:
@@ -77,7 +77,7 @@ public class ArgsException extends Exception {
     case INVALID_ARGUMENT_FORMAT:
       return String.format("'%s' is not a valid argument format.", errorParameter);
     default:
-      return "";
+      throw new UnsupportedOperationException(errorCode.toString());
     }
   }
 
