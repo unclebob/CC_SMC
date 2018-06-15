@@ -4,3 +4,7 @@ build
 .idea
 test_cases/java_turnstile/.idea
 
+!/gradle/wrapper/gradle-wrapper.jar
+!/gradle/wrapper/gradle-wrapper.properties
+/.gradle/
+/build/
