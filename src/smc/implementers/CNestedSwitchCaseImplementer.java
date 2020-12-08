@@ -80,8 +80,8 @@ public class CNestedSwitchCaseImplementer implements NSCNodeVisitor {
     fsmName = fsmClassNode.className;
 
     fsmImplementation += "#include <stdlib.h>\n";
-    fsmImplementation += String.format("#include \"%s.h\"\n", actionsName);
-    fsmImplementation += String.format("#include \"%s.h\"\n\n", fsmName);
+    fsmImplementation += String.format("#include \"%s.h\"\n", toLowerCamelCase(actionsName));
+    fsmImplementation += String.format("#include \"%s.h\"\n\n", toLowerCamelCase(fsmName));
     fsmClassNode.eventEnum.accept(this);
     fsmClassNode.stateEnum.accept(this);
 
@@ -142,4 +142,9 @@ public class CNestedSwitchCaseImplementer implements NSCNodeVisitor {
   }
 
   public enum Error {NO_ACTION}
+
+  static private String toLowerCamelCase(String s) {
+    if (s.length() < 2) return s.toLowerCase();
+    return s.substring(0, 1).toLowerCase() + s.substring(1);
+  }
 }
