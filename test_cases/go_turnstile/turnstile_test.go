@@ -9,40 +9,33 @@ var _ TurnstileActions = &MyTwoCoinTurnstile{}
 
 // MyTwoCoinTurnstile implements the TurnstileActions interface.
 type MyTwoCoinTurnstile struct {
-	output   string
-	position int
-	t        *testing.T
+	output string
+	t      *testing.T
 }
 
 func (m *MyTwoCoinTurnstile) Lock() {
 	m.output += "L"
-	m.position++
 }
 
 func (m *MyTwoCoinTurnstile) Unlock() {
 	m.output += "U"
-	m.position++
 }
 
 func (m *MyTwoCoinTurnstile) Thankyou() {
 	m.output += "T"
-	m.position++
 }
 
 func (m *MyTwoCoinTurnstile) AlarmOn() {
 	m.output += "A"
-	m.position++
 }
 
 func (m *MyTwoCoinTurnstile) AlarmOff() {
 	m.output += "O"
-	m.position++
 }
 
 func (m *MyTwoCoinTurnstile) UnexpectedTransition(state, event string) {
 	e := fmt.Sprintf("X(%v,%v)", state, event)
 	m.output += e
-	m.position += len(e)
 }
 
 func (m *MyTwoCoinTurnstile) check(function, want string) {
