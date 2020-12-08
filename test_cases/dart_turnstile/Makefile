@@ -7,3 +7,4 @@ clean :
 
 TwoCoinTurnstile.dart : twoCoinTurnstile.sm
 	java -jar ../../build/jar/smc.jar -l Dart $?
+	dartfmt -w *.dart

@@ -2,106 +2,85 @@
 
 import 'package:test/test.dart';
 
+import 'TurnstileActions.dart';
 import 'TwoCoinTurnstile.dart';
 
-class MyTwoCoinTurnstile implements TwoCoinTurnstile {
+class MyTwoCoinTurnstile extends TwoCoinTurnstile implements TurnstileActions {
   String output;
-  MyTwoCoinTurnstile({this.output = ""});
-  
-  void lock() {
-		output += 'L';
-    position++;
-	}
+  MyTwoCoinTurnstile({this.output = ''});
 
-	void unlock() {
-		output += 'U';
-	}
+  lock() {
+    output += 'L';
+  }
 
-	void thankyou() {
-		output[position++] = 'T';
-	}
+  unlock() {
+    output += 'U';
+  }
 
-	void alarmOn() {
-		output[position++] = 'A';
-	}
+  thankyou() {
+    output += 'T';
+  }
 
-	void alarmOff() {
-		output[position++] = 'O';
-	}
+  alarmOn() {
+    output += 'A';
+  }
 
-	void unexpected_transition(final String state, final String event) {
-		char error[80];
-		bzero(error, 80);
-		sprintf(error, "X(%s,%s)", state, event);
-		strcpy(output+position, error);
-		position += strlen(error);
-	}
+  alarmOff() {
+    output += 'O';
+  }
+
+  unexpected_transition(final String state, final String event) {
+    output += 'X($state,$event)';
+  }
 }
 
 main() {
   MyTwoCoinTurnstile fsm;
-  
+
   setUp(() {
-      fsm = MyTwoCoinTurnstile();
+    fsm = MyTwoCoinTurnstile();
   });
 
-  void check(const char* function, const char* expected) {
-	  int result = strcmp(output, expected);
-	  if (result) {
-		  printf("\n%s failed.  expected: %s, but was: %s", function, expected, output);
-		  error_count++;
-	  }
-	  else
-		printf(".");	
-  }
+  test('NormalBehavior', () {
+    fsm.Coin();
+    fsm.Coin();
+    fsm.Pass();
+    expect(fsm.output, equals('UL'));
+  });
 
-  static void testNormalBehavior() {
-	  setup();
-	  fsm->Coin();
-	  fsm->Coin();
-	  fsm->Pass();
-	  check("testNormalBehavior", "UL");
-  }
+  test('Alarm', () {
+    fsm.Pass();
+    expect(fsm.output, equals('A'));
+  });
 
-  static void testAlarm() {
-	  setup();
-	  fsm->Pass();
-	  check("testAlarm", "A");
-  }
+  test('Thankyou', () {
+    fsm.Coin();
+    fsm.Coin();
+    fsm.Coin();
+    expect(fsm.output, equals('UT'));
+  });
 
-  static void testThankyou() {
-	  setup();
-	  fsm->Coin();
-	  fsm->Coin();
-	  fsm->Coin();
-	  check("testThankyou", "UT");
-  }
+  test('NormalManyThanksAndAlarm', () {
+    fsm.Coin();
+    fsm.Coin();
+    fsm.Pass();
+    fsm.Coin();
+    fsm.Coin();
+    fsm.Coin();
+    fsm.Pass();
+    fsm.Pass();
+    expect(fsm.output, equals('ULUTLA'));
+  });
 
-  static void testNormalManyThanksAndAlarm() {
-	  setup();
-	  fsm->Coin();
-	  fsm->Coin();
-	  fsm->Pass();
-	  fsm->Coin();
-	  fsm->Coin();
-	  fsm->Coin();
-	  fsm->Pass();
-	  fsm->Pass();
-	  check("testNormalManyThanksAndAlarm", "ULUTLA");
-  }
+  test('Undefined', () {
+    fsm.Pass();
+    fsm.Pass();
+    expect(fsm.output, equals('AX(Alarming,Pass)'));
+  });
 
-
-  static void testUndefined() {
-	  setup();
-	  fsm->Pass();
-	  fsm->Pass();
-	  check("testUndefined", "AX(Alarming,Pass)");
-  }
-
-  static void testReset() {
-	  setup();
-	  fsm->Pass();
-	  fsm->Reset();
-	  check("testReset", "AOL");
-  }
+  test('Reset', () {
+    fsm.Pass();
+    fsm.Reset();
+    expect(fsm.output, equals('AOL'));
+  });
 }
