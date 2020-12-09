@@ -14,6 +14,21 @@ public class Utilities {
     return commaList;
   }
 
+  public static String iotaList(String typeName, List<String> names) {
+    String iotaList = "";
+    boolean first = true;
+    for (String name : names) {
+      iotaList += "\t" + name + (first ? " " + typeName + " = iota" : "") + "\n";
+      first = false;
+    }
+    return iotaList;
+  }
+
+  public static String capitalize(String s) {
+    if (s.length() < 2) return s.toUpperCase();
+    return s.substring(0, 1).toUpperCase() + s.substring(1);
+  }
+
   public static List<String> addPrefix(String prefix, List<String> list) {
     List<String> result = new ArrayList<>();
     for (String element : list)
