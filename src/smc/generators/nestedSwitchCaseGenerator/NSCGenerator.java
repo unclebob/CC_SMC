@@ -69,8 +69,8 @@ public class NSCGenerator {
   }
 
   private void addSetStateNode(String stateName, NSCNode.CompositeNode actions) {
-    NSCNode.StatePropertyNode statePropertyNode = new NSCNode.StatePropertyNode(stateName);
-    NSCNode.FunctionCallNode setStateNode = new NSCNode.FunctionCallNode("setState", statePropertyNode);
+    NSCNode.EnumeratorNode enumeratorNode = new NSCNode.EnumeratorNode("State", stateName);
+    NSCNode.FunctionCallNode setStateNode = new NSCNode.FunctionCallNode("setState", enumeratorNode);
     actions.add(setStateNode);
   }
 }
