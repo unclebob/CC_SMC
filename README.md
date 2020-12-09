@@ -1,17 +1,17 @@
-##The Care and Feeding of 
-#SMC
-##The State Machine Compiler
+## The Care and Feeding of 
+# SMC
+## The State Machine Compiler
 
 SMC is a Java application that translates a state transition table into a program that implements the described state machine.  Output languages include Java, C, and C++.  Adding other languages is trivial.
 
-###Command Line
+### Command Line
 `java -jar smc.jar -l <language> -o <directory> -f <flags>`
 
  * `<language>` is either `C`, `Cpp`, or `Java`.  
  * `<directory>` is the output directory.  Your new state machine will be written there.
  * `<flags>` currently for Java only.  `package:package_name` will put the appropriate `package` statement in the generated code.
 
-###Syntax
+### Syntax
 The syntax for the state transition table is based on a simple state transition table.  Here is a straightforward example that describes the logic of a subway turnstile.  `turnstile.sm`:
 
     Initial: Locked
@@ -30,7 +30,7 @@ When this is run through SMC it produces the source code for a state machine nam
 * Given we are in the `Unlocked` state, when we get a `Coin` event, then we stay in the `Unlocked` state and invoke the `thankyou` action.
 * GIven we are in the `Unlocked` state, when we get a `Pass` event, then we transition to the `Locked` state and invoke the `lock` action. 
 
-###Opacity
+### Opacity
 One of the goals of SMC is to produce code that the programmer never needs to look at, and does not check in to source code control.  It is intended that SMC will generate the appropriate code during the pre-compile phase of your build.  
 
 The output of SMC is two sets of functions: The _Event_ functions and the _Actions_ functions.  For most languages these functions will be arranged into an abstract class in which the _Event_ functions are public, and the _Action_ functions are protected and abstract.  
@@ -196,7 +196,7 @@ We use the _dash_ (`-`) character for two purposes.  When used as an action it m
 
 When more than one action should be performed, they can be grouped together in braces (`{}`).
 
-###Super States
+### Super States
 Notice the duplication of the `Reset` transition.  In all three states the `Reset` event does the same thing.  It transitions to the `Locked` state and it invokes the `lock` and `alarmOff` actions.  This duplication can be eliminated by using a _Super State_ as follows:
 
     Initial: Locked
