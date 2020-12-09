@@ -3,4 +3,6 @@ build
 *.iml
 .idea
 test_cases/java_turnstile/.idea
-
+.dart_tool
+.packages
+*.lock
