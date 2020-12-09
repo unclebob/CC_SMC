@@ -15,6 +15,7 @@ public class GoNestedSwitchCaseImplementer implements NSCNodeVisitor {
   private String output = "";
   private List<String> actions = new ArrayList<>();
   private List<Error> errors = new ArrayList<>();
+  private List<String> states = new ArrayList<>();
   private Map<String, String> flags;
 
   public GoNestedSwitchCaseImplementer(Map<String, String> flags) {
@@ -68,6 +69,7 @@ public class GoNestedSwitchCaseImplementer implements NSCNodeVisitor {
     fsmName = fsmClassNode.className;
     actionsName = fsmClassNode.actionsName;
     actions = fsmClassNode.actions;
+    states = fsmClassNode.states;
 
     output += String.format(
       "// Package %s is an auto-generated Finite State Machine.\n" +
@@ -106,6 +108,13 @@ public class GoNestedSwitchCaseImplementer implements NSCNodeVisitor {
       output += String.format(
         "\t%s := func() { f.actions.%s() }\n",
         action, Utilities.capitalize(action));
+    }
+    output += "\n";
+
+    for (String state : states) {
+      output += String.format(
+        "\tconst State%s = state%s\n",
+        state, Utilities.capitalize(state));
     }
     output += "\n";
 

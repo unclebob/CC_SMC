@@ -118,6 +118,7 @@ public interface NSCNode {
     public String className;
     public String actionsName;
     public List<String> actions;
+    public List<String> states;
 
     public void accept(NSCNodeVisitor visitor) {
       visitor.visit(this);
