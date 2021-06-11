@@ -4,3 +4,6 @@ build
 .idea
 test_cases/java_turnstile/.idea
 
+
+# Ignore Gradle project-specific cache directory
+.gradle
