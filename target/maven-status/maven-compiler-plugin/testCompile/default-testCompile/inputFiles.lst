@@ -1,0 +1,11 @@
+/Users/marcotedone/dev/smc-compiler-unclebob/src/test/java/smc/implementers/CppNestedSwitchCaseImplementerTests.java
+/Users/marcotedone/dev/smc-compiler-unclebob/src/test/java/smc/generators/nestedSwitchCaseGenerator/NSCGeneratorTest.java
+/Users/marcotedone/dev/smc-compiler-unclebob/src/test/java/smc/parser/ParserTest.java
+/Users/marcotedone/dev/smc-compiler-unclebob/src/test/java/smc/implementers/CNestedSwitchCaseImplementerTest.java
+/Users/marcotedone/dev/smc-compiler-unclebob/src/test/java/smc/UtilitiesTest.java
+/Users/marcotedone/dev/smc-compiler-unclebob/src/test/java/args/ArgsExceptionTest.java
+/Users/marcotedone/dev/smc-compiler-unclebob/src/test/java/smc/lexer/LexerTest.java
+/Users/marcotedone/dev/smc-compiler-unclebob/src/test/java/smc/semanticAnalyzer/SemanticAnalyzerTest.java
+/Users/marcotedone/dev/smc-compiler-unclebob/src/test/java/smc/implementers/JavaNestedSwitchCaseImplementerTest.java
+/Users/marcotedone/dev/smc-compiler-unclebob/src/test/java/args/ArgsTest.java
+/Users/marcotedone/dev/smc-compiler-unclebob/src/test/java/smc/optimizer/OptimizerTest.java
