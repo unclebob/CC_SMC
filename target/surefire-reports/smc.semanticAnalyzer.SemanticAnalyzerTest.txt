@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: smc.semanticAnalyzer.SemanticAnalyzerTest
 -------------------------------------------------------------------------------
-Tests run: 48, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.036 sec
+Tests run: 48, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.031 sec

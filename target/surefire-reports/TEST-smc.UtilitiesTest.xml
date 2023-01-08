@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuite tests="10" failures="0" name="smc.UtilitiesTest" time="0.003" errors="0" skipped="0">
+<testsuite tests="10" failures="0" name="smc.UtilitiesTest" time="0.002" errors="0" skipped="0">
   <properties>
     <property name="java.runtime.name" value="OpenJDK Runtime Environment"/>
     <property name="java.vm.version" value="19"/>
@@ -65,11 +65,11 @@
   <testcase classname="smc.UtilitiesTest$CompressWhiteSpace" name="oneTab" time="0.001"/>
   <testcase classname="smc.UtilitiesTest$CompressWhiteSpace" name="manyWordsWithSingleSpaces" time="0"/>
   <testcase classname="smc.UtilitiesTest$CompressWhiteSpace" name="twoTabs" time="0"/>
-  <testcase classname="smc.UtilitiesTest$CompressWhiteSpace" name="returnsAndSpaces" time="0.001"/>
+  <testcase classname="smc.UtilitiesTest$CompressWhiteSpace" name="returnsAndSpaces" time="0"/>
   <testcase classname="smc.UtilitiesTest$CompressWhiteSpace" name="startingWhitespace" time="0"/>
   <testcase classname="smc.UtilitiesTest$CompressWhiteSpace" name="emptyString" time="0"/>
   <testcase classname="smc.UtilitiesTest$CompressWhiteSpace" name="oneReturn" time="0"/>
   <testcase classname="smc.UtilitiesTest$CompressWhiteSpace" name="acceptanceTest" time="0"/>
-  <testcase classname="smc.UtilitiesTest$CompressWhiteSpace" name="NoWhiteSpace" time="0"/>
-  <testcase classname="smc.UtilitiesTest$CompressWhiteSpace" name="oneSpace" time="0.001"/>
+  <testcase classname="smc.UtilitiesTest$CompressWhiteSpace" name="NoWhiteSpace" time="0.001"/>
+  <testcase classname="smc.UtilitiesTest$CompressWhiteSpace" name="oneSpace" time="0"/>
 </testsuite>

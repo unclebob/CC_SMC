@@ -18,7 +18,6 @@ smc/generators/nestedSwitchCaseGenerator/NSCGeneratorTest$EventDelegatorVisitor.
 smc/lexer/LexerTest$CommentTests.class
 smc/implementers/JavaNestedSwitchCaseImplementerTest.class
 smc/generators/nestedSwitchCaseGenerator/NSCGeneratorTest$FsmClassTest.class
-smc/generators/nestedSwitchCaseGenerator/NSCGeneratorTest$1.class
 smc/lexer/LexerTest.class
 smc/generators/nestedSwitchCaseGenerator/NSCGeneratorTest$EventDelegators.class
 smc/implementers/CppNestedSwitchCaseImplementerTests$TestsWithNoFlags.class

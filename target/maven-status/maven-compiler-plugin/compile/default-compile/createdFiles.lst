@@ -1,6 +1,5 @@
 smc/parser/FsmSyntax.class
 smc/generators/nestedSwitchCaseGenerator/NSCNode$EnumeratorNode.class
-smc/semanticAnalyzer/SemanticAnalyzer$1.class
 smc/lexer/TokenCollector.class
 smc/OptimizedStateMachine$Header.class
 com/cleancoder/args/StringArrayArgumentMarshaler.class

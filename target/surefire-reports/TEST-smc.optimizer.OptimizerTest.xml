@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuite tests="18" failures="0" name="smc.optimizer.OptimizerTest" time="0.048" errors="0" skipped="0">
+<testsuite tests="18" failures="0" name="smc.optimizer.OptimizerTest" time="0.041" errors="0" skipped="0">
   <properties>
     <property name="java.runtime.name" value="OpenJDK Runtime Environment"/>
     <property name="java.vm.version" value="19"/>
@@ -62,22 +62,22 @@
     <property name="socksNonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="ftp.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
   </properties>
-  <testcase classname="smc.optimizer.OptimizerTest$AcceptanceTests" name="turnstyle3" time="0.027"/>
+  <testcase classname="smc.optimizer.OptimizerTest$AcceptanceTests" name="turnstyle3" time="0.022"/>
   <testcase classname="smc.optimizer.OptimizerTest$superStateTransitions" name="overridingTransitions" time="0.001"/>
   <testcase classname="smc.optimizer.OptimizerTest$superStateTransitions" name="simpleInheritanceOfTransitions" time="0.001"/>
   <testcase classname="smc.optimizer.OptimizerTest$superStateTransitions" name="diamondInheritanceOfTransitions" time="0.001"/>
-  <testcase classname="smc.optimizer.OptimizerTest$superStateTransitions" name="deepInheritanceOfTransitions" time="0.002"/>
+  <testcase classname="smc.optimizer.OptimizerTest$superStateTransitions" name="deepInheritanceOfTransitions" time="0.001"/>
   <testcase classname="smc.optimizer.OptimizerTest$superStateTransitions" name="multipleInheritanceOfTransitions" time="0.001"/>
   <testcase classname="smc.optimizer.OptimizerTest$superStateTransitions" name="eliminationOfDuplicateTransitions" time="0.001"/>
-  <testcase classname="smc.optimizer.OptimizerTest$EntryAndExitActions" name="firstSuperStateEntryAndExitActionsAreAdded" time="0.001"/>
+  <testcase classname="smc.optimizer.OptimizerTest$EntryAndExitActions" name="firstSuperStateEntryAndExitActionsAreAdded" time="0"/>
   <testcase classname="smc.optimizer.OptimizerTest$EntryAndExitActions" name="multipleSuperStateEntryAndExitActionsAreAdded" time="0.001"/>
   <testcase classname="smc.optimizer.OptimizerTest$EntryAndExitActions" name="diamondSuperStateEntryAndExitActionsAreAdded" time="0.002"/>
   <testcase classname="smc.optimizer.OptimizerTest$EntryAndExitActions" name="entryFunctionsAdded" time="0.001"/>
   <testcase classname="smc.optimizer.OptimizerTest$EntryAndExitActions" name="exitFunctionsAdded" time="0.001"/>
-  <testcase classname="smc.optimizer.OptimizerTest$BasicOptimizerFunctions" name="header" time="0"/>
-  <testcase classname="smc.optimizer.OptimizerTest$BasicOptimizerFunctions" name="eventsArePreserved" time="0.004"/>
+  <testcase classname="smc.optimizer.OptimizerTest$BasicOptimizerFunctions" name="header" time="0.001"/>
+  <testcase classname="smc.optimizer.OptimizerTest$BasicOptimizerFunctions" name="eventsArePreserved" time="0.003"/>
   <testcase classname="smc.optimizer.OptimizerTest$BasicOptimizerFunctions" name="abstractStatesAreRemoved" time="0.002"/>
   <testcase classname="smc.optimizer.OptimizerTest$BasicOptimizerFunctions" name="actionsArePreserved" time="0"/>
-  <testcase classname="smc.optimizer.OptimizerTest$BasicOptimizerFunctions" name="statesArePreserved" time="0"/>
-  <testcase classname="smc.optimizer.OptimizerTest$BasicOptimizerFunctions" name="simpleStateMachine" time="0.002"/>
+  <testcase classname="smc.optimizer.OptimizerTest$BasicOptimizerFunctions" name="statesArePreserved" time="0.001"/>
+  <testcase classname="smc.optimizer.OptimizerTest$BasicOptimizerFunctions" name="simpleStateMachine" time="0.001"/>
 </testsuite>

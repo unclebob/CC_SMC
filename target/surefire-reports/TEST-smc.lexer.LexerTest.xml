@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuite tests="20" failures="0" name="smc.lexer.LexerTest" time="0.01" errors="0" skipped="0">
+<testsuite tests="20" failures="0" name="smc.lexer.LexerTest" time="0.006" errors="0" skipped="0">
   <properties>
     <property name="java.runtime.name" value="OpenJDK Runtime Environment"/>
     <property name="java.vm.version" value="19"/>
@@ -64,21 +64,21 @@
   </properties>
   <testcase classname="smc.lexer.LexerTest$MultipleTokenTests" name="simpleSequence" time="0"/>
   <testcase classname="smc.lexer.LexerTest$MultipleTokenTests" name="complexSequence" time="0.001"/>
-  <testcase classname="smc.lexer.LexerTest$MultipleTokenTests" name="multipleLines" time="0.004"/>
+  <testcase classname="smc.lexer.LexerTest$MultipleTokenTests" name="multipleLines" time="0.003"/>
   <testcase classname="smc.lexer.LexerTest$MultipleTokenTests" name="allTokens" time="0"/>
-  <testcase classname="smc.lexer.LexerTest$CommentTests" name="commentAfterToken" time="0"/>
-  <testcase classname="smc.lexer.LexerTest$CommentTests" name="commentLines" time="0.001"/>
+  <testcase classname="smc.lexer.LexerTest$CommentTests" name="commentAfterToken" time="0.001"/>
+  <testcase classname="smc.lexer.LexerTest$CommentTests" name="commentLines" time="0"/>
   <testcase classname="smc.lexer.LexerTest$SingleTokenTests" name="nothingButWhiteSpace" time="0"/>
-  <testcase classname="smc.lexer.LexerTest$SingleTokenTests" name="findsOpenAngle" time="0.001"/>
-  <testcase classname="smc.lexer.LexerTest$SingleTokenTests" name="findsOpenBrace" time="0"/>
-  <testcase classname="smc.lexer.LexerTest$SingleTokenTests" name="findsOpenParen" time="0.001"/>
+  <testcase classname="smc.lexer.LexerTest$SingleTokenTests" name="findsOpenAngle" time="0"/>
+  <testcase classname="smc.lexer.LexerTest$SingleTokenTests" name="findsOpenBrace" time="0.001"/>
+  <testcase classname="smc.lexer.LexerTest$SingleTokenTests" name="findsOpenParen" time="0"/>
   <testcase classname="smc.lexer.LexerTest$SingleTokenTests" name="findsClosedAngle" time="0"/>
-  <testcase classname="smc.lexer.LexerTest$SingleTokenTests" name="findsClosedBrace" time="0.001"/>
+  <testcase classname="smc.lexer.LexerTest$SingleTokenTests" name="findsClosedBrace" time="0"/>
   <testcase classname="smc.lexer.LexerTest$SingleTokenTests" name="findsClosedParen" time="0"/>
   <testcase classname="smc.lexer.LexerTest$SingleTokenTests" name="whiteSpaceBefore" time="0"/>
   <testcase classname="smc.lexer.LexerTest$SingleTokenTests" name="findsSimpleName" time="0"/>
   <testcase classname="smc.lexer.LexerTest$SingleTokenTests" name="error" time="0"/>
-  <testcase classname="smc.lexer.LexerTest$SingleTokenTests" name="findStarAsDash" time="0.001"/>
+  <testcase classname="smc.lexer.LexerTest$SingleTokenTests" name="findStarAsDash" time="0"/>
   <testcase classname="smc.lexer.LexerTest$SingleTokenTests" name="findsDash" time="0"/>
   <testcase classname="smc.lexer.LexerTest$SingleTokenTests" name="findsColon" time="0"/>
   <testcase classname="smc.lexer.LexerTest$SingleTokenTests" name="findComplexName" time="0"/>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuite tests="23" failures="0" name="args.ArgsTest" time="0.009" errors="0" skipped="0">
+<testsuite tests="23" failures="0" name="args.ArgsTest" time="0.006" errors="0" skipped="0">
   <properties>
     <property name="java.runtime.name" value="OpenJDK Runtime Environment"/>
     <property name="java.vm.version" value="19"/>
@@ -62,18 +62,18 @@
     <property name="socksNonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="ftp.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
   </properties>
-  <testcase classname="args.ArgsTest" name="testMissingStringArrayElement" time="0.002"/>
+  <testcase classname="args.ArgsTest" name="testMissingStringArrayElement" time="0.001"/>
   <testcase classname="args.ArgsTest" name="testMissingInteger" time="0.001"/>
   <testcase classname="args.ArgsTest" name="testSimpleDoublePresent" time="0.001"/>
   <testcase classname="args.ArgsTest" name="testSimpleStringPresent" time="0.001"/>
-  <testcase classname="args.ArgsTest" name="testSpacesInFormat" time="0.001"/>
-  <testcase classname="args.ArgsTest" name="MapArgument" time="0"/>
-  <testcase classname="args.ArgsTest" name="testSimpleBooleanPresent" time="0.001"/>
+  <testcase classname="args.ArgsTest" name="testSpacesInFormat" time="0"/>
+  <testcase classname="args.ArgsTest" name="MapArgument" time="0.001"/>
+  <testcase classname="args.ArgsTest" name="testSimpleBooleanPresent" time="0"/>
   <testcase classname="args.ArgsTest" name="testExtraArguments" time="0"/>
   <testcase classname="args.ArgsTest" name="testInvalidArgumentFormat" time="0"/>
-  <testcase classname="args.ArgsTest" name="testMissingDouble" time="0"/>
+  <testcase classname="args.ArgsTest" name="testMissingDouble" time="0.001"/>
   <testcase classname="args.ArgsTest" name="testNonLetterSchema" time="0"/>
-  <testcase classname="args.ArgsTest" name="testInvalidDouble" time="0.001"/>
+  <testcase classname="args.ArgsTest" name="testInvalidDouble" time="0"/>
   <testcase classname="args.ArgsTest" name="manyStringArrayElements" time="0"/>
   <testcase classname="args.ArgsTest" name="testInvalidInteger" time="0"/>
   <testcase classname="args.ArgsTest" name="testWithNoSchemaButWithMultipleArguments" time="0"/>
@@ -83,6 +83,6 @@
   <testcase classname="args.ArgsTest" name="oneMapArgument" time="0"/>
   <testcase classname="args.ArgsTest" name="testMissingStringArgument" time="0"/>
   <testcase classname="args.ArgsTest" name="testCreateWithNoSchemaOrArguments" time="0"/>
-  <testcase classname="args.ArgsTest" name="testStringArray" time="0.001"/>
+  <testcase classname="args.ArgsTest" name="testStringArray" time="0"/>
   <testcase classname="args.ArgsTest" name="malFormedMapArgument" time="0"/>
 </testsuite>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuite tests="8" failures="0" name="smc.generators.nestedSwitchCaseGenerator.NSCGeneratorTest" time="0.007" errors="0" skipped="0">
+<testsuite tests="8" failures="0" name="smc.generators.nestedSwitchCaseGenerator.NSCGeneratorTest" time="0.005" errors="0" skipped="0">
   <properties>
     <property name="java.runtime.name" value="OpenJDK Runtime Environment"/>
     <property name="java.vm.version" value="19"/>
@@ -63,11 +63,11 @@
     <property name="ftp.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
   </properties>
   <testcase classname="smc.generators.nestedSwitchCaseGenerator.NSCGeneratorTest$FsmClassTest" name="fsmClassNodeIsGenerated" time="0.001"/>
-  <testcase classname="smc.generators.nestedSwitchCaseGenerator.NSCGeneratorTest$HandleEventTest" name="handleEventIsGenerated" time="0.001"/>
-  <testcase classname="smc.generators.nestedSwitchCaseGenerator.NSCGeneratorTest$EventDelegators" name="eventDelegatorsAreGenerated" time="0.001"/>
-  <testcase classname="smc.generators.nestedSwitchCaseGenerator.NSCGeneratorTest$StatePropertyTest" name="statePropertyIsCreated" time="0.001"/>
+  <testcase classname="smc.generators.nestedSwitchCaseGenerator.NSCGeneratorTest$HandleEventTest" name="handleEventIsGenerated" time="0"/>
+  <testcase classname="smc.generators.nestedSwitchCaseGenerator.NSCGeneratorTest$EventDelegators" name="eventDelegatorsAreGenerated" time="0"/>
+  <testcase classname="smc.generators.nestedSwitchCaseGenerator.NSCGeneratorTest$StatePropertyTest" name="statePropertyIsCreated" time="0"/>
   <testcase classname="smc.generators.nestedSwitchCaseGenerator.NSCGeneratorTest$EnumTests" name="statesAndEvents" time="0.001"/>
-  <testcase classname="smc.generators.nestedSwitchCaseGenerator.NSCGeneratorTest$SwitchCaseTests" name="OneTransition" time="0.001"/>
+  <testcase classname="smc.generators.nestedSwitchCaseGenerator.NSCGeneratorTest$SwitchCaseTests" name="OneTransition" time="0.002"/>
   <testcase classname="smc.generators.nestedSwitchCaseGenerator.NSCGeneratorTest$SwitchCaseTests" name="twoStatesTwoEventsFourActions" time="0"/>
   <testcase classname="smc.generators.nestedSwitchCaseGenerator.NSCGeneratorTest$SwitchCaseTests" name="twoTransitions" time="0.001"/>
 </testsuite>

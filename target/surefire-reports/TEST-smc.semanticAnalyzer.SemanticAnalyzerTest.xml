@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuite tests="48" failures="0" name="smc.semanticAnalyzer.SemanticAnalyzerTest" time="0.013" errors="0" skipped="0">
+<testsuite tests="48" failures="0" name="smc.semanticAnalyzer.SemanticAnalyzerTest" time="0.015" errors="0" skipped="0">
   <properties>
     <property name="java.runtime.name" value="OpenJDK Runtime Environment"/>
     <property name="java.vm.version" value="19"/>
@@ -62,31 +62,31 @@
     <property name="socksNonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="ftp.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
   </properties>
-  <testcase classname="smc.semanticAnalyzer.SemanticAnalyzerTest$AcceptanceTests" name="subwayTurnstileThree" time="0.002"/>
+  <testcase classname="smc.semanticAnalyzer.SemanticAnalyzerTest$AcceptanceTests" name="subwayTurnstileThree" time="0.001"/>
   <testcase classname="smc.semanticAnalyzer.SemanticAnalyzerTest$AcceptanceTests" name="subwayTurnstileOne" time="0"/>
-  <testcase classname="smc.semanticAnalyzer.SemanticAnalyzerTest$AcceptanceTests" name="subwayTurnstileTwo" time="0"/>
+  <testcase classname="smc.semanticAnalyzer.SemanticAnalyzerTest$AcceptanceTests" name="subwayTurnstileTwo" time="0.001"/>
   <testcase classname="smc.semanticAnalyzer.SemanticAnalyzerTest$Logic" name="oneTransition" time="0.001"/>
-  <testcase classname="smc.semanticAnalyzer.SemanticAnalyzerTest$Logic" name="entryAndExitActionsRemainInOrder" time="0"/>
-  <testcase classname="smc.semanticAnalyzer.SemanticAnalyzerTest$Logic" name="superStatesAreAggregated" time="0.001"/>
-  <testcase classname="smc.semanticAnalyzer.SemanticAnalyzerTest$Logic" name="actionsRemainInOrder" time="0"/>
+  <testcase classname="smc.semanticAnalyzer.SemanticAnalyzerTest$Logic" name="entryAndExitActionsRemainInOrder" time="0.001"/>
+  <testcase classname="smc.semanticAnalyzer.SemanticAnalyzerTest$Logic" name="superStatesAreAggregated" time="0"/>
+  <testcase classname="smc.semanticAnalyzer.SemanticAnalyzerTest$Logic" name="actionsRemainInOrder" time="0.001"/>
   <testcase classname="smc.semanticAnalyzer.SemanticAnalyzerTest$Logic" name="twoTransitionsAreAggregated" time="0"/>
   <testcase classname="smc.semanticAnalyzer.SemanticAnalyzerTest$Logic" name="nullNextStateRefersToSelf" time="0.001"/>
   <testcase classname="smc.semanticAnalyzer.SemanticAnalyzerTest$Lists" name="entryAndExitActionsAreCountedAsActions" time="0.001"/>
   <testcase classname="smc.semanticAnalyzer.SemanticAnalyzerTest$Lists" name="noNullEvents" time="0"/>
-  <testcase classname="smc.semanticAnalyzer.SemanticAnalyzerTest$Lists" name="manyActionsButNoDuplicates" time="0.001"/>
-  <testcase classname="smc.semanticAnalyzer.SemanticAnalyzerTest$Lists" name="manyEvents" time="0"/>
+  <testcase classname="smc.semanticAnalyzer.SemanticAnalyzerTest$Lists" name="manyActionsButNoDuplicates" time="0"/>
+  <testcase classname="smc.semanticAnalyzer.SemanticAnalyzerTest$Lists" name="manyEvents" time="0.001"/>
   <testcase classname="smc.semanticAnalyzer.SemanticAnalyzerTest$Lists" name="manyEventsButNoDuplicates" time="0"/>
   <testcase classname="smc.semanticAnalyzer.SemanticAnalyzerTest$Lists" name="manyStates" time="0"/>
   <testcase classname="smc.semanticAnalyzer.SemanticAnalyzerTest$Lists" name="statesAreKeyedByName" time="0"/>
-  <testcase classname="smc.semanticAnalyzer.SemanticAnalyzerTest$Lists" name="oneState" time="0.001"/>
-  <testcase classname="smc.semanticAnalyzer.SemanticAnalyzerTest$Warnings" name="warnIfStateUsedAsBothAbstractAndConcrete" time="0"/>
+  <testcase classname="smc.semanticAnalyzer.SemanticAnalyzerTest$Lists" name="oneState" time="0"/>
+  <testcase classname="smc.semanticAnalyzer.SemanticAnalyzerTest$Warnings" name="warnIfStateUsedAsBothAbstractAndConcrete" time="0.001"/>
   <testcase classname="smc.semanticAnalyzer.SemanticAnalyzerTest$SemanticErrors$TransitionErrors" name="abstractStatesCantBeTargets" time="0"/>
-  <testcase classname="smc.semanticAnalyzer.SemanticAnalyzerTest$SemanticErrors$TransitionErrors" name="errorIfStateHasMultipleExitActionDefinitions" time="0.001"/>
-  <testcase classname="smc.semanticAnalyzer.SemanticAnalyzerTest$SemanticErrors$TransitionErrors" name="abstractStatesCanBeUsedAsSuperStates" time="0"/>
+  <testcase classname="smc.semanticAnalyzer.SemanticAnalyzerTest$SemanticErrors$TransitionErrors" name="errorIfStateHasMultipleExitActionDefinitions" time="0"/>
+  <testcase classname="smc.semanticAnalyzer.SemanticAnalyzerTest$SemanticErrors$TransitionErrors" name="abstractStatesCanBeUsedAsSuperStates" time="0.001"/>
   <testcase classname="smc.semanticAnalyzer.SemanticAnalyzerTest$SemanticErrors$TransitionErrors" name="noDuplicateTransitions" time="0"/>
   <testcase classname="smc.semanticAnalyzer.SemanticAnalyzerTest$SemanticErrors$TransitionErrors" name="errorIfStateHasMultiplyDefinedEntryAndExitActions" time="0"/>
   <testcase classname="smc.semanticAnalyzer.SemanticAnalyzerTest$SemanticErrors$TransitionErrors" name="errorIfStateHasMultipleEntryActionDefinitions" time="0"/>
-  <testcase classname="smc.semanticAnalyzer.SemanticAnalyzerTest$SemanticErrors$TransitionErrors" name="entryAndExitActionsNotMultiplyDefined" time="0.001"/>
+  <testcase classname="smc.semanticAnalyzer.SemanticAnalyzerTest$SemanticErrors$TransitionErrors" name="entryAndExitActionsNotMultiplyDefined" time="0"/>
   <testcase classname="smc.semanticAnalyzer.SemanticAnalyzerTest$SemanticErrors$TransitionErrors" name="duplicateTransitions" time="0"/>
   <testcase classname="smc.semanticAnalyzer.SemanticAnalyzerTest$SemanticErrors$StateErrors" name="usedAsInitialIsValidUsage" time="0"/>
   <testcase classname="smc.semanticAnalyzer.SemanticAnalyzerTest$SemanticErrors$StateErrors" name="noErrorForOverriddenTransition" time="0"/>
@@ -95,19 +95,19 @@
   <testcase classname="smc.semanticAnalyzer.SemanticAnalyzerTest$SemanticErrors$StateErrors" name="unusedStates" time="0"/>
   <testcase classname="smc.semanticAnalyzer.SemanticAnalyzerTest$SemanticErrors$StateErrors" name="noUndefinedStates" time="0"/>
   <testcase classname="smc.semanticAnalyzer.SemanticAnalyzerTest$SemanticErrors$StateErrors" name="undefinedSuperState" time="0"/>
-  <testcase classname="smc.semanticAnalyzer.SemanticAnalyzerTest$SemanticErrors$StateErrors" name="noErrorIfSuperStatesHaveIdenticalTransitions" time="0"/>
-  <testcase classname="smc.semanticAnalyzer.SemanticAnalyzerTest$SemanticErrors$StateErrors" name="usedAsBaseIsValidUsage" time="0.001"/>
-  <testcase classname="smc.semanticAnalyzer.SemanticAnalyzerTest$SemanticErrors$StateErrors" name="superStateDefined" time="0"/>
+  <testcase classname="smc.semanticAnalyzer.SemanticAnalyzerTest$SemanticErrors$StateErrors" name="noErrorIfSuperStatesHaveIdenticalTransitions" time="0.001"/>
+  <testcase classname="smc.semanticAnalyzer.SemanticAnalyzerTest$SemanticErrors$StateErrors" name="usedAsBaseIsValidUsage" time="0"/>
+  <testcase classname="smc.semanticAnalyzer.SemanticAnalyzerTest$SemanticErrors$StateErrors" name="superStateDefined" time="0.001"/>
   <testcase classname="smc.semanticAnalyzer.SemanticAnalyzerTest$SemanticErrors$StateErrors" name="nextStateNullIsImplicitUse" time="0"/>
   <testcase classname="smc.semanticAnalyzer.SemanticAnalyzerTest$SemanticErrors$StateErrors" name="nullNextStateIsNotUndefined" time="0"/>
-  <testcase classname="smc.semanticAnalyzer.SemanticAnalyzerTest$SemanticErrors$StateErrors" name="errorIfSuperStatesHaveConflictingTransitions" time="0"/>
+  <testcase classname="smc.semanticAnalyzer.SemanticAnalyzerTest$SemanticErrors$StateErrors" name="errorIfSuperStatesHaveConflictingTransitions" time="0.001"/>
   <testcase classname="smc.semanticAnalyzer.SemanticAnalyzerTest$SemanticErrors$StateErrors" name="noUnusedStates" time="0"/>
   <testcase classname="smc.semanticAnalyzer.SemanticAnalyzerTest$SemanticErrors$HeaderErrors" name="unexpectedHeader" time="0"/>
   <testcase classname="smc.semanticAnalyzer.SemanticAnalyzerTest$SemanticErrors$HeaderErrors" name="nothingMissing" time="0.001"/>
   <testcase classname="smc.semanticAnalyzer.SemanticAnalyzerTest$SemanticErrors$HeaderErrors" name="missingInitial" time="0"/>
   <testcase classname="smc.semanticAnalyzer.SemanticAnalyzerTest$SemanticErrors$HeaderErrors" name="initialStateMustBeDefined" time="0"/>
   <testcase classname="smc.semanticAnalyzer.SemanticAnalyzerTest$SemanticErrors$HeaderErrors" name="missingFsm" time="0"/>
-  <testcase classname="smc.semanticAnalyzer.SemanticAnalyzerTest$SemanticErrors$HeaderErrors" name="duplicateHeader" time="0"/>
-  <testcase classname="smc.semanticAnalyzer.SemanticAnalyzerTest$SemanticErrors$HeaderErrors" name="missingActions" time="0.001"/>
+  <testcase classname="smc.semanticAnalyzer.SemanticAnalyzerTest$SemanticErrors$HeaderErrors" name="duplicateHeader" time="0.001"/>
+  <testcase classname="smc.semanticAnalyzer.SemanticAnalyzerTest$SemanticErrors$HeaderErrors" name="missingActions" time="0"/>
   <testcase classname="smc.semanticAnalyzer.SemanticAnalyzerTest$SemanticErrors$HeaderErrors" name="noHeaders" time="0"/>
 </testsuite>

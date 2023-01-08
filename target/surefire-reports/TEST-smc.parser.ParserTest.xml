@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuite tests="32" failures="0" name="smc.parser.ParserTest" time="0.027" errors="0" skipped="0">
+<testsuite tests="32" failures="0" name="smc.parser.ParserTest" time="0.021" errors="0" skipped="0">
   <properties>
     <property name="java.runtime.name" value="OpenJDK Runtime Environment"/>
     <property name="java.vm.version" value="19"/>
@@ -62,36 +62,36 @@
     <property name="socksNonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="ftp.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
   </properties>
-  <testcase classname="smc.parser.ParserTest$ErrorTests" name="transitionNoAction" time="0.012"/>
-  <testcase classname="smc.parser.ParserTest$ErrorTests" name="headerWithNoValue" time="0"/>
+  <testcase classname="smc.parser.ParserTest$ErrorTests" name="transitionNoAction" time="0.009"/>
+  <testcase classname="smc.parser.ParserTest$ErrorTests" name="headerWithNoValue" time="0.001"/>
   <testcase classname="smc.parser.ParserTest$ErrorTests" name="noClosingBrace" time="0"/>
   <testcase classname="smc.parser.ParserTest$ErrorTests" name="headerWithNoColonOrValue" time="0"/>
   <testcase classname="smc.parser.ParserTest$ErrorTests" name="parseNothing" time="0.001"/>
   <testcase classname="smc.parser.ParserTest$ErrorTests" name="transitionWayTooShort" time="0"/>
-  <testcase classname="smc.parser.ParserTest$ErrorTests" name="lexicalError" time="0.001"/>
+  <testcase classname="smc.parser.ParserTest$ErrorTests" name="lexicalError" time="0"/>
   <testcase classname="smc.parser.ParserTest$ErrorTests" name="transitionTooShort" time="0"/>
   <testcase classname="smc.parser.ParserTest$ErrorTests" name="initialStateDash" time="0"/>
   <testcase classname="smc.parser.ParserTest$AcceptanceTests" name="simpleOneCoinTurnstile" time="0.007"/>
   <testcase classname="smc.parser.ParserTest$AcceptanceTests" name="twoCoinTurnstileWithSuperState" time="0.001"/>
-  <testcase classname="smc.parser.ParserTest$AcceptanceTests" name="twoCoinTurnstileWithoutSuperState" time="0"/>
-  <testcase classname="smc.parser.ParserTest$IncrementalTests" name="superState" time="0.001"/>
+  <testcase classname="smc.parser.ParserTest$AcceptanceTests" name="twoCoinTurnstileWithoutSuperState" time="0.001"/>
+  <testcase classname="smc.parser.ParserTest$IncrementalTests" name="superState" time="0"/>
   <testcase classname="smc.parser.ParserTest$IncrementalTests" name="entryAction" time="0"/>
   <testcase classname="smc.parser.ParserTest$IncrementalTests" name="multipleExitActions" time="0"/>
   <testcase classname="smc.parser.ParserTest$IncrementalTests" name="parseOneHeader" time="0"/>
   <testcase classname="smc.parser.ParserTest$IncrementalTests" name="simpleTransition" time="0"/>
   <testcase classname="smc.parser.ParserTest$IncrementalTests" name="stateWithSeveralSubTransitions" time="0"/>
-  <testcase classname="smc.parser.ParserTest$IncrementalTests" name="derivedState" time="0.001"/>
+  <testcase classname="smc.parser.ParserTest$IncrementalTests" name="derivedState" time="0"/>
   <testcase classname="smc.parser.ParserTest$IncrementalTests" name="multipleSuperStates" time="0"/>
   <testcase classname="smc.parser.ParserTest$IncrementalTests" name="manyTransitions" time="0"/>
   <testcase classname="smc.parser.ParserTest$IncrementalTests" name="exitAction" time="0"/>
   <testcase classname="smc.parser.ParserTest$IncrementalTests" name="transitionWithNullAction" time="0"/>
-  <testcase classname="smc.parser.ParserTest$IncrementalTests" name="stateWithSubTransition" time="0.001"/>
+  <testcase classname="smc.parser.ParserTest$IncrementalTests" name="stateWithSubTransition" time="0"/>
   <testcase classname="smc.parser.ParserTest$IncrementalTests" name="allStateAdornments" time="0"/>
   <testcase classname="smc.parser.ParserTest$IncrementalTests" name="transitionWithManyActions" time="0"/>
   <testcase classname="smc.parser.ParserTest$IncrementalTests" name="noHeader" time="0"/>
-  <testcase classname="smc.parser.ParserTest$IncrementalTests" name="multipleEntryAndExitActionsWithBraces" time="0"/>
-  <testcase classname="smc.parser.ParserTest$IncrementalTests" name="parseManyHeaders" time="0.001"/>
+  <testcase classname="smc.parser.ParserTest$IncrementalTests" name="multipleEntryAndExitActionsWithBraces" time="0.001"/>
+  <testcase classname="smc.parser.ParserTest$IncrementalTests" name="parseManyHeaders" time="0"/>
   <testcase classname="smc.parser.ParserTest$IncrementalTests" name="multipleEntryActions" time="0"/>
   <testcase classname="smc.parser.ParserTest$IncrementalTests" name="stateWithAllDashes" time="0"/>
-  <testcase classname="smc.parser.ParserTest$IncrementalTests" name="stateWithNoSubTransitions" time="0.001"/>
+  <testcase classname="smc.parser.ParserTest$IncrementalTests" name="stateWithNoSubTransitions" time="0"/>
 </testsuite>
