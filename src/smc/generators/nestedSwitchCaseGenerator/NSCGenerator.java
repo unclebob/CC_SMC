@@ -37,6 +37,11 @@ public class NSCGenerator {
   private void addStateCases(OptimizedStateMachine sm) {
     for (OptimizedStateMachine.Transition t : sm.transitions)
       addStateCase(stateSwitch, t);
+    addDefaultStateCase(stateSwitch);
+  }
+
+  private void addDefaultStateCase(NSCNode.SwitchCaseNode stateSwitch) {
+    stateSwitch.caseNodes.add(new NSCNode.DefaultCaseNode("Invalid State"));
   }
 
   private void addStateCase(NSCNode.SwitchCaseNode stateSwitch, OptimizedStateMachine.Transition t) {

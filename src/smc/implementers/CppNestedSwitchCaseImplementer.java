@@ -74,8 +74,13 @@ public class CppNestedSwitchCaseImplementer implements NSCNodeVisitor {
       "class %s : public %s {\n" +
       "public:\n" +
       "\t%s()\n\t: state(", fsmName, actionsName,fsmName);
+
     fsmClassNode.stateProperty.accept(this);
     output += ")\n\t{}\n\n";
+
+    // Add virtual destructor
+    output += String.format("\n" +
+        "\tvirtual ~%s() {}\n", fsmName);
 
     fsmClassNode.delegators.accept(this);
     output += "\nprivate:\n";
@@ -83,6 +88,7 @@ public class CppNestedSwitchCaseImplementer implements NSCNodeVisitor {
     output += "\tState state;\n";
     output += "\tvoid setState(State s) {state=s;}\n";
     fsmClassNode.eventEnum.accept(this);
+
     fsmClassNode.handleEvent.accept(this);
 
     output += "};\n\n";
