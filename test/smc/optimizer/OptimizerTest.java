@@ -93,11 +93,9 @@ public class OptimizerTest {
     @Test
     public void simpleStateMachine() throws Exception {
       assertOptimization(
-        "" +
-          "{i e i a1}",
+              "{i e i a1}",
 
-        "" +
-          "i {\n" +
+        "i {\n" +
           "  e i {a1}\n" +
           "}\n");
         assertThat(optimizedStateMachine.transitions, hasSize(1));
@@ -110,14 +108,12 @@ public class OptimizerTest {
     @Test
     public void entryFunctionsAdded() throws Exception {
       assertOptimization(
-        "" +
-          "{" +
+        "{" +
           "  i e s a1" +
           "  i e2 s a2" +
           "  s <n1 <n2 e i -" +
           "}",
-        "" +
-          "i {\n" +
+        "i {\n" +
           "  e s {n1 n2 a1}\n" +
           "  e2 s {n1 n2 a2}\n" +
           "}\n" +
@@ -129,14 +125,12 @@ public class OptimizerTest {
     @Test
     public void exitFunctionsAdded() throws Exception {
       assertOptimization(
-        "" +
-          "{" +
+        "{" +
           "  i >x2 >x1 e s a1" +
           "  i e2 s a2" +
           "  s e i -" +
           "}",
-        "" +
-          "i {\n" +
+        "i {\n" +
           "  e s {x2 x1 a1}\n" +
           "  e2 s {x2 x1 a2}\n" +
           "}\n" +
@@ -148,15 +142,13 @@ public class OptimizerTest {
     @Test
     public void firstSuperStateEntryAndExitActionsAreAdded() throws Exception {
       assertOptimization(
-        "" +
-          "{" +
+        "{" +
           "  (ib) >ibx1 >ibx2 - - -" +
           "  (sb) <sbn1 <sbn2 - - -" +
           "  i:ib >x e s a" +
           "  s:sb <n e i -" +
           "}",
-        "" +
-          "i {\n" +
+        "i {\n" +
           "  e s {x ibx1 ibx2 sbn1 sbn2 n a}\n" +
           "}\n" +
           "s {\n" +
@@ -167,8 +159,7 @@ public class OptimizerTest {
     @Test
     public void multipleSuperStateEntryAndExitActionsAreAdded() throws Exception {
       assertOptimization(
-        "" +
-          "{" +
+        "{" +
           "  (ib1) >ib1x - - -" +
           "  (ib2) : ib1 >ib2x - - -" +
           "  (sb1) <sb1n- - -" +
@@ -176,8 +167,7 @@ public class OptimizerTest {
           "  i:ib2 >x e s a" +
           "  s:sb2 <n e i -" +
           "}",
-        "" +
-          "i {\n" +
+        "i {\n" +
           "  e s {x ib2x ib1x sb1n sb2n n a}\n" +
           "}\n" +
           "s {\n" +
@@ -188,8 +178,7 @@ public class OptimizerTest {
     @Test
     public void diamondSuperStateEntryAndExitActionsAreAdded() throws Exception {
       assertOptimization(
-        "" +
-          "{" +
+        "{" +
           "  (ib1) >ib1x - - -" +
           "  (ib2) : ib1 >ib2x - - -" +
           "  (ib3) : ib1 >ib3x - - -" +
@@ -199,8 +188,7 @@ public class OptimizerTest {
           "  i:ib2 :ib3 >x e s a" +
           "  s :sb2 :sb3 <n e i -" +
           "}",
-        "" +
-          "i {\n" +
+        "i {\n" +
           "  e s {x ib3x ib2x ib1x sb1n sb2n sb3n n a}\n" +
           "}\n" +
           "s {\n" +
@@ -214,14 +202,12 @@ public class OptimizerTest {
     @Test
     public void simpleInheritanceOfTransitions() throws Exception {
       assertOptimization(
-        "" +
-          "{" +
+        "{" +
           "  (b) be s ba" +
           "  i:b e s a" +
           "  s e i -" +
           "}",
-        "" +
-          "i {\n" +
+        "i {\n" +
           "  e s {a}\n" +
           "  be s {ba}\n" +
           "}\n" +
@@ -234,8 +220,7 @@ public class OptimizerTest {
     @Test
     public void deepInheritanceOfTransitions() throws Exception {
       assertOptimization(
-        "" +
-          "{" +
+        "{" +
           "  (b1) {" +
           "    b1e1 s b1a1" +
           "    b1e2 s b1a2" +
@@ -244,8 +229,7 @@ public class OptimizerTest {
           "  i:b2 e s a" +
           "  s e i -" +
           "}",
-        "" +
-          "i {\n" +
+        "i {\n" +
           "  e s {a}\n" +
           "  b2e s {b2a}\n" +
           "  b1e1 s {b1a1}\n" +
@@ -260,15 +244,13 @@ public class OptimizerTest {
     @Test
     public void multipleInheritanceOfTransitions() throws Exception {
       assertOptimization(
-        "" +
-          "{" +
+        "{" +
           "  (b1) b1e s b1a" +
           "  (b2) b2e s b2a" +
           "  i:b1 :b2 e s a" +
           "  s e i -" +
           "}",
-        "" +
-          "i {\n" +
+        "i {\n" +
           "  e s {a}\n" +
           "  b2e s {b2a}\n" +
           "  b1e s {b1a}\n" +
@@ -282,16 +264,14 @@ public class OptimizerTest {
     @Test
     public void diamondInheritanceOfTransitions() throws Exception {
       assertOptimization(
-        "" +
-          "{" +
+        "{" +
           "  (b) be s ba" +
           "  (b1):b b1e s b1a" +
           "  (b2):b b2e s b2a" +
           "  i:b1 :b2 e s a" +
           "  s e i -" +
           "}",
-        "" +
-          "i {\n" +
+        "i {\n" +
           "  e s {a}\n" +
           "  b2e s {b2a}\n" +
           "  b1e s {b1a}\n" +
@@ -306,15 +286,13 @@ public class OptimizerTest {
     @Test
     public void overridingTransitions() throws Exception {
       assertOptimization(
-        "" +
-          "{" +
+        "{" +
           "  (b) e s2 a2" +
           "  i:b e s a" +
           "  s e i -" +
           "  s2 e i -" +
           "}",
-        "" +
-          "i {\n" +
+        "i {\n" +
           "  e s {a}\n" +
           "}\n" +
           "s {\n" +
@@ -329,14 +307,12 @@ public class OptimizerTest {
     @Test
     public void eliminationOfDuplicateTransitions() throws Exception {
       assertOptimization(
-        "" +
-          "{" +
+        "{" +
           "  (b) e s a" +
           "  i:b e s a" +
           "  s e i -" +
           "}",
-        "" +
-          "i {\n" +
+        "i {\n" +
           "  e s {a}\n" +
           "}\n" +
           "s {\n" +
@@ -352,32 +328,26 @@ public class OptimizerTest {
     @Test
     public void turnstyle3() throws Exception {
       OptimizedStateMachine sm = produceStateMachine(
-        "" +
-          "Actions: Turnstile\n" +
+        "Actions: Turnstile\n" +
           "FSM: TwoCoinTurnstile\n" +
           "Initial: Locked\n" +
           "{" +
           "    (Base)  Reset  Locked  lock" +
-          "" +
           "  Locked : Base {" +
           "    Pass  Alarming  -" +
           "    Coin  FirstCoin -" +
           "  }" +
-          "" +
           "  Alarming : Base <alarmOn >alarmOff -  -  -" +
-          "" +
           "  FirstCoin : Base {" +
           "    Pass  Alarming  -" +
           "    Coin  Unlocked  unlock" +
           "  }" +
-          "" +
           "  Unlocked : Base {" +
           "    Pass  Locked  lock" +
           "    Coin  -       thankyou" +
           "}");
       assertThat(sm.toString(), equalTo(
-        "" +
-          "Initial: Locked\n" +
+        "Initial: Locked\n" +
           "Fsm: TwoCoinTurnstile\n" +
           "Actions:Turnstile\n" +
           "{\n" +

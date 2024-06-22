@@ -33,7 +33,7 @@ import static smc.parser.ParserState.*;
 
 public class Parser implements TokenCollector {
   private ParserState state = HEADER;
-  private Builder builder;
+  private final Builder builder;
 
   public Parser(Builder builder) {
     this.builder = builder;

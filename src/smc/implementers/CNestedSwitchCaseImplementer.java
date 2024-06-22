@@ -14,8 +14,8 @@ public class CNestedSwitchCaseImplementer implements NSCNodeVisitor {
   private String actionsName;
   private String fsmHeader = "";
   private String fsmImplementation = "";
-  private List<Error> errors = new ArrayList<>();
-  private Map<String, String> flags;
+  private final List<Error> errors = new ArrayList<>();
+  private final Map<String, String> flags;
 
   public CNestedSwitchCaseImplementer(Map<String, String> flags) {
     this.flags = flags;
@@ -50,12 +50,11 @@ public class CNestedSwitchCaseImplementer implements NSCNodeVisitor {
     fsmImplementation +=
       String.format("struct %s *make_%s(struct %s* actions) {\n", fsmName, fsmName, actionsName) +
         String.format("\tstruct %s *fsm = malloc(sizeof(struct %s));\n", fsmName, fsmName) +
-        String.format("\tfsm->actions = actions;\n") +
+              "\tfsm->actions = actions;\n" +
         String.format("\tfsm->state = %s;\n", statePropertyNode.initialState) +
-        String.format("\treturn fsm;\n") + "}\n\n";
+              "\treturn fsm;\n" + "}\n\n";
 
-    fsmImplementation += String.format("" +
-      "static void setState(struct %s *fsm, enum State state) {\n" +
+    fsmImplementation += String.format("static void setState(struct %s *fsm, enum State state) {\n" +
       "\tfsm->state = state;\n" +
       "}\n\n", fsmName);
   }
@@ -64,8 +63,7 @@ public class CNestedSwitchCaseImplementer implements NSCNodeVisitor {
     for (String event : eventDelegatorsNode.events) {
       fsmHeader += String.format("void %s_%s(struct %s*);\n", fsmName, event, fsmName);
 
-      fsmImplementation += String.format("" +
-        "void %s_%s(struct %s* fsm) {\n" +
+      fsmImplementation += String.format("void %s_%s(struct %s* fsm) {\n" +
         "\tprocessEvent(fsm->state, %s, fsm, \"%s\");\n" +
         "}\n", fsmName, event, fsmName, event, event);
     }
@@ -94,8 +92,7 @@ public class CNestedSwitchCaseImplementer implements NSCNodeVisitor {
     fsmClassNode.stateProperty.accept(this);
 
     for (String action : fsmClassNode.actions) {
-      fsmImplementation += String.format("" +
-        "static void %s(struct %s *fsm) {\n" +
+      fsmImplementation += String.format("static void %s(struct %s *fsm) {\n" +
         "\tfsm->actions->%s();\n" +
         "}\n\n", action, fsmName, action);
     }
@@ -111,8 +108,7 @@ public class CNestedSwitchCaseImplementer implements NSCNodeVisitor {
   }
 
   public void visit(HandleEventNode handleEventNode) {
-    fsmImplementation += String.format("" +
-        "static void processEvent(enum State state, enum Event event, struct %s *fsm, char *event_name) {\n",
+    fsmImplementation += String.format("static void processEvent(enum State state, enum Event event, struct %s *fsm, char *event_name) {\n",
       fsmName);
     handleEventNode.switchCase.accept(this);
     fsmImplementation += "}\n\n";
@@ -123,8 +119,7 @@ public class CNestedSwitchCaseImplementer implements NSCNodeVisitor {
   }
 
   public void visit(DefaultCaseNode defaultCaseNode) {
-    fsmImplementation += String.format("" +
-      "default:\n" +
+    fsmImplementation += String.format("default:\n" +
       "(fsm->actions->unexpected_transition)(\"%s\", event_name);\n" +
       "break;\n", defaultCaseNode.state);
   }

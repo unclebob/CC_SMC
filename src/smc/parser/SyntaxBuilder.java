@@ -4,7 +4,7 @@ import static smc.parser.FsmSyntax.*;
 import static smc.parser.FsmSyntax.SyntaxError.Type.*;
 
 public class SyntaxBuilder implements Builder {
-  private FsmSyntax fsm;
+  private final FsmSyntax fsm;
   private Header header;
   private String parsedName;
   private Transition transition;

@@ -9,7 +9,7 @@ import java.nio.file.Files;
 import java.util.Map;
 
 public class CCodeGenerator extends CodeGenerator {
-  private CNestedSwitchCaseImplementer implementer;
+  private final CNestedSwitchCaseImplementer implementer;
 
   public CCodeGenerator(OptimizedStateMachine optimizedStateMachine,
                         String outputDirectory,

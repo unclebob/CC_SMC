@@ -29,8 +29,8 @@ public class Optimizer {
   }
 
   private class StateOptimizer {
-    private SemanticState currentState;
-    private Set<String> eventsForThisState = new HashSet<>();
+    private final SemanticState currentState;
+    private final Set<String> eventsForThisState = new HashSet<>();
 
     public StateOptimizer(SemanticState currentState) {
       this.currentState = currentState;
@@ -74,8 +74,8 @@ public class Optimizer {
     }
 
     private class SubTransitionOptimizer {
-      private SemanticTransition semanticTransition;
-      private SubTransition subTransition;
+      private final SemanticTransition semanticTransition;
+      private final SubTransition subTransition;
 
       public SubTransitionOptimizer(SemanticTransition semanticTransition, SubTransition subTransition) {
         this.semanticTransition = semanticTransition;

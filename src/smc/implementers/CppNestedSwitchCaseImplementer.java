@@ -13,8 +13,8 @@ public class CppNestedSwitchCaseImplementer implements NSCNodeVisitor {
   private String fsmName;
   private String actionsName;
   private String output = "";
-  private List<Error> errors = new ArrayList<>();
-  private Map<String, String> flags;
+  private final List<Error> errors = new ArrayList<>();
+  private final Map<String, String> flags;
 
   public CppNestedSwitchCaseImplementer(Map<String, String> flags) {
     this.flags = flags;
@@ -100,8 +100,7 @@ public class CppNestedSwitchCaseImplementer implements NSCNodeVisitor {
   }
 
   public void visit(DefaultCaseNode defaultCaseNode) {
-    output += String.format("" +
-      "default:\n" +
+    output += String.format("default:\n" +
       "unexpected_transition(\"%s\", eventName);\n" +
       "break;\n", defaultCaseNode.state);
   }

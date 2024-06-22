@@ -36,8 +36,8 @@ public class SMC {
   }
 
   private static class SmcCompiler {
-    private String[] args;
-    private Args argParser;
+    private final String[] args;
+    private final Args argParser;
     private String outputDirectory = null;
     private String language = "Java";
     Map<String, String> flags = new HashMap<>();
@@ -87,9 +87,9 @@ public class SMC {
 
     private int reportSyntaxErrors(FsmSyntax fsm) {
       int syntaxErrorCount = fsm.errors.size();
-      System.out.println(String.format(
-        "Compiled with %d syntax error%s.",
-        syntaxErrorCount, (syntaxErrorCount == 1 ? "" : "s")));
+      System.out.printf(
+              "Compiled with %d syntax error%s.%n",
+        syntaxErrorCount, (syntaxErrorCount == 1 ? "" : "s"));
 
       for (FsmSyntax.SyntaxError error : fsm.errors)
         System.out.println(error.toString());

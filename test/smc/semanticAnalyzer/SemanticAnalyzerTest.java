@@ -177,8 +177,7 @@ public class SemanticAnalyzerTest {
       @Test
       public void errorIfSuperStatesHaveConflictingTransitions() throws Exception {
         List<AnalysisError> errors = produceAst(
-          "" +
-            "FSM: f Actions: act Initial: s" +
+          "FSM: f Actions: act Initial: s" +
             "{" +
             "  (ss1) e1 s1 -" +
             "  (ss2) e1 s2 -" +
@@ -193,8 +192,7 @@ public class SemanticAnalyzerTest {
       @Test
       public void noErrorForOverriddenTransition() throws Exception {
         List<AnalysisError> errors = produceAst(
-          "" +
-            "FSM: f Actions: act Initial: s" +
+          "FSM: f Actions: act Initial: s" +
             "{" +
             "  (ss1) e1 s1 -" +
             "  s :ss1 e1 s3 a" +
@@ -207,8 +205,7 @@ public class SemanticAnalyzerTest {
       @Test
       public void noErrorIfSuperStatesHaveIdenticalTransitions() throws Exception {
         List<AnalysisError> errors = produceAst(
-          "" +
-            "FSM: f Actions: act Initial: s" +
+          "FSM: f Actions: act Initial: s" +
             "{" +
             "  (ss1) e1 s1 ax" +
             "  (ss2) e1 s1 ax" +
@@ -222,8 +219,7 @@ public class SemanticAnalyzerTest {
       @Test
       public void errorIfSuperstatesHaveDifferentActionsInSameTransitions() throws Exception {
         List<AnalysisError> errors = produceAst(
-          "" +
-            "FSM: f Actions: act Initial: s" +
+          "FSM: f Actions: act Initial: s" +
             "{" +
             "  (ss1) e1 s1 a1" +
             "  (ss2) e1 s1 a2" +
@@ -265,8 +261,7 @@ public class SemanticAnalyzerTest {
       @Test
       public void entryAndExitActionsNotMultiplyDefined() throws Exception {
         List<AnalysisError> errors = produceAst(
-          "" +
-            "{" +
+          "{" +
             "  s - - - " +
             "  s - - -" +
             "  es - - -" +
@@ -384,8 +379,7 @@ public class SemanticAnalyzerTest {
     @Test
     public void oneTransition() throws Exception {
       assertSyntaxToAst("{s e s a}",
-        "" +
-          "{\n" +
+        "{\n" +
           "  s {\n" +
           "    e s {a}\n" +
           "  }\n" +
@@ -395,8 +389,7 @@ public class SemanticAnalyzerTest {
     @Test
     public void twoTransitionsAreAggregated() throws Exception {
       assertSyntaxToAst("{s e1 s a s e2 s a}",
-        "" +
-          "{\n" +
+        "{\n" +
           "  s {\n" +
           "    e1 s {a}\n" +
           "    e2 s {a}\n" +
@@ -407,8 +400,7 @@ public class SemanticAnalyzerTest {
     @Test
     public void superStatesAreAggregated() throws Exception {
       assertSyntaxToAst("{s:b1 e1 s a s:b2 e2 s a (b1) e s - (b2) e s -}",
-        "" +
-          "{\n" +
+        "{\n" +
           "  (b1) {\n" +
           "    e s {}\n" +
           "  }\n" +
@@ -427,8 +419,7 @@ public class SemanticAnalyzerTest {
     @Test
     public void nullNextStateRefersToSelf() throws Exception {
       assertSyntaxToAst("{s e - a}",
-        "" +
-          "{\n" +
+        "{\n" +
           "  s {\n" +
           "    e s {a}\n" +
           "  }\n" +
@@ -439,8 +430,7 @@ public class SemanticAnalyzerTest {
     @Test
     public void actionsRemainInOrder() throws Exception {
       assertSyntaxToAst("{s e s {the quick brown fox jumped over the lazy dogs back}}",
-        "" +
-          "{\n" +
+        "{\n" +
           "  s {\n" +
           "    e s {the quick brown fox jumped over the lazy dogs back}\n" +
           "  }\n" +
@@ -450,8 +440,7 @@ public class SemanticAnalyzerTest {
     @Test
     public void entryAndExitActionsRemainInOrder() throws Exception {
       assertSyntaxToAst("{s <{d o} <g >{c a} >t e s a}",
-        "" +
-          "{\n" +
+        "{\n" +
           "  s <d <o <g >c >a >t {\n" +
           "    e s {a}\n" +
           "  }\n" +
@@ -459,12 +448,12 @@ public class SemanticAnalyzerTest {
     }
   } //Logic
 
+  @Nested
   public class AcceptanceTests {
     @Test
     public void subwayTurnstileOne() throws Exception {
       SemanticStateMachine ast = produceAst(
-        "" +
-          "Actions: Turnstile\n" +
+        "Actions: Turnstile\n" +
           "FSM: OneCoinTurnstile\n" +
           "Initial: Locked\n" +
           "{\n" +
@@ -474,8 +463,7 @@ public class SemanticAnalyzerTest {
           "  Unlocked\tPass\tLocked\t\tlock\n" +
           "}");
       assertThat(ast.toString(), equalTo(
-        "" +
-          "Actions: Turnstile\n" +
+        "Actions: Turnstile\n" +
           "FSM: OneCoinTurnstile\n" +
           "Initial: Locked{\n" +
           "  Locked {\n" +
@@ -493,8 +481,7 @@ public class SemanticAnalyzerTest {
     @Test
     public void subwayTurnstileTwo() throws Exception {
       SemanticStateMachine ast = produceAst(
-        "" +
-          "Actions: Turnstile\n" +
+        "Actions: Turnstile\n" +
           "FSM: TwoCoinTurnstile\n" +
           "Initial: Locked\n" +
           "{\n" +
@@ -520,8 +507,7 @@ public class SemanticAnalyzerTest {
           "}"
       );
       assertThat(ast.toString(), equalTo(
-        "" +
-          "Actions: Turnstile\n" +
+        "Actions: Turnstile\n" +
           "FSM: TwoCoinTurnstile\n" +
           "Initial: Locked{\n" +
           "  Alarming {\n" +
@@ -551,8 +537,7 @@ public class SemanticAnalyzerTest {
     @Test
     public void subwayTurnstileThree() throws Exception {
       SemanticStateMachine ast = produceAst(
-        "" +
-          "Actions: Turnstile\n" +
+        "Actions: Turnstile\n" +
           "FSM: TwoCoinTurnstile\n" +
           "Initial: Locked\n" +
           "{\n" +
@@ -577,8 +562,7 @@ public class SemanticAnalyzerTest {
           "}"
       );
       assertThat(ast.toString(), equalTo(
-        "" +
-          "Actions: Turnstile\n" +
+        "Actions: Turnstile\n" +
           "FSM: TwoCoinTurnstile\n" +
           "Initial: Locked{\n" +
           "  Alarming :Base <alarmOn >alarmOff {\n" +

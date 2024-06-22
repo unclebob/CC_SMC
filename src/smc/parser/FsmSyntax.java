@@ -32,9 +32,8 @@ public class FsmSyntax {
     }
 
     public boolean equals(Object obj) {
-      if (obj instanceof Header) {
-        Header other = (Header) obj;
-        return Objects.equals(other.name, name) && Objects.equals(other.value, value);
+      if (obj instanceof Header other) {
+          return Objects.equals(other.name, name) && Objects.equals(other.value, value);
       }
       return false;
     }

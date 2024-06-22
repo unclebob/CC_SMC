@@ -61,8 +61,7 @@ public class CppNestedSwitchCaseImplementerTests {
 
     @Test
     public void noActions_shouldBeError() throws Exception {
-      OptimizedStateMachine sm = produceStateMachine("" +
-        "Initial: I\n" +
+      OptimizedStateMachine sm = produceStateMachine("Initial: I\n" +
         "Fsm: fsm\n" +
         "{" +
         "  I E I A" +
@@ -74,8 +73,7 @@ public class CppNestedSwitchCaseImplementerTests {
     }
     @Test
     public void oneTransition() throws Exception {
-      OptimizedStateMachine sm = produceStateMachine("" +
-        "Initial: I\n" +
+      OptimizedStateMachine sm = produceStateMachine("Initial: I\n" +
         "Fsm: fsm\n" +
         "Actions: acts\n" +
         "{" +
@@ -84,27 +82,20 @@ public class CppNestedSwitchCaseImplementerTests {
       NSCNode generatedFsm = generator.generate(sm);
       generatedFsm.accept(implementer);
 
-      assertWhitespaceEquivalent(implementer.getOutput(), "" +
-        "#ifndef FSM_H\n" +
+      assertWhitespaceEquivalent(implementer.getOutput(), "#ifndef FSM_H\n" +
         "#define FSM_H\n" +
         "#include \"acts.h\"\n" +
-        "" +
         "class fsm : public acts {\n" +
         "public:\n" +
         "  fsm()\n" +
         "  : state(State_I)\n" +
         "  {}\n" +
-        "" +
         "  void E() {processEvent(Event_E, \"E\");}\n" +
-        "" +
         "private:\n" +
         "  enum State {State_I};\n" +
         "  State state;\n" +
-        "" +
         "  void setState(State s) {state=s;}\n" +
-        "" +
         "  enum Event {Event_E};\n" +
-        "" +
         "  void processEvent(Event event, const char* eventName) {\n" +
         "    switch (state) {\n" +
         "      case State_I:\n" +
@@ -113,7 +104,6 @@ public class CppNestedSwitchCaseImplementerTests {
         "            setState(State_I);\n" +
         "            A();\n" +
         "            break;\n" +
-        "" +
         "          default:\n" +
         "            unexpected_transition(\"I\", eventName);\n" +
         "            break;\n" +

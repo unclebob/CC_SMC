@@ -9,7 +9,7 @@ import java.nio.file.Files;
 import java.util.Map;
 
 public class JavaCodeGenerator extends CodeGenerator {
-  private JavaNestedSwitchCaseImplementer implementer;
+  private final JavaNestedSwitchCaseImplementer implementer;
 
   public JavaCodeGenerator(OptimizedStateMachine optimizedStateMachine,
                            String outputDirectory,

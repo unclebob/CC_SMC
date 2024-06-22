@@ -8,7 +8,7 @@ import java.util.Map;
 
 public class JavaNestedSwitchCaseImplementer implements NSCNodeVisitor {
   private String output = "";
-  private Map<String, String> flags;
+  private final Map<String, String> flags;
   private String javaPackage = null;
 
   public JavaNestedSwitchCaseImplementer(Map<String, String> flags) {

@@ -54,8 +54,7 @@ public class CNestedSwitchCaseImplementerTest {
 
   @Test
   public void noAction_shouldBeError() throws Exception {
-    OptimizedStateMachine sm = produceStateMachine("" +
-      "Initial: I\n" +
+    OptimizedStateMachine sm = produceStateMachine("Initial: I\n" +
       "Fsm: fsm\n" +
       "{" +
       "  I E I A" +
@@ -68,8 +67,7 @@ public class CNestedSwitchCaseImplementerTest {
 
   @Test
   public void oneTransition() throws Exception {
-    OptimizedStateMachine sm = produceStateMachine("" +
-      "Initial: I\n" +
+    OptimizedStateMachine sm = produceStateMachine("Initial: I\n" +
       "Fsm: fsm\n" +
       "Actions: acts\n" +
       "{" +
@@ -77,8 +75,7 @@ public class CNestedSwitchCaseImplementerTest {
       "}");
     NSCNode generatedFsm = generator.generate(sm);
     generatedFsm.accept(implementer);
-    assertWhiteSpaceEquivalent(implementer.getFsmHeader(), "" +
-      "#ifndef FSM_H\n" +
+    assertWhiteSpaceEquivalent(implementer.getFsmHeader(), "#ifndef FSM_H\n" +
       "#define FSM_H\n" +
       "struct acts;\n" +
       "struct fsm;\n" +
@@ -86,34 +83,27 @@ public class CNestedSwitchCaseImplementerTest {
       "void fsm_E(struct fsm*);\n" +
       "#endif\n");
 
-    assertWhiteSpaceEquivalent(implementer.getFsmImplementation(), "" +
-      "#include <stdlib.h>\n" +
+    assertWhiteSpaceEquivalent(implementer.getFsmImplementation(), "#include <stdlib.h>\n" +
       "#include \"acts.h\"\n" +
       "#include \"fsm.h\"\n" +
-      "" +
       "enum Event {E};\n" +
       "enum State {I};\n" +
-      "" +
       "struct fsm {\n" +
       "  enum State state;\n" +
       "  struct acts *actions;\n" +
       "};\n" +
-      "" +
       "struct fsm *make_fsm(struct acts* actions) {\n" +
       "  struct fsm *fsm = malloc(sizeof(struct fsm));\n" +
       "  fsm->actions = actions;\n" +
       "  fsm->state = I;\n" +
       "  return fsm;\n" +
       "}\n" +
-      "" +
       "static void setState(struct fsm *fsm, enum State state) {\n" +
       "  fsm->state = state;\n" +
       "}\n" +
-      "" +
       "static void A(struct fsm *fsm) {\n" +
       "  fsm->actions->A();\n" +
       "}\n" +
-      "" +
       "static void processEvent(enum State state, enum Event event, struct fsm *fsm, char *event_name) {\n" +
       "  switch (state) {\n" +
       "    case I:\n" +
@@ -129,7 +119,6 @@ public class CNestedSwitchCaseImplementerTest {
       "      break;\n" +
       "  }\n" +
       "}\n" +
-      "" +
       "void fsm_E(struct fsm* fsm) {\n" +
       "  processEvent(fsm->state, E, fsm, \"E\");\n" +
       "}\n");

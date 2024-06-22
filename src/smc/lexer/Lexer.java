@@ -4,7 +4,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Lexer {
-  private TokenCollector collector;
+  private final TokenCollector collector;
   private int lineNumber;
   private int position;
 
@@ -14,7 +14,7 @@ public class Lexer {
 
   public void lex(String s) {
     lineNumber = 1;
-    String lines[] = s.split("\n");
+    String[] lines = s.split("\n");
     for (String line : lines) {
       lexLine(line);
       lineNumber++;
@@ -40,9 +40,9 @@ public class Lexer {
         findName(line);
   }
 
-  private static Pattern whitePattern = Pattern.compile("^\\s+");
-  private static Pattern commentPattern = Pattern.compile("^//.*$");
-  private static Pattern[] whitePatterns = new Pattern[] {whitePattern, commentPattern};
+  private static final Pattern whitePattern = Pattern.compile("^\\s+");
+  private static final Pattern commentPattern = Pattern.compile("^//.*$");
+  private static final Pattern[] whitePatterns = new Pattern[] {whitePattern, commentPattern};
 
   private boolean findWhiteSpace(String line) {
     for (Pattern pattern : whitePatterns) {
@@ -93,7 +93,7 @@ public class Lexer {
     return true;
   }
 
-  private static Pattern namePattern = Pattern.compile("^\\w+");
+  private static final Pattern namePattern = Pattern.compile("^\\w+");
 
   private boolean findName(String line) {
     Matcher nameMatcher = namePattern.matcher(line.substring(position));

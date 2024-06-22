@@ -26,7 +26,7 @@ public class NSCGeneratorTest {
   private SyntaxBuilder builder;
   private SemanticAnalyzer analyzer;
   private Optimizer optimizer;
-  private String stdHead = "Initial: I FSM:f Actions:acts";
+  private final String stdHead = "Initial: I FSM:f Actions:acts";
   private NSCGenerator generator;
   private NSCNodeVisitor implementer;
   private String output = "";
@@ -122,8 +122,7 @@ public class NSCGeneratorTest {
     @Test
     public void twoTransitions() throws Exception {
       assertGenerated("{I e1 S a1 S e2 I a2}",
-        "" +
-          "s state {" +
+        "s state {" +
           "case I {s event {case e1 {setState(State.S) a1() } default(I);}}" +
           "case S {s event {case e2 {setState(State.I) a2() } default(S);}}" +
           "}");
@@ -132,15 +131,13 @@ public class NSCGeneratorTest {
     @Test
     public void twoStatesTwoEventsFourActions() throws Exception {
       assertGenerated(
-        "" +
-          "{" +
+        "{" +
           "  I e1 S a1 " +
           "  I e2 - a2" +
           "  S e1 I a3" +
           "  S e2 - a4" +
           "}",
-        "" +
-          "s state {" +
+        "s state {" +
           "case I {s event {case e1 {setState(State.S) a1() }" +
           "case e2 {setState(State.I) a2() } default(I);}}" +
           "case S {s event {case e1 {setState(State.I) a3() }" +
@@ -181,8 +178,7 @@ public class NSCGeneratorTest {
     @Test
     public void statesAndEvents() throws Exception {
       assertGenerated(
-        "" +
-          "{" +
+        "{" +
           "  I e1 S a1 " +
           "  I e2 - a2" +
           "  S e1 I a3" +
@@ -229,8 +225,7 @@ public class NSCGeneratorTest {
     @Test
     public void eventDelegatorsAreGenerated() throws Exception {
       assertGenerated(
-              "" +
-                "{" +
+              "{" +
                 "  I e1 S a1 " +
                 "  I e2 - a2" +
                 "  S e1 I a3" +

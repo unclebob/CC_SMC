@@ -5,7 +5,7 @@ import static com.cleancoder.args.ArgsException.ErrorCode.*;
 import java.util.*;
 
 public class StringArrayArgumentMarshaler implements ArgumentMarshaler {
-  private List<String> strings = new ArrayList<String>();
+  private final List<String> strings = new ArrayList<String>();
 
   public void set(Iterator<String> currentArgument) throws ArgsException {
     try {

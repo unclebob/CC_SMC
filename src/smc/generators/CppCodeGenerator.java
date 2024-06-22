@@ -9,7 +9,7 @@ import java.nio.file.Files;
 import java.util.Map;
 
 public class CppCodeGenerator extends CodeGenerator {
-  private CppNestedSwitchCaseImplementer implementer;
+  private final CppNestedSwitchCaseImplementer implementer;
 
   public CppCodeGenerator(OptimizedStateMachine optimizedStateMachine,
                           String outputDirectory,

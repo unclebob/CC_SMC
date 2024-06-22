@@ -54,8 +54,7 @@ public class ParserTest {
     @Test
     public void simpleTransition() throws Exception {
       assertParseResult("{ s e ns a }",
-        "" +
-          "{\n" +
+        "{\n" +
           "  s e ns a\n" +
           "}\n" +
           ".\n");
@@ -64,8 +63,7 @@ public class ParserTest {
     @Test
     public void transitionWithNullAction() throws Exception {
       assertParseResult("{s e ns -}",
-        "" +
-          "{\n" +
+        "{\n" +
           "  s e ns {}\n" +
           "}\n" +
           ".\n");
@@ -74,8 +72,7 @@ public class ParserTest {
     @Test
     public void transitionWithManyActions() throws Exception {
       assertParseResult("{s e ns {a1 a2}}",
-        "" +
-          "{\n" +
+        "{\n" +
           "  s e ns {a1 a2}\n" +
           "}\n" +
           ".\n");
@@ -84,8 +81,7 @@ public class ParserTest {
     @Test
     public void stateWithSubTransition() throws Exception {
       assertParseResult("{s {e ns a}}",
-        "" +
-          "{\n" +
+        "{\n" +
           "  s e ns a\n" +
           "}\n" +
           ".\n");
@@ -94,8 +90,7 @@ public class ParserTest {
     @Test
     public void stateWithSeveralSubTransitions() throws Exception {
       assertParseResult("{s {e1 ns a1 e2 ns a2}}",
-        "" +
-          "{\n" +
+        "{\n" +
           "  s {\n" +
           "    e1 ns a1\n" +
           "    e2 ns a2\n" +
@@ -107,8 +102,7 @@ public class ParserTest {
     @Test
     public void manyTransitions() throws Exception {
       assertParseResult("{s1 e1 s2 a1 s2 e2 s3 a2}",
-        "" +
-          "{\n" +
+        "{\n" +
           "  s1 e1 s2 a1\n" +
           "  s2 e2 s3 a2\n" +
           "}\n" +
@@ -118,8 +112,7 @@ public class ParserTest {
     @Test
     public void superState() throws Exception {
       assertParseResult("{(ss) e s a}",
-        "" +
-          "{\n" +
+        "{\n" +
           "  (ss) e s a\n" +
           "}\n" +
           ".\n");
@@ -128,8 +121,7 @@ public class ParserTest {
     @Test
     public void entryAction() throws Exception {
       assertParseResult("{s <ea e ns a}",
-        "" +
-          "{\n" +
+        "{\n" +
           "  s <ea e ns a\n" +
           "}\n" +
           ".\n");
@@ -138,8 +130,7 @@ public class ParserTest {
     @Test
     public void exitAction() throws Exception {
       assertParseResult("{s >xa e ns a}",
-        "" +
-          "{\n" +
+        "{\n" +
           "  s >xa e ns a\n" +
           "}\n" +
           ".\n");
@@ -148,8 +139,7 @@ public class ParserTest {
     @Test
     public void derivedState() throws Exception {
       assertParseResult("{s:ss e ns a}",
-        "" +
-          "{\n" +
+        "{\n" +
           "  s:ss e ns a\n" +
           "}\n" +
           ".\n");
@@ -158,8 +148,7 @@ public class ParserTest {
     @Test
     public void allStateAdornments() throws Exception {
       assertParseResult("{(s)<ea>xa:ss e ns a}",
-        "" +
-          "{\n" +
+        "{\n" +
           "  (s):ss <ea >xa e ns a\n" +
           "}\n" +
           ".\n");
@@ -168,8 +157,7 @@ public class ParserTest {
     @Test
     public void stateWithNoSubTransitions() throws Exception {
       assertParseResult("{s {}}",
-        "" +
-          "{\n" +
+        "{\n" +
           "  s {\n" +
           "  }\n" +
           "}\n" +
@@ -179,8 +167,7 @@ public class ParserTest {
     @Test
     public void stateWithAllDashes() throws Exception {
       assertParseResult("{s - - -}",
-        "" +
-          "{\n" +
+        "{\n" +
           "  s null null {}\n" +
           "}\n" +
           ".\n");
@@ -189,8 +176,7 @@ public class ParserTest {
     @Test
     public void multipleSuperStates() throws Exception {
       assertParseResult("{s :x :y - - -}",
-        "" +
-          "{\n" +
+        "{\n" +
           "  s:x:y null null {}\n" +
           "}\n" +
           ".\n");
@@ -199,8 +185,7 @@ public class ParserTest {
     @Test
     public void multipleEntryActions() throws Exception {
       assertParseResult("{s <x <y - - -}",
-        "" +
-          "{\n" +
+        "{\n" +
           "  s <x <y null null {}\n" +
           "}\n" +
           ".\n");
@@ -209,8 +194,7 @@ public class ParserTest {
     @Test
     public void multipleExitActions() throws Exception {
       assertParseResult("{s >x >y - - -}",
-        "" +
-          "{\n" +
+        "{\n" +
           "  s >x >y null null {}\n" +
           "}\n" +
           ".\n");
@@ -219,8 +203,7 @@ public class ParserTest {
     @Test
     public void multipleEntryAndExitActionsWithBraces() throws Exception {
       assertParseResult("{s <{u v} >{w x} - - -}",
-        "" +
-          "{\n" +
+        "{\n" +
           "  s <u <v >w >x null null {}\n" +
           "}\n" +
           ".\n");
@@ -232,8 +215,7 @@ public class ParserTest {
     @Test
     public void simpleOneCoinTurnstile() throws Exception {
       assertParseResult(
-        "" +
-          "Actions: Turnstile\n" +
+        "Actions: Turnstile\n" +
           "FSM: OneCoinTurnstile\n" +
           "Initial: Locked\n" +
           "{\n" +
@@ -242,8 +224,7 @@ public class ParserTest {
           "  Unlocked\tCoin\tUnlocked\tthankyou\n" +
           "  Unlocked\tPass\tLocked\t\tlock\n" +
           "}",
-        "" +
-          "Actions:Turnstile\n" +
+        "Actions:Turnstile\n" +
           "FSM:OneCoinTurnstile\n" +
           "Initial:Locked\n" +
           "{\n" +
@@ -259,8 +240,7 @@ public class ParserTest {
     @Test
     public void twoCoinTurnstileWithoutSuperState() throws Exception {
       assertParseResult(
-        "" +
-          "Actions: Turnstile\n" +
+        "Actions: Turnstile\n" +
           "FSM: TwoCoinTurnstile\n" +
           "Initial: Locked\n" +
           "{\n" +
@@ -284,8 +264,7 @@ public class ParserTest {
           "\t\tReset\tLocked {lock alarmOff}\n" +
           "\t}\n" +
           "}",
-        "" +
-          "Actions:Turnstile\n" +
+        "Actions:Turnstile\n" +
           "FSM:TwoCoinTurnstile\n" +
           "Initial:Locked\n" +
           "{\n" +
@@ -313,8 +292,7 @@ public class ParserTest {
     @Test
     public void twoCoinTurnstileWithSuperState() throws Exception {
       assertParseResult(
-        "" +
-          "Actions: Turnstile\n" +
+        "Actions: Turnstile\n" +
           "FSM: TwoCoinTurnstile\n" +
           "Initial: Locked\n" +
           "{\n" +
@@ -337,8 +315,7 @@ public class ParserTest {
           "\t\tCoin\t-\t\tthankyou\n" +
           "\t}\n" +
           "}",
-        "" +
-          "Actions:Turnstile\n" +
+        "Actions:Turnstile\n" +
           "FSM:TwoCoinTurnstile\n" +
           "Initial:Locked\n" +
           "{\n" +

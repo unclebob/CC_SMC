@@ -6,7 +6,7 @@ import static com.cleancoder.args.ArgsException.ErrorCode.*;
 
 public class Args {
   private final Map<Character, ArgumentMarshaler> marshalers;
-  private Set<Character> argsFound;
+  private final Set<Character> argsFound;
   private ListIterator<String> currentArgument;
 
   public Args(String schema, String[] args) throws ArgsException {

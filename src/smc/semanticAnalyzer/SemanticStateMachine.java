@@ -14,8 +14,7 @@ public class SemanticStateMachine {
 
   public String toString() {
     return String.format(
-      "" +
-        "Actions: %s\n" +
+      "Actions: %s\n" +
         "FSM: %s\n" +
         "Initial: %s" +
         "%s",
@@ -48,9 +47,8 @@ public class SemanticStateMachine {
     }
 
     public boolean equals(Object obj) {
-      if (obj instanceof SemanticState) {
-        SemanticState other = (SemanticState) obj;
-        return
+      if (obj instanceof SemanticState other) {
+          return
           Objects.equals(other.name, name) &&
             Objects.equals(other.entryActions, entryActions) &&
             Objects.equals(other.exitActions, exitActions) &&
@@ -127,7 +125,7 @@ public class SemanticStateMachine {
       CONFLICTING_SUPERSTATES,
     }
 
-    private ID id;
+    private final ID id;
     private Object extra;
 
     public AnalysisError(ID id) {
@@ -148,9 +146,8 @@ public class SemanticStateMachine {
     }
 
     public boolean equals(Object obj) {
-      if (obj instanceof AnalysisError) {
-        AnalysisError other = (AnalysisError) obj;
-        return id == other.id && Objects.equals(extra, other.extra);
+      if (obj instanceof AnalysisError other) {
+          return id == other.id && Objects.equals(extra, other.extra);
       }
       return false;
     }

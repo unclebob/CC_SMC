@@ -10,9 +10,9 @@ import static smc.semanticAnalyzer.SemanticStateMachine.AnalysisError.ID.*;
 
 public class SemanticAnalyzer {
   private SemanticStateMachine semanticStateMachine;
-  private Header fsmHeader = Header.NullHeader();
-  private Header actionsHeader = new Header();
-  private Header initialHeader = new Header();
+  private final Header fsmHeader = Header.NullHeader();
+  private final Header actionsHeader = new Header();
+  private final Header initialHeader = new Header();
 
   public SemanticStateMachine analyze(FsmSyntax fsm) {
     semanticStateMachine = new SemanticStateMachine();
@@ -295,9 +295,8 @@ public class SemanticAnalyzer {
       }
 
       public boolean equals(Object obj) {
-        if (obj instanceof TransitionTuple) {
-          TransitionTuple tt = (TransitionTuple) obj;
-          return
+        if (obj instanceof TransitionTuple tt) {
+            return
             Objects.equals(currentState, tt.currentState) &&
               Objects.equals(event, tt.event) &&
               Objects.equals(nextState, tt.nextState) &&
@@ -317,7 +316,7 @@ public class SemanticAnalyzer {
 
     private void checkSuperClassTransitions() {
       for (SemanticState state : semanticStateMachine.states.values()) {
-        if (state.abstractState == false) {
+        if (!state.abstractState) {
           concreteState = state;
           transitionTuples = new HashMap<>();
           checkTransitionsForState(concreteState);
