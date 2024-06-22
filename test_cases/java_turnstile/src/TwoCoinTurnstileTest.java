@@ -75,7 +75,8 @@ public class TwoCoinTurnstileTest {
 
   @Test
   public void pass() throws Exception {
-    
+    sm.Pass();
+    assertThat(output, is("A"));
   }
 
 
