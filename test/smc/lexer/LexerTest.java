@@ -1,19 +1,16 @@
 package smc.lexer;
 
-import de.bechte.junit.runners.context.HierarchicalContextRunner;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-
-@RunWith(HierarchicalContextRunner.class)
+import static org.junit.jupiter.api.Assertions.assertEquals;
 public class LexerTest implements TokenCollector {
   String tokens = "";
   Lexer lexer;
   private boolean firstToken = true;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     lexer = new Lexer(this);
   }
@@ -70,6 +67,7 @@ public class LexerTest implements TokenCollector {
     addToken("E" + line + "/" + pos);
   }
 
+  @Nested
   public class SingleTokenTests {
     @Test
     public void findsOpenBrace() throws Exception {
@@ -137,11 +135,12 @@ public class LexerTest implements TokenCollector {
     }
 
     @Test
-    public void whiteSpaceBefore() throws Exception {
+    public void whiteSpaceBeforeEach() throws Exception {
       assertLexResult("  \t\n  -", "D");
     }
   }
 
+  @Nested
   public class CommentTests {
     @Test
     public void commentAfterToken() throws Exception {
@@ -154,6 +153,7 @@ public class LexerTest implements TokenCollector {
     }
   }
 
+  @Nested
   public class MultipleTokenTests {
     @Test
     public void simpleSequence() throws Exception {

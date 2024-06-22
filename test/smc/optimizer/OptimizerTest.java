@@ -1,9 +1,7 @@
 package smc.optimizer;
 
-import de.bechte.junit.runners.context.HierarchicalContextRunner;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+
+
 import smc.OptimizedStateMachine;
 import smc.lexer.Lexer;
 import smc.parser.Parser;
@@ -11,13 +9,17 @@ import smc.parser.SyntaxBuilder;
 import smc.semanticAnalyzer.SemanticAnalyzer;
 import smc.semanticAnalyzer.SemanticStateMachine;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.assertThat;
+
 import static smc.Utilities.compressWhiteSpace;
 import static smc.parser.ParserEvent.EOF;
 
-@RunWith(HierarchicalContextRunner.class)
+
 public class OptimizerTest {
   private Lexer lexer;
   private Parser parser;
@@ -26,7 +28,7 @@ public class OptimizerTest {
   private Optimizer optimizer;
   private OptimizedStateMachine optimizedStateMachine;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     builder = new SyntaxBuilder();
     parser = new Parser(builder);
@@ -54,6 +56,7 @@ public class OptimizerTest {
       equalTo(compressWhiteSpace(stateMachine)));
   }
 
+  @Nested
   public class BasicOptimizerFunctions {
     @Test
     public void header() throws Exception {
@@ -102,6 +105,7 @@ public class OptimizerTest {
     }
   } // Basic Optimizer Functions
 
+  @Nested
   public class EntryAndExitActions {
     @Test
     public void entryFunctionsAdded() throws Exception {
@@ -205,6 +209,7 @@ public class OptimizerTest {
     }
   } // Entry and Exit Actions
 
+  @Nested
   public class superStateTransitions {
     @Test
     public void simpleInheritanceOfTransitions() throws Exception {
@@ -342,6 +347,7 @@ public class OptimizerTest {
     }
   }// Super State Transitions
 
+  @Nested
   public class AcceptanceTests {
     @Test
     public void turnstyle3() throws Exception {

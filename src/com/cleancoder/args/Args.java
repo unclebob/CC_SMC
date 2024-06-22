@@ -5,7 +5,7 @@ import java.util.*;
 import static com.cleancoder.args.ArgsException.ErrorCode.*;
 
 public class Args {
-  private Map<Character, ArgumentMarshaler> marshalers;
+  private final Map<Character, ArgumentMarshaler> marshalers;
   private Set<Character> argsFound;
   private ListIterator<String> currentArgument;
 

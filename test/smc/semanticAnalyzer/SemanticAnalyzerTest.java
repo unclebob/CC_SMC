@@ -1,9 +1,8 @@
 package smc.semanticAnalyzer;
 
-import de.bechte.junit.runners.context.HierarchicalContextRunner;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import smc.lexer.Lexer;
 import smc.parser.Parser;
 import smc.parser.SyntaxBuilder;
@@ -16,20 +15,20 @@ import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.IsCollectionContaining.hasItems;
 import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static smc.parser.FsmSyntax.Header;
 import static smc.parser.ParserEvent.EOF;
 import static smc.semanticAnalyzer.SemanticStateMachine.AnalysisError;
 import static smc.semanticAnalyzer.SemanticStateMachine.AnalysisError.ID.*;
 
-@RunWith(HierarchicalContextRunner.class)
+
 public class SemanticAnalyzerTest {
   private Lexer lexer;
   private Parser parser;
   private SyntaxBuilder builder;
   private SemanticAnalyzer analyzer;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     builder = new SyntaxBuilder();
     parser = new Parser(builder);
@@ -48,7 +47,9 @@ public class SemanticAnalyzerTest {
     assertEquals(expected, semanticStateMachine.toString());
   }
 
+  @Nested
   public class SemanticErrors {
+    @Nested
     public class HeaderErrors {
       @Test
       public void noHeaders() throws Exception {
@@ -111,6 +112,7 @@ public class SemanticAnalyzerTest {
       }
     } // Header Errors
 
+    @Nested
     public class StateErrors {
       @Test
       public void nullNextStateIsNotUndefined() throws Exception {
@@ -234,6 +236,7 @@ public class SemanticAnalyzerTest {
       }
     } // State Errors
 
+    @Nested
     public class TransitionErrors {
       @Test
       public void duplicateTransitions() throws Exception {
@@ -298,6 +301,7 @@ public class SemanticAnalyzerTest {
     } // Transition Errors
   }// Semantic Errors.
 
+  @Nested
   public class Warnings {
     @Test
     public void warnIfStateUsedAsBothAbstractAndConcrete() throws Exception {
@@ -307,6 +311,7 @@ public class SemanticAnalyzerTest {
     }
   } // Warnings
 
+  @Nested
   public class Lists {
     @Test
     public void oneState() throws Exception {
@@ -365,6 +370,7 @@ public class SemanticAnalyzerTest {
     }
   } // Lists
 
+  @Nested
   public class Logic {
     private String addHeader(String s) {
       return "initial: s fsm:f actions:a " + s;

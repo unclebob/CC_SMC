@@ -1,23 +1,25 @@
 package smc.generators.nestedSwitchCaseGenerator;
 
-import de.bechte.junit.runners.context.HierarchicalContextRunner;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+
+
 import smc.OptimizedStateMachine;
 import smc.lexer.Lexer;
 import smc.optimizer.Optimizer;
 import smc.parser.Parser;
 import smc.parser.SyntaxBuilder;
-import smc.semanticAnalyzer.SemanticStateMachine;
 import smc.semanticAnalyzer.SemanticAnalyzer;
+import smc.semanticAnalyzer.SemanticStateMachine;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+
 import static smc.generators.nestedSwitchCaseGenerator.NSCNode.*;
 import static smc.parser.ParserEvent.EOF;
 
-@RunWith(HierarchicalContextRunner.class)
+
 public class NSCGeneratorTest {
   private Lexer lexer;
   private Parser parser;
@@ -29,7 +31,7 @@ public class NSCGeneratorTest {
   private NSCNodeVisitor implementer;
   private String output = "";
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     builder = new SyntaxBuilder();
     parser = new Parser(builder);
@@ -103,8 +105,9 @@ public class NSCGeneratorTest {
     }
   }
 
+  @Nested
   public class SwitchCaseTests {
-    @Before
+    @BeforeEach
     public void setup() {
       implementer = new TestVisitor();
     }
@@ -145,6 +148,7 @@ public class NSCGeneratorTest {
     }
   } // SwitchCase Tests.
 
+
   private class TestVisitor extends EmptyVisitor {
     public void visit(SwitchCaseNode switchCaseNode) {
       output += String.format("s %s {", switchCaseNode.variableName);
@@ -167,8 +171,9 @@ public class NSCGeneratorTest {
     }
   }
 
+  @Nested
   public class EnumTests {
-    @Before
+    @BeforeEach
     public void setup() {
       implementer = new EnumVisitor();
     }
@@ -193,8 +198,9 @@ public class NSCGeneratorTest {
     }
   }
 
+  @Nested
   public class StatePropertyTest {
-    @Before
+    @BeforeEach
     public void setup() {
       implementer = new StatePropertyVisitor();
     }
@@ -213,8 +219,9 @@ public class NSCGeneratorTest {
     }
   }
 
+  @Nested
   public class EventDelegators {
-    @Before
+    @BeforeEach
     public void setup() {
       implementer = new EventDelegatorVisitor();
     }
@@ -240,8 +247,9 @@ public class NSCGeneratorTest {
     }
   }
 
+  @Nested
   public class HandleEventTest {
-    @Before
+    @BeforeEach
     public void setup() {
       implementer = new HandleEventVisitor();
     }
@@ -266,8 +274,9 @@ public class NSCGeneratorTest {
     }
   }
 
+  @Nested
   public class FsmClassTest {
-    @Before
+    @BeforeEach
     public void setup() {
       implementer = new FSMClassVisitor();
     }

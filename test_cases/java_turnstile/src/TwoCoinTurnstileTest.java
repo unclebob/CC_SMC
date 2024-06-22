@@ -1,14 +1,15 @@
-import org.junit.Before;
-import org.junit.Test;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
 
 public class TwoCoinTurnstileTest {
   private String output = "";
   private TwoCoinTurnstile sm;
 
-  class TwoCoinTurnstileImp extends TwoCoinTurnstile {
+  @Nested
+  class TwoCoinTurnstileImp  extends TwoCoinTurnstile {
     public void unhandledTransition(String state, String event) {
       output += String.format("X(%s,%s) ", state, event);
     }
@@ -34,7 +35,7 @@ public class TwoCoinTurnstileTest {
     }
   }
 
-  @Before
+  @BeforeEach
   public void setup() {
     output = "";
     sm = new TwoCoinTurnstileImp();

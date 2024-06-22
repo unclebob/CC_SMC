@@ -250,7 +250,7 @@ In the previous example, the fact that the alarm is turned on every time the `Al
       Alarming : Resetable <alarmOn >alarmOff   -    -    -
     }
 
-The _less-than_ (`<`) character denote an _entry-action_.  It is invoked whenever the state is entered.  Likewise the _greater-than_ (`>`) character denotes an _exit-action_ which is invoked whenever the state is exited.  
+The _less-than_ (`<`) character denote an _entry-action_.  It is invoked whenever the state is entered.  Likewise, the _greater-than_ (`>`) character denotes an _exit-action_ which is invoked whenever the state is exited.  
 
 In the above example, notice that nearly all the actions have been restated as _entry-_ and _exit-actions_.  You may find that this makes the state machine more readable.  
 

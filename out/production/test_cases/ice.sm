@@ -1,0 +1,180 @@
+// ice.sm, the finite state machine for the ICE gui
+
+Initial: init
+FSM: RootFSMGen
+{
+    // life begins in the init state; but it doesn't stay there long.
+    // Once the main program has done some initialization, it invokes
+    // the init event which moves us to the login state.
+    init
+    {
+      init        login       {}
+    }
+    
+    // Whenever we enter the login state we display the login screen.
+    // Whenever we leave it we hide the login screen.  While in the
+    // login state, only two events can move us out.  The login event
+    // tells us that someone has successfully logged in.  The cancel
+    // event means that the user gave up, and we terminate the program.
+    login <displayLoginScreen >hideLoginScreen
+    {
+        login       determiningUserMode {}
+        cancel      end                 {}
+    }
+    
+    // This is a transient state.  Upon entry some cleanup is done,
+    // and then the checkUserState function is called.  It determines
+    // if the user state was set to auto or manual and invokes the
+    // corresponding event.
+    determiningUserMode < { cleanupThumbnails checkUserState }
+    {
+        auto        autoBatch           {}
+        manual      gettingManualBatch  { createSelector }
+    }
+    
+    // Someone has determined that the system will run in auto batch
+    // mode.  We set up the windows for auto mode and display the
+    // thumbnail screen.  Then we wait for an event.
+    autoBatch   < { setUserAuto displayThumbnailAuto }
+    {
+        manual      gettingManualBatch  { createSelector }
+        select      gettingAutoBatch    { createSelector }
+        itemChanged *                   workTypeItemChanged
+        redisplay   *                   displayThumbnailAuto
+        exit        end                 {}
+    }
+    
+    // We are trying to get a new auto batch from the system.  This
+    // can either succeed or fail.
+    gettingAutoBatch <getNextAutoBatch
+    {
+        nextBatchFound  batchSplashAuto     {}
+        noBatchFound    determiningUserMode { noBatchDialog }
+    }
+    
+    // We are trying to get a new manual batch from the system, first
+    // we have to check to see if one is available.  If not we switch
+    // to auto mode.
+    gettingManualBatch <isBatchAvailable
+    {
+        batchesFound    manualBatch          {}
+        noBatchFound    autoBatch            {}
+    }
+    
+    // We have selected a manual batch.  Set the user mode to manual,
+    // and show the thumbnail screen in manual mode.  Then wait for an
+    // event.
+
+    manualBatch < { setUserManual displayThumbnailManual }
+    {
+        auto        autoBatch           {}
+        refresh     gettingManualBatch  {}
+        select      batchSplashManual   selectManualBatch
+        redisplay   *                   displayThumbnailManual
+        exit        end                 {}
+    }
+
+    // The processingBatch superstate is occupied whenever the
+    // thumbnail screen is displayed in the 'processing' state,
+    // meaning that the thumbnails are filled in with the pages of the
+    // selected batch.  There are several substates, each one
+    // relflecting a particular mode of batch processing.    
+    (processingBatch) >hideThumbnailScreen
+    {
+        // these transitions are to correct button bounce on 
+        // entry into this state
+        ok          *                   {}
+        cancel      *                   {}
+        
+        // these are the normal transitions
+        complete    determiningUserMode { completeBatch cleanupBatch }
+        requeue     determiningUserMode { requeueBatch cleanupBatch }
+        reject      determiningUserMode { rejectBatch cleanupBatch }
+        assign      *                   assignPage
+        exit        end                 requeueBatch
+    }
+    
+    // We are processing an auto-mode batch.
+    processingAutoBatch : processingBatch 
+    {
+        stop        processingAutoBatchStopped  {}
+        complete    gettingAutoBatch        { completeBatch cleanupBatch }
+        reject      gettingAutoBatch        { rejectBatch cleanupBatch }
+        openPage    pageAutoBatch           {}
+        redisplay   *                       displayAutoThumbnailProcessing
+    }
+    
+    // we are processing an auto mode batch, and the user had pressed
+    // the stop button, so that auto-mode will come to and end.
+    processingAutoBatchStopped : processingBatch
+    {
+        complete    determiningUserMode     { completeBatch cleanupBatch }
+        reject      determiningUserMode     { rejectBatch cleanupBatch }
+        openPage    pageAutoBatchStopped    {}
+        stop        processingAutoBatch     {}
+        redisplay   *                       displayAutoThumbnailProcessing
+    }
+    
+    // we are processing a manual mode batch.
+    processingManualBatch : processingBatch
+    {
+        openPage    pageManualBatch         {}
+        redisplay   *                       displayManualThumbnailProcessing
+    }
+    
+    // This superstate is occupied whenever the batch splash screen is
+    // active.  Upon entry it activates the batch splash screen, and
+    // upon exit, it deactivates it.
+    (batchSplash) <displayBatchSplashScreen >hideBatchSplashScreen
+    {
+    }
+    
+    // The batch splash screen is up in auto mode.
+    batchSplashAuto : batchSplash
+    {
+        ok          processingAutoBatch {allMode initBatch displayAutoThumbnailProcessing} 
+        complete    gettingAutoBatch    {completeBatch hideThumbnailScreen}
+    }
+    
+    // The batch splash screen is up in manual mode.
+    batchSplashManual : batchSplash
+    {
+        ok          processingManualBatch   {allMode initBatch 
+                                             displayManualThumbnailProcessing}
+        complete    determiningUserMode     {completeBatch hideThumbnailScreen}
+
+    }
+    
+    // This superstate is occupied whenever the page screen is
+    // active.  Entry into this superstate displays the page screen,
+    // and exit from it hides the page screen.
+    (page) <displayPageScreen >hidePageScreen
+    {
+        assign      *       {assignPage redisplayPageScreen}
+        setZone     *       {assignZone redisplayPageScreen}
+    }
+    
+    // we are displaying the page screen in auto-batch mode.
+    pageAutoBatch : page
+    {
+        goBack  processingAutoBatch         displayAutoThumbnailProcessing
+    }
+    
+    // we are displaying the page screen in auto mode after the user
+    // has decided to stop auto-mode.
+    pageAutoBatchStopped : page
+    {
+        goBack  processingAutoBatchStopped  displayAutoThumbnailProcessing
+    }
+    
+    // we are displaying the page screen in manual batch mode.
+    pageManualBatch : page
+    {
+        goBack  processingManualBatch       displayManualThumbnailProcessing
+    }
+    
+    // we are done with the program.  We immediately exit.
+    end <exitProgram
+    {
+    }
+}

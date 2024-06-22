@@ -1,11 +1,14 @@
 package com.cleancoder.args;
 
-import org.junit.Test;
-
 import java.util.Map;
 
 import static com.cleancoder.args.ArgsException.ErrorCode.*;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class ArgsTest {
 
@@ -197,9 +200,10 @@ public class ArgsTest {
     assertEquals("val2", map.get("key2"));
   }
 
-  @Test(expected=ArgsException.class)
+  @Test
   public void malFormedMapArgument() throws Exception {
-    Args args = new Args("f&", new String[] {"-f", "key1:val1,key2"});
+    assertThrows(ArgsException.class, () -> 
+    new Args("f&", new String[] {"-f", "key1:val1,key2"}));
   }
 
   @Test

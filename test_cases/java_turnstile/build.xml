@@ -20,6 +20,6 @@
     </target>
 
     <target name="run">
-        <java jar="build/jar/smc.jar" fork="true"/>
+        <java jar="../../build/jar/smc.jar" fork="true"/>
     </target>
 </project>

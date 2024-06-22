@@ -1,21 +1,21 @@
 package smc.parser;
 
-import de.bechte.junit.runners.context.HierarchicalContextRunner;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import smc.lexer.Lexer;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static smc.parser.ParserEvent.EOF;
 
-@RunWith(HierarchicalContextRunner.class)
+
 public class ParserTest {
   private Lexer lexer;
   private Parser parser;
   private SyntaxBuilder builder;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     builder = new SyntaxBuilder();
     parser = new Parser(builder);
@@ -34,6 +34,7 @@ public class ParserTest {
     assertEquals(expected, builder.getFsm().getError());
   }
 
+  @Nested
   public class IncrementalTests {
     @Test
     public void parseOneHeader() throws Exception {
@@ -226,6 +227,7 @@ public class ParserTest {
     }
   }
 
+  @Nested
   public class AcceptanceTests {
     @Test
     public void simpleOneCoinTurnstile() throws Exception {
@@ -359,6 +361,7 @@ public class ParserTest {
     }
   }
 
+  @Nested
   public class ErrorTests {
     @Test
     public void parseNothing() throws Exception {

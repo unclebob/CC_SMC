@@ -1,16 +1,17 @@
 package smc;
 
-import de.bechte.junit.runners.context.HierarchicalContextRunner;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static smc.Utilities.compressWhiteSpace;
 
-@RunWith(HierarchicalContextRunner.class)
+
 public class UtilitiesTest {
 
+  @Nested
   public class CompressWhiteSpace {
     @Test
     public void emptyString() throws Exception {

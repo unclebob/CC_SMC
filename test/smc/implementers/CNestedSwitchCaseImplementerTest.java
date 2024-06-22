@@ -1,7 +1,7 @@
 package smc.implementers;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import smc.OptimizedStateMachine;
 import smc.generators.nestedSwitchCaseGenerator.NSCGenerator;
 import smc.generators.nestedSwitchCaseGenerator.NSCNode;
@@ -9,14 +9,14 @@ import smc.lexer.Lexer;
 import smc.optimizer.Optimizer;
 import smc.parser.Parser;
 import smc.parser.SyntaxBuilder;
-import smc.semanticAnalyzer.SemanticStateMachine;
 import smc.semanticAnalyzer.SemanticAnalyzer;
+import smc.semanticAnalyzer.SemanticStateMachine;
 
 import java.util.HashMap;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 import static smc.Utilities.compressWhiteSpace;
 import static smc.parser.ParserEvent.EOF;
 
@@ -33,7 +33,7 @@ public class CNestedSwitchCaseImplementerTest {
     assertThat(compressWhiteSpace(generated), equalTo(compressWhiteSpace(expected)));
   }
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     builder = new SyntaxBuilder();
     parser = new Parser(builder);

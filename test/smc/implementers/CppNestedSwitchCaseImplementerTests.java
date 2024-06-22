@@ -1,9 +1,8 @@
 package smc.implementers;
 
-import de.bechte.junit.runners.context.HierarchicalContextRunner;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import smc.OptimizedStateMachine;
 import smc.generators.nestedSwitchCaseGenerator.NSCGenerator;
 import smc.generators.nestedSwitchCaseGenerator.NSCNode;
@@ -11,18 +10,17 @@ import smc.lexer.Lexer;
 import smc.optimizer.Optimizer;
 import smc.parser.Parser;
 import smc.parser.SyntaxBuilder;
-import smc.semanticAnalyzer.SemanticStateMachine;
 import smc.semanticAnalyzer.SemanticAnalyzer;
+import smc.semanticAnalyzer.SemanticStateMachine;
 
 import java.util.HashMap;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 import static smc.Utilities.compressWhiteSpace;
 import static smc.parser.ParserEvent.EOF;
 
-@RunWith(HierarchicalContextRunner.class)
 public class CppNestedSwitchCaseImplementerTests {
   private Lexer lexer;
   private Parser parser;
@@ -32,7 +30,7 @@ public class CppNestedSwitchCaseImplementerTests {
   private NSCGenerator generator;
   private CppNestedSwitchCaseImplementer implementer;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     builder = new SyntaxBuilder();
     parser = new Parser(builder);
@@ -53,9 +51,10 @@ public class CppNestedSwitchCaseImplementerTests {
     assertThat(compressWhiteSpace(generatedCode), equalTo(compressWhiteSpace(expected)));
   }
 
+  @Nested
   public class TestsWithNoFlags {
 
-    @Before
+    @BeforeEach
     public void setup() {
       implementer = new CppNestedSwitchCaseImplementer(new HashMap<>());
     }
