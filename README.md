@@ -118,7 +118,7 @@ It is often more convenient to express the abstract _Action_ functions as an int
       ...
     }
 
-The programer will write the `TurnstileActions` interface to declare all the _Action_ functions.  SMC will generate code that implements that interface.   Here how this looks in UML:
+The programmer will write the `TurnstileActions` interface to declare all the _Action_ functions.  SMC will generate code that implements that interface.   Here how this looks in UML:
 
               +-------------------------+
               |      <<interface>>      |
@@ -197,7 +197,7 @@ We use the _dash_ (`-`) character for two purposes.  When used as an action it m
 When more than one action should be performed, they can be grouped together in braces (`{}`).
 
 ### Super States
-Notice the duplication of the `Reset` transition.  In all three states the `Reset` event does the same thing.  It transitions to the `Locked` state and it invokes the `lock` and `alarmOff` actions.  This duplication can be eliminated by using a _Super State_ as follows:
+Notice the duplication of the `Reset` transition.  In all three states the `Reset` event does the same thing.  It transitions to the `Locked` state, and it invokes the `lock` and `alarmOff` actions.  This duplication can be eliminated by using a _Super State_ as follows:
 
     Initial: Locked
     FSM: Turnstile

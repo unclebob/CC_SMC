@@ -5,7 +5,7 @@ import static com.cleancoder.args.ArgsException.ErrorCode.*;
 import java.util.*;
 
 public class StringArrayArgumentMarshaler implements ArgumentMarshaler {
-  private final List<String> strings = new ArrayList<String>();
+  private final List<String> strings = new ArrayList<>();
 
   public void set(Iterator<String> currentArgument) throws ArgsException {
     try {
@@ -16,7 +16,7 @@ public class StringArrayArgumentMarshaler implements ArgumentMarshaler {
   }
 
   public static String[] getValue(ArgumentMarshaler am) {
-    if (am != null && am instanceof StringArrayArgumentMarshaler)
+    if (am instanceof StringArrayArgumentMarshaler)
       return ((StringArrayArgumentMarshaler) am).strings.toArray(new String[0]);
     else
       return new String[0];

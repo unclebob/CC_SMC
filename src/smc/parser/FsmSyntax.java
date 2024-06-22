@@ -5,9 +5,9 @@ import java.util.List;
 import java.util.Objects;
 
 public class FsmSyntax {
-  public List<Header> headers = new ArrayList<>();
-  public List<Transition> logic = new ArrayList<>();
-  public List<SyntaxError> errors = new ArrayList<>();
+  public final List<Header> headers = new ArrayList<>();
+  public final List<Transition> logic = new ArrayList<>();
+  public final List<SyntaxError> errors = new ArrayList<>();
   public boolean done = false;
 
   public static class Header {
@@ -15,8 +15,7 @@ public class FsmSyntax {
     public String value;
 
     public static Header NullHeader() {
-      Header header = new Header(null, null);
-      return header;
+        return new Header(null, null);
     }
 
     public Header() {
@@ -42,46 +41,35 @@ public class FsmSyntax {
 
   public static class Transition {
     public StateSpec state;
-    public List<SubTransition> subTransitions = new ArrayList<>();
+    public final List<SubTransition> subTransitions = new ArrayList<>();
   }
 
   public static class StateSpec {
     public String name;
-    public List<String> superStates = new ArrayList<>();
-    public List<String> entryActions = new ArrayList<>();
-    public List<String> exitActions = new ArrayList<>();
+    public final List<String> superStates = new ArrayList<>();
+    public final List<String> entryActions = new ArrayList<>();
+    public final List<String> exitActions = new ArrayList<>();
     public boolean abstractState;
   }
 
   public static class SubTransition {
-    public String event;
+    public final String event;
     public String nextState;
-    public List<String> actions = new ArrayList<>();
+    public final List<String> actions = new ArrayList<>();
 
     public SubTransition(String event) {
       this.event = event;
     }
   }
 
-  public static class SyntaxError {
-    public Type type;
-    public String msg;
-    public int lineNumber;
-    public int position;
-
-    public SyntaxError(Type type, String msg, int lineNumber, int position) {
-      this.type = type;
-      this.msg = msg;
-      this.lineNumber = lineNumber;
-      this.position = position;
-    }
+  public record SyntaxError(FsmSyntax.SyntaxError.Type type, String msg, int lineNumber, int position) {
 
     public String toString() {
-      return String.format("Syntax Error Line: %d, Position: %d.  (%s) %s", lineNumber, position, type.name(), msg);
-    }
+        return String.format("Syntax Error Line: %d, Position: %d.  (%s) %s", lineNumber, position, type.name(), msg);
+      }
 
-    public enum Type {HEADER, STATE, TRANSITION, TRANSITION_GROUP, END, SYNTAX}
-  }
+      public enum Type {HEADER, STATE, TRANSITION, TRANSITION_GROUP, END, SYNTAX}
+    }
 
   public String toString() {
     return
@@ -92,10 +80,11 @@ public class FsmSyntax {
   }
 
   private String formatHeaders() {
-    String formattedHeaders = "";
-    for (Header header : headers)
-      formattedHeaders += formatHeader(header);
-    return formattedHeaders;
+    StringBuilder formattedHeaders = new StringBuilder();
+    for (Header header : headers) {
+        formattedHeaders.append(formatHeader(header));
+    }
+    return formattedHeaders.toString();
   }
 
   private String formatHeader(Header header) {
@@ -103,17 +92,19 @@ public class FsmSyntax {
   }
 
   private String formatLogic() {
-    if (logic.size() > 0)
-      return String.format("{\n%s}\n", formatTransitions());
-    else
-      return "";
+    String ret = "";
+    if (!logic.isEmpty()) {
+        ret = String.format("{\n%s}\n", formatTransitions());
+    }
+    return ret;
   }
 
   private String formatTransitions() {
-    String transitions = "";
-    for (Transition transition : logic)
-      transitions += formatTransition(transition);
-    return transitions;
+    StringBuilder transitions = new StringBuilder();
+    for (Transition transition : logic) {
+        transitions.append(formatTransition(transition));
+    }
+    return transitions.toString();
   }
 
   private String formatTransition(Transition transition) {
@@ -124,24 +115,28 @@ public class FsmSyntax {
   }
 
   private String formatStateName(StateSpec stateSpec) {
-    String stateName = String.format(stateSpec.abstractState ? "(%s)" : "%s", stateSpec.name);
-    for (String superState : stateSpec.superStates)
-      stateName += ":" + superState;
-    for (String entryAction : stateSpec.entryActions)
-      stateName += " <" + entryAction;
-    for (String exitAction : stateSpec.exitActions)
-      stateName += " >" + exitAction;
-    return stateName;
+    StringBuilder stateName = new StringBuilder(String.format(stateSpec.abstractState ? "(%s)" : "%s", stateSpec.name));
+    for (String superState : stateSpec.superStates) {
+        stateName.append(":").append(superState);
+    }
+    for (String entryAction : stateSpec.entryActions) {
+        stateName.append(" <").append(entryAction);
+    }
+    for (String exitAction : stateSpec.exitActions) {
+        stateName.append(" >").append(exitAction);
+    }
+    return stateName.toString();
   }
 
   private String formatSubTransitions(Transition transition) {
-    if (transition.subTransitions.size() == 1)
-      return formatSubTransition(transition.subTransitions.get(0));
-    else {
+    if (transition.subTransitions.size() == 1) {
+        return formatSubTransition(transition.subTransitions.getFirst());
+    } else {
       String formattedSubTransitions = "{\n";
 
-      for (SubTransition subtransition : transition.subTransitions)
-        formattedSubTransitions += "    " + formatSubTransition(subtransition) + "\n";
+      for (SubTransition subtransition : transition.subTransitions) {
+          formattedSubTransitions += "    " + formatSubTransition(subtransition) + "\n";
+      }
 
       return formattedSubTransitions + "  }";
     }
@@ -156,9 +151,9 @@ public class FsmSyntax {
   }
 
   private String formatActions(SubTransition subtransition) {
-    if (subtransition.actions.size() == 1)
-      return subtransition.actions.get(0);
-    else {
+    if (subtransition.actions.size() == 1) {
+        return subtransition.actions.getFirst();
+    } else {
       String actions = "{";
       boolean first = true;
       for (String action : subtransition.actions) {
@@ -171,10 +166,11 @@ public class FsmSyntax {
   }
 
   private String formatErrors() {
-    if (errors.size() > 0)
-      return formatError(errors.get(0));
-    else
-      return "";
+    String ret = "";
+    if (!errors.isEmpty()) {
+        ret = formatError(errors.getFirst());
+    }
+    return ret;
   }
 
   private String formatError(SyntaxError error) {

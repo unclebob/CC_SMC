@@ -7,11 +7,11 @@ import java.util.List;
 // Code generators will use this format as their input.
 
 public class OptimizedStateMachine {
-  public List<String> states = new ArrayList<>();
-  public List<String> events = new ArrayList<>();
-  public List<String> actions = new ArrayList<>();
+  public final List<String> states = new ArrayList<>();
+  public final List<String> events = new ArrayList<>();
+  public final List<String> actions = new ArrayList<>();
   public Header header;
-  public List<Transition> transitions = new ArrayList<>();
+  public final List<Transition> transitions = new ArrayList<>();
 
   public String transitionsToString() {
     String result = "";
@@ -43,7 +43,7 @@ public class OptimizedStateMachine {
     }
 
     public String currentState;
-    public List<SubTransition> subTransitions = new ArrayList<>();
+    public final List<SubTransition> subTransitions = new ArrayList<>();
   }
 
   public static class SubTransition {
@@ -53,7 +53,7 @@ public class OptimizedStateMachine {
 
     private String actionsToString() {
       String result = "";
-      if (actions.size() == 0)
+      if (actions.isEmpty())
         return result;
       for (String action : actions)
         result += action + " ";
@@ -62,6 +62,6 @@ public class OptimizedStateMachine {
 
     public String event;
     public String nextState;
-    public List<String> actions = new ArrayList<>();
+    public final List<String> actions = new ArrayList<>();
   }
 }

@@ -41,11 +41,8 @@ public class SMC {
     private String outputDirectory = null;
     private String language = "Java";
     Map<String, String> flags = new HashMap<>();
-    private SyntaxBuilder syntaxBuilder;
-    private Parser parser;
-    private Lexer lexer;
 
-    public SmcCompiler(String[] args, Args argParser) {
+      public SmcCompiler(String[] args, Args argParser) {
       this.args = args;
       this.argParser = argParser;
     }
@@ -71,9 +68,9 @@ public class SMC {
     }
 
     private FsmSyntax compile(String smContent) {
-      syntaxBuilder = new SyntaxBuilder();
-      parser = new Parser(syntaxBuilder);
-      lexer = new Lexer(parser);
+        SyntaxBuilder syntaxBuilder = new SyntaxBuilder();
+        Parser parser = new Parser(syntaxBuilder);
+        Lexer lexer = new Lexer(parser);
       lexer.lex(smContent);
       parser.handleEvent(EOF, -1, -1);
 
@@ -112,8 +109,8 @@ public class SMC {
                                           String outputDirectory,
                                           Map<String, String> flags) {
       try {
-        Class generatorClass = Class.forName(generatorClassName);
-        Constructor constructor = generatorClass.getConstructor(OptimizedStateMachine.class, String.class, Map.class);
+        Class<?> generatorClass = Class.forName(generatorClassName);
+        Constructor<?> constructor = generatorClass.getConstructor(OptimizedStateMachine.class, String.class, Map.class);
         return (CodeGenerator) constructor.newInstance(optimizedStateMachine, outputDirectory, flags);
       } catch (ClassNotFoundException e) {
         System.out.printf("The class %s was not found.\n", generatorClassName);
@@ -121,14 +118,11 @@ public class SMC {
       } catch (NoSuchMethodException e) {
         System.out.printf("Appropriate constructor for %s not found", generatorClassName);
         System.exit(0);
-      } catch (InvocationTargetException | InstantiationException e) {
-        e.printStackTrace();
-        System.exit(0);
-      } catch (IllegalAccessException e) {
+      } catch (InvocationTargetException | InstantiationException  | IllegalAccessException e) {
         e.printStackTrace();
         System.exit(0);
       }
-      return null;
+        return null;
     }
 
   }

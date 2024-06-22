@@ -7,8 +7,8 @@ public interface NSCNode {
   void accept(NSCNodeVisitor visitor);
 
   class SwitchCaseNode implements NSCNode {
-    public String variableName;
-    public List<NSCNode> caseNodes = new ArrayList<>();
+    public final String variableName;
+    public final List<NSCNode> caseNodes = new ArrayList<>();
 
     public SwitchCaseNode(String variableName) {
       this.variableName = variableName;
@@ -26,8 +26,8 @@ public interface NSCNode {
   }
 
   class CaseNode implements NSCNode {
-    public String switchName;
-    public String caseName;
+    public final String switchName;
+    public final String caseName;
     public NSCNode caseActionNode;
 
     public CaseNode(String SwitchName, String caseName){
@@ -41,7 +41,7 @@ public interface NSCNode {
   }
 
   class FunctionCallNode implements NSCNode {
-    public String functionName;
+    public final String functionName;
     public NSCNode argument;
 
     public FunctionCallNode(String functionName) {
@@ -72,8 +72,8 @@ public interface NSCNode {
   }
 
   class EnumNode implements NSCNode {
-    public String name;
-    public List<String> enumerators;
+    public final String name;
+    public final List<String> enumerators;
 
     public EnumNode(String name, List<String> enumerators) {
       this.name = name;
@@ -86,7 +86,7 @@ public interface NSCNode {
   }
 
   class StatePropertyNode implements NSCNode {
-    public String initialState;
+    public final String initialState;
 
     public StatePropertyNode(String initialState) {
       this.initialState = initialState;
@@ -98,7 +98,7 @@ public interface NSCNode {
   }
 
   class EventDelegatorsNode implements NSCNode {
-    public List<String> events;
+    public final List<String> events;
 
     public EventDelegatorsNode(List<String> events) {
       this.events = events;
@@ -125,7 +125,7 @@ public interface NSCNode {
   }
 
   class HandleEventNode implements NSCNode {
-    public SwitchCaseNode switchCase;
+    public final SwitchCaseNode switchCase;
 
     public HandleEventNode(SwitchCaseNode switchCase) {
       this.switchCase = switchCase;
@@ -137,8 +137,8 @@ public interface NSCNode {
   }
 
   class EnumeratorNode implements NSCNode {
-    public String enumeration;
-    public String enumerator;
+    public final String enumeration;
+    public final String enumerator;
 
     public EnumeratorNode(String enumeration, String enumerator) {
       this.enumeration = enumeration;
@@ -151,7 +151,7 @@ public interface NSCNode {
   }
 
     class DefaultCaseNode implements NSCNode {
-      public String state;
+      public final String state;
 
       public DefaultCaseNode(String state) {
         this.state = state;

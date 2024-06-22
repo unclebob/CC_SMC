@@ -76,17 +76,13 @@ public abstract class TwoCoinTurnstile implements TurnstileActions {
                 break;
             case Unlocked:
                 switch (event) {
-                    case Pass:
+                    case Pass, Reset:
                         setState(State.Locked);
                         lock();
                         break;
                     case Coin:
                         setState(State.Unlocked);
                         thankyou();
-                        break;
-                    case Reset:
-                        setState(State.Locked);
-                        lock();
                         break;
                     default:
                         unhandledTransition(state.name(), event.name());

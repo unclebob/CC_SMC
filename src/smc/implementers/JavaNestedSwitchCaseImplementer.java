@@ -8,13 +8,12 @@ import java.util.Map;
 
 public class JavaNestedSwitchCaseImplementer implements NSCNodeVisitor {
   private String output = "";
-  private final Map<String, String> flags;
-  private String javaPackage = null;
+    private String javaPackage = null;
 
   public JavaNestedSwitchCaseImplementer(Map<String, String> flags) {
-    this.flags = flags;
-    if (flags.containsKey("package"))
-      javaPackage = flags.get("package");
+      if (flags.containsKey("package")) {
+        javaPackage = flags.get("package");
+      }
   }
 
   public void visit(NSCNode.SwitchCaseNode switchCaseNode) {
@@ -31,8 +30,9 @@ public class JavaNestedSwitchCaseImplementer implements NSCNodeVisitor {
 
   public void visit(NSCNode.FunctionCallNode functionCallNode) {
     output += String.format("%s(", functionCallNode.functionName);
-    if (functionCallNode.argument != null)
+    if (functionCallNode.argument != null) {
       functionCallNode.argument.accept(this);
+    }
     output += ");\n";
   }
 
@@ -47,19 +47,22 @@ public class JavaNestedSwitchCaseImplementer implements NSCNodeVisitor {
   }
 
   public void visit(NSCNode.EventDelegatorsNode eventDelegatorsNode) {
-    for (String event : eventDelegatorsNode.events)
+    for (String event : eventDelegatorsNode.events) {
       output += String.format("public void %s() {handleEvent(Event.%s);}\n", event, event);
+    }
   }
 
   public void visit(NSCNode.FSMClassNode fsmClassNode) {
-    if (javaPackage != null)
+    if (javaPackage != null) {
       output += "package " + javaPackage + ";\n";
+    }
 
     String actionsName = fsmClassNode.actionsName;
-    if (actionsName == null)
+    if (actionsName == null) {
       output += String.format("public abstract class %s {\n", fsmClassNode.className);
-    else
+    } else {
       output += String.format("public abstract class %s implements %s {\n", fsmClassNode.className, actionsName);
+    }
 
     output += "public abstract void unhandledTransition(String state, String event);\n";
     fsmClassNode.stateEnum.accept(this);

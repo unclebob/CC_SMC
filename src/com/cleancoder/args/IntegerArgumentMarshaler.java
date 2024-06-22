@@ -1,8 +1,10 @@
 package com.cleancoder.args;
 
-import static com.cleancoder.args.ArgsException.ErrorCode.*;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
-import java.util.*;
+import static com.cleancoder.args.ArgsException.ErrorCode.INVALID_INTEGER;
+import static com.cleancoder.args.ArgsException.ErrorCode.MISSING_INTEGER;
 
 public class IntegerArgumentMarshaler implements ArgumentMarshaler {
   private int intValue = 0;
@@ -20,7 +22,7 @@ public class IntegerArgumentMarshaler implements ArgumentMarshaler {
   }
 
   public static int getValue(ArgumentMarshaler am) {
-    if (am != null && am instanceof IntegerArgumentMarshaler)
+    if (am instanceof IntegerArgumentMarshaler)
       return ((IntegerArgumentMarshaler) am).intValue;
     else
       return 0;

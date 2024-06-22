@@ -1,8 +1,10 @@
 package com.cleancoder.args;
 
-import static com.cleancoder.args.ArgsException.ErrorCode.*;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
-import java.util.*;
+import static com.cleancoder.args.ArgsException.ErrorCode.INVALID_DOUBLE;
+import static com.cleancoder.args.ArgsException.ErrorCode.MISSING_DOUBLE;
 
 public class DoubleArgumentMarshaler implements ArgumentMarshaler {
   private double doubleValue = 0;
@@ -20,9 +22,10 @@ public class DoubleArgumentMarshaler implements ArgumentMarshaler {
   }
 
   public static double getValue(ArgumentMarshaler am) {
-    if (am != null && am instanceof DoubleArgumentMarshaler)
-      return ((DoubleArgumentMarshaler) am).doubleValue;
-    else
-      return 0.0;
+    double ret = 0.0;
+    if (am instanceof DoubleArgumentMarshaler) {
+        ret = ((DoubleArgumentMarshaler) am).doubleValue;
+    }
+    return ret;
   }
 }

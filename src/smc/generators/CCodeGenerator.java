@@ -23,7 +23,7 @@ public class CCodeGenerator extends CodeGenerator {
   }
 
   public void writeFiles() throws IOException {
-    if (implementer.getErrors().size() > 0) {
+    if (!implementer.getErrors().isEmpty()) {
       for (CNestedSwitchCaseImplementer.Error error : implementer.getErrors())
         System.out.println("Implementation error: " + error.name());
     } else {

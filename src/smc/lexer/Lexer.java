@@ -77,13 +77,10 @@ public class Lexer {
       case ">":
         collector.closedAngle(lineNumber, position);
         break;
-      case "-":
+      case "-", "*":
         collector.dash(lineNumber, position);
         break;
-      case "*":
-        collector.dash(lineNumber, position);
-        break;
-      case ":":
+        case ":":
         collector.colon(lineNumber, position);
         break;
       default:

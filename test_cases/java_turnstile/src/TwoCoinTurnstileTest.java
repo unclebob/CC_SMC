@@ -42,7 +42,7 @@ public class TwoCoinTurnstileTest {
   }
 
   @Test
-  public void normal() throws Exception {
+  public void normal() {
     sm.Coin();
     sm.Coin();
     sm.Pass();
@@ -50,21 +50,21 @@ public class TwoCoinTurnstileTest {
   }
 
   @Test
-  public void oneCoinAttempt() throws Exception {
+  public void oneCoinAttempt() {
     sm.Coin();
     sm.Pass();
     assertThat(output, is("A"));
   }
 
   @Test
-  public void alarmReset() throws Exception {
+  public void alarmReset() {
     sm.Pass();
     sm.Reset();
     assertThat(output, is("AOL"));
   }
 
   @Test
-  public void extraCoins() throws Exception {
+  public void extraCoins() {
     sm.Coin();
     sm.Coin();
     sm.Coin();
@@ -74,7 +74,7 @@ public class TwoCoinTurnstileTest {
   }
 
   @Test
-  public void pass() throws Exception {
+  public void pass() {
     sm.Pass();
     assertThat(output, is("A"));
   }

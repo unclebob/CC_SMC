@@ -10,8 +10,8 @@ public class Args {
   private ListIterator<String> currentArgument;
 
   public Args(String schema, String[] args) throws ArgsException {
-    marshalers = new HashMap<Character, ArgumentMarshaler>();
-    argsFound = new HashSet<Character>();
+    marshalers = new HashMap<>();
+    argsFound = new HashSet<>();
 
     parseSchema(schema);
     parseArgumentStrings(Arrays.asList(args));
@@ -19,7 +19,7 @@ public class Args {
 
   private void parseSchema(String schema) throws ArgsException {
     for (String element : schema.split(","))
-      if (element.length() > 0)
+      if (!element.isEmpty())
         parseSchemaElement(element.trim());
   }
 
@@ -27,7 +27,7 @@ public class Args {
     char elementId = element.charAt(0);
     String elementTail = element.substring(1);
     validateSchemaElementId(elementId);
-    if (elementTail.length() == 0)
+    if (elementTail.isEmpty())
       marshalers.put(elementId, new BooleanArgumentMarshaler());
     else if (elementTail.equals("*"))
       marshalers.put(elementId, new StringArgumentMarshaler());

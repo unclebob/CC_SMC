@@ -3,6 +3,7 @@ package smc.semanticAnalyzer;
 import smc.parser.FsmSyntax;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static smc.parser.FsmSyntax.*;
 import static smc.semanticAnalyzer.SemanticStateMachine.*;
@@ -48,15 +49,18 @@ public class SemanticAnalyzer {
     if (isNullHeader(targetHeader)) {
       targetHeader.name = header.name;
       targetHeader.value = header.value;
-    } else
-      semanticStateMachine.addError(new AnalysisError(EXTRA_HEADER_IGNORED, header));
+    } else {
+        semanticStateMachine.addError(new AnalysisError(EXTRA_HEADER_IGNORED, header));
+    }
   }
 
   private void checkMissingHeaders() {
-    if (isNullHeader(fsmHeader))
-      semanticStateMachine.addError(new AnalysisError(AnalysisError.ID.NO_FSM));
-    if (isNullHeader(initialHeader))
-      semanticStateMachine.addError(new AnalysisError(AnalysisError.ID.NO_INITIAL));
+    if (isNullHeader(fsmHeader)) {
+        semanticStateMachine.addError(new AnalysisError(AnalysisError.ID.NO_FSM));
+    }
+    if (isNullHeader(initialHeader)) {
+        semanticStateMachine.addError(new AnalysisError(AnalysisError.ID.NO_INITIAL));
+    }
   }
 
   private boolean isNullHeader(Header header) {
@@ -81,43 +85,34 @@ public class SemanticAnalyzer {
   }
 
   private void addTransitionActionsToActionList(FsmSyntax fsm) {
-    for (Transition t : fsm.logic)
-      for (SubTransition st : t.subTransitions)
-        for (String action : st.actions)
-          semanticStateMachine.actions.add(action);
+      fsm.logic.stream().flatMap(t ->
+              t.subTransitions.stream()).forEach(st ->
+                semanticStateMachine.actions.addAll(st.actions));
   }
 
   private void addEventsToEventList(FsmSyntax fsm) {
-    for (Transition t : fsm.logic)
-      for (SubTransition st : t.subTransitions)
-        if (st.event != null)
-          semanticStateMachine.events.add(st.event);
+      fsm.logic.stream().flatMap(t ->
+              t.subTransitions.stream()).filter(st ->
+                st.event != null).forEachOrdered(st -> semanticStateMachine.events.add(st.event));
   }
 
   private void addEntryAndExitActionsToActionList(FsmSyntax fsm) {
-    for (Transition t : fsm.logic) {
-      for (String entryAction : t.state.entryActions)
-        semanticStateMachine.actions.add(entryAction);
-      for (String exitAction : t.state.exitActions)
-        semanticStateMachine.actions.add(exitAction);
-    }
+      fsm.logic.forEach(t -> {
+          semanticStateMachine.actions.addAll(t.state.entryActions);
+          semanticStateMachine.actions.addAll(t.state.exitActions);
+      });
   }
 
   private void addStateNamesToStateList(FsmSyntax fsm) {
-    for (Transition t : fsm.logic) {
-      SemanticState state = new SemanticState(t.state.name);
-      semanticStateMachine.states.put(state.name, state);
-    }
+      fsm.logic.stream().map(t ->
+              new SemanticState(t.state.name)).forEachOrdered(state -> semanticStateMachine.states.put(state.name, state));
   }
 
   private void checkUndefinedStates(FsmSyntax fsm) {
-    for (Transition t : fsm.logic) {
-      for (String superState : t.state.superStates)
-        checkUndefinedState(superState, UNDEFINED_SUPER_STATE);
-
-      for (SubTransition st : t.subTransitions)
-        checkUndefinedState(st.nextState, UNDEFINED_STATE);
-    }
+      fsm.logic.forEach(t -> {
+          t.state.superStates.forEach(superState -> checkUndefinedState(superState, UNDEFINED_SUPER_STATE));
+          t.subTransitions.forEach(st -> checkUndefinedState(st.nextState, UNDEFINED_STATE));
+      });
 
     if (initialHeader.value != null && !semanticStateMachine.states.containsKey(initialHeader.value))
       semanticStateMachine.errors.add(new AnalysisError(UNDEFINED_STATE, "initial: " + initialHeader.value));
@@ -137,84 +132,73 @@ public class SemanticAnalyzer {
 
   private Set<String> getNextStates(FsmSyntax fsm) {
     Set<String> nextStates = new HashSet<>();
-    for (Transition t : fsm.logic)
-      for (SubTransition st : t.subTransitions)
-        if (st.nextState == null) // implicit use of current state.
-          nextStates.add(t.state.name);
-        else
-          nextStates.add(st.nextState);
+      fsm.logic.forEach(t -> t.subTransitions.forEach(st -> {
+          if (st.nextState == null) // implicit use of current state.
+          {
+              nextStates.add(t.state.name);
+          } else {
+              nextStates.add(st.nextState);
+          }
+      }));
     return nextStates;
   }
 
   private Set<String> getSuperStates(FsmSyntax fsm) {
-    Set<String> superStates = new HashSet<>();
-    for (Transition t : fsm.logic)
-      for (String superState : t.state.superStates)
-        superStates.add(superState);
-    return superStates;
+      return fsm.logic.stream().flatMap(t -> t.state.superStates.stream()).collect(Collectors.toSet());
   }
 
   private void findStatesDefinedButNotUsed(Set<String> usedStates) {
-    for (String definedState : semanticStateMachine.states.keySet())
-      if (!usedStates.contains(definedState))
-        semanticStateMachine.errors.add(new AnalysisError(UNUSED_STATE, definedState));
+      semanticStateMachine.states.keySet().stream().filter(definedState ->
+              !usedStates.contains(definedState)).forEach(definedState ->
+                semanticStateMachine.errors.add(new AnalysisError(UNUSED_STATE, definedState)));
   }
 
   private void checkForDuplicateTransitions(FsmSyntax fsm) {
     Set<String> transitionKeys = new HashSet<>();
-    for (Transition t : fsm.logic) {
-      for (SubTransition st : t.subTransitions) {
-        String key = String.format("%s(%s)", t.state.name, st.event);
-        if (transitionKeys.contains(key))
-          semanticStateMachine.errors.add(new AnalysisError(DUPLICATE_TRANSITION, key));
-        else
-          transitionKeys.add(key);
-      }
-    }
+      fsm.logic.forEach(t -> t.subTransitions.stream().map(st -> String.format("%s(%s)", t.state.name, st.event)).forEach(key -> {
+          if (transitionKeys.contains(key)) {
+              semanticStateMachine.errors.add(new AnalysisError(DUPLICATE_TRANSITION, key));
+          } else {
+              transitionKeys.add(key);
+          }
+      }));
   }
 
   private void checkThatAbstractStatesAreNotTargets(FsmSyntax fsm) {
     Set<String> abstractStates = findAbstractStates(fsm);
-    for (Transition t : fsm.logic)
-      for (SubTransition st : t.subTransitions)
-        if (abstractStates.contains(st.nextState))
-          semanticStateMachine.errors.add(
-            new AnalysisError(
-              ABSTRACT_STATE_USED_AS_NEXT_STATE,
-              String.format("%s(%s)->%s", t.state.name, st.event, st.nextState)));
+      fsm.logic.forEach(t -> t.subTransitions.stream().filter(st -> abstractStates.contains(st.nextState)).forEachOrdered(st ->
+              semanticStateMachine.errors.add(
+                new AnalysisError(
+                      ABSTRACT_STATE_USED_AS_NEXT_STATE,
+                      String.format("%s(%s)->%s", t.state.name, st.event, st.nextState)))));
   }
 
   private Set<String> findAbstractStates(FsmSyntax fsm) {
-    Set<String> abstractStates = new HashSet<>();
-    for (Transition t : fsm.logic)
-      if (t.state.abstractState)
-        abstractStates.add(t.state.name);
-    return abstractStates;
+     return fsm.logic.stream().filter(t ->
+            t.state.abstractState).map(t -> t.state.name).collect(Collectors.toSet());
   }
 
   private void checkForInconsistentAbstraction(FsmSyntax fsm) {
     Set<String> abstractStates = findAbstractStates(fsm);
-    for (Transition t : fsm.logic)
-      if (!t.state.abstractState && abstractStates.contains(t.state.name))
-        semanticStateMachine.warnings.add(new AnalysisError(INCONSISTENT_ABSTRACTION, t.state.name));
+      fsm.logic.stream().filter(t -> !t.state.abstractState && abstractStates.contains(t.state.name)).forEachOrdered(t ->
+              semanticStateMachine.warnings.add(new AnalysisError(INCONSISTENT_ABSTRACTION, t.state.name)));
   }
 
   private void checkForMultiplyDefinedStateActions(FsmSyntax fsm) {
     Map<String, String> firstActionsForState = new HashMap<>();
-    for (Transition t : fsm.logic) {
-      if (specifiesStateActions(t)) {
-        String actionsKey = makeActionsKey(t);
-        if (firstActionsForState.containsKey(t.state.name)) {
-          if (!firstActionsForState.get(t.state.name).equals(actionsKey))
-            semanticStateMachine.errors.add(new AnalysisError(STATE_ACTIONS_MULTIPLY_DEFINED, t.state.name));
-        } else
-          firstActionsForState.put(t.state.name, actionsKey);
-      }
-    }
+      fsm.logic.stream().filter(this::specifiesStateActions).forEachOrdered(t -> {
+          String actionsKey = makeActionsKey(t);
+          if (firstActionsForState.containsKey(t.state.name)) {
+              if (!firstActionsForState.get(t.state.name).equals(actionsKey)) {
+                  semanticStateMachine.errors.add(new AnalysisError(STATE_ACTIONS_MULTIPLY_DEFINED, t.state.name));
+              }
+          } else
+              firstActionsForState.put(t.state.name, actionsKey);
+      });
   }
 
   private boolean specifiesStateActions(Transition t) {
-    return t.state.entryActions.size() != 0 || t.state.exitActions.size() != 0;
+    return !t.state.entryActions.isEmpty() || !t.state.exitActions.isEmpty();
   }
 
   private String makeActionsKey(Transition t) {
@@ -226,10 +210,12 @@ public class SemanticAnalyzer {
 
   private String commaList(List<String> list) {
     String commaList = "";
-    if (list.size() == 0)
-      return "";
-    for (String s : list)
-      commaList += s + ",";
+    if (list.isEmpty()) {
+        return "";
+    }
+    for (String s : list) {
+        commaList += s + ",";
+    }
     return commaList.substring(0, commaList.length() - 1);
 
   }
@@ -241,7 +227,7 @@ public class SemanticAnalyzer {
   }
 
   private void produceSemanticStateMachine(FsmSyntax fsm) {
-    if (semanticStateMachine.errors.size() == 0) {
+    if (semanticStateMachine.errors.isEmpty()) {
       compileHeaders();
       for (Transition t : fsm.logic) {
         SemanticState state = compileState(t);
@@ -263,14 +249,12 @@ public class SemanticAnalyzer {
     state.entryActions.addAll(t.state.entryActions);
     state.exitActions.addAll(t.state.exitActions);
     state.abstractState |= t.state.abstractState;
-    for (String superStateName : t.state.superStates)
-      state.superStates.add(semanticStateMachine.states.get(superStateName));
+    t.state.superStates.forEach(superStateName -> state.superStates.add(semanticStateMachine.states.get(superStateName)));
     return state;
   }
 
   private void compileTransitions(Transition t, SemanticState state) {
-    for (SubTransition st : t.subTransitions)
-      compileTransition(state, st);
+      t.subTransitions.forEach(st -> compileTransition(state, st));
   }
 
   private void compileTransition(SemanticState state, SubTransition st) {
@@ -282,33 +266,19 @@ public class SemanticAnalyzer {
   }
 
   private class SuperClassCrawler {
-    class TransitionTuple {
-      TransitionTuple(String currentState, String event, String nextState, List<String> actions) {
-        this.currentState = currentState;
-        this.event = event;
-        this.nextState = nextState;
-        this.actions = actions;
-      }
-
-      public int hashCode() {
-        return Objects.hash(currentState, event, nextState, actions);
-      }
+    record TransitionTuple(String currentState, String event, String nextState, List<String> actions) {
 
       public boolean equals(Object obj) {
-        if (obj instanceof TransitionTuple tt) {
-            return
-            Objects.equals(currentState, tt.currentState) &&
-              Objects.equals(event, tt.event) &&
-              Objects.equals(nextState, tt.nextState) &&
-              Objects.equals(actions, tt.actions);
-        }
-        return false;
-      }
+            if (obj instanceof TransitionTuple tt) {
+              return
+                      Objects.equals(currentState, tt.currentState) &&
+                              Objects.equals(event, tt.event) &&
+                              Objects.equals(nextState, tt.nextState) &&
+                              Objects.equals(actions, tt.actions);
+            }
+            return false;
+          }
 
-      String currentState;
-      String event;
-      String nextState;
-      List<String> actions;
     }
 
     private SemanticState concreteState = null;
@@ -325,14 +295,12 @@ public class SemanticAnalyzer {
     }
 
     private void checkTransitionsForState(SemanticState state) {
-      for (SemanticState superState : state.superStates)
-        checkTransitionsForState(superState);
+      state.superStates.forEach(this::checkTransitionsForState);
       checkStateForPreviouslyDefinedTransition(state);
     }
 
     private void checkStateForPreviouslyDefinedTransition(SemanticState state) {
-      for (SemanticTransition st : state.transitions)
-        checkTransitionForPreviousDefinition(state, st);
+        state.transitions.forEach(st -> checkTransitionForPreviousDefinition(state, st));
     }
 
     private void checkTransitionForPreviousDefinition(SemanticState state, SemanticTransition st) {
@@ -345,16 +313,18 @@ public class SemanticAnalyzer {
 
     private void determineIfThePreviousDefinitionIsAnError(SemanticState state, TransitionTuple thisTuple) {
       TransitionTuple previousTuple = transitionTuples.get(thisTuple.event);
-      if (!transitionsHaveSameOutcomes(thisTuple, previousTuple))
-        checkForOverriddenTransition(state, thisTuple, previousTuple);
+      if (!transitionsHaveSameOutcomes(thisTuple, previousTuple)) {
+          checkForOverriddenTransition(state, thisTuple, previousTuple);
+      }
     }
 
     private void checkForOverriddenTransition(SemanticState state, TransitionTuple thisTuple, TransitionTuple previousTuple) {
       SemanticState definingState = semanticStateMachine.states.get(previousTuple.currentState);
       if (!isSuperStateOf(definingState, state)) {
         semanticStateMachine.errors.add(new AnalysisError(CONFLICTING_SUPERSTATES, concreteState.name + "|" + thisTuple.event));
-      } else
-        transitionTuples.put(thisTuple.event, thisTuple);
+      } else {
+          transitionTuples.put(thisTuple.event, thisTuple);
+      }
     }
 
     private boolean transitionsHaveSameOutcomes(TransitionTuple t1, TransitionTuple t2) {
@@ -365,11 +335,9 @@ public class SemanticAnalyzer {
   }
 
   private boolean isSuperStateOf(SemanticState possibleSuperState, SemanticState state) {
-    if (state == possibleSuperState)
-      return true;
-    for (SemanticState superState : state.superStates)
-      if (isSuperStateOf(possibleSuperState, superState))
+    if (state == possibleSuperState) {
         return true;
-    return false;
+    }
+    return state.superStates.stream().anyMatch(superState -> isSuperStateOf(possibleSuperState, superState));
   }
 }

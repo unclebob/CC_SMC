@@ -10,15 +10,11 @@ import java.util.Map;
 import static smc.generators.nestedSwitchCaseGenerator.NSCNode.*;
 
 public class CppNestedSwitchCaseImplementer implements NSCNodeVisitor {
-  private String fsmName;
-  private String actionsName;
-  private String output = "";
+    private String output = "";
   private final List<Error> errors = new ArrayList<>();
-  private final Map<String, String> flags;
 
-  public CppNestedSwitchCaseImplementer(Map<String, String> flags) {
-    this.flags = flags;
-  }
+    public CppNestedSwitchCaseImplementer(Map<String, String> flags) {
+    }
 
   public void visit(SwitchCaseNode switchCaseNode) {
     output += String.format("switch (%s) {\n", switchCaseNode.variableName);
@@ -63,17 +59,19 @@ public class CppNestedSwitchCaseImplementer implements NSCNodeVisitor {
       return;
     }
 
-    fsmName = fsmClassNode.className;
+      String fsmName = fsmClassNode.className;
     String includeGuard = fsmName.toUpperCase();
     output += String.format("#ifndef %s_H\n#define %s_H\n\n", includeGuard, includeGuard);
 
-    actionsName = fsmClassNode.actionsName;
+      String actionsName = fsmClassNode.actionsName;
     output += String.format("#include \"%s.h\"\n", actionsName);
 
-    output += String.format("\n" +
-      "class %s : public %s {\n" +
-      "public:\n" +
-      "\t%s()\n\t: state(", fsmName, actionsName,fsmName);
+    output += String.format("""
+
+            class %s : public %s {
+            public:
+            \t%s()
+            \t: state(""", fsmName, actionsName, fsmName);
     fsmClassNode.stateProperty.accept(this);
     output += ")\n\t{}\n\n";
 
@@ -100,9 +98,11 @@ public class CppNestedSwitchCaseImplementer implements NSCNodeVisitor {
   }
 
   public void visit(DefaultCaseNode defaultCaseNode) {
-    output += String.format("default:\n" +
-      "unexpected_transition(\"%s\", eventName);\n" +
-      "break;\n", defaultCaseNode.state);
+    output += String.format("""
+            default:
+            unexpected_transition("%s", eventName);
+            break;
+            """, defaultCaseNode.state);
   }
 
   public String getOutput() {

@@ -11,7 +11,7 @@ public class LexerTest implements TokenCollector {
   private boolean firstToken = true;
 
   @BeforeEach
-  public void setUp() throws Exception {
+  public void setUp() {
     lexer = new Lexer(this);
   }
 
@@ -70,72 +70,72 @@ public class LexerTest implements TokenCollector {
   @Nested
   public class SingleTokenTests {
     @Test
-    public void findsOpenBrace() throws Exception {
+    public void findsOpenBrace() {
       assertLexResult("{", "OB");
     }
 
     @Test
-    public void findsClosedBrace() throws Exception {
+    public void findsClosedBrace() {
       assertLexResult("}", "CB");
     }
 
     @Test
-    public void findsOpenParen() throws Exception {
+    public void findsOpenParen() {
       assertLexResult("(", "OP");
     }
 
     @Test
-    public void findsClosedParen() throws Exception {
+    public void findsClosedParen() {
       assertLexResult(")", "CP");
     }
 
     @Test
-    public void findsOpenAngle() throws Exception {
+    public void findsOpenAngle() {
       assertLexResult("<", "OA");
     }
 
     @Test
-    public void findsClosedAngle() throws Exception {
+    public void findsClosedAngle() {
       assertLexResult(">", "CA");
     }
 
     @Test
-    public void findsDash() throws Exception {
+    public void findsDash() {
       assertLexResult("-", "D");
     }
 
     @Test
-    public void findStarAsDash() throws Exception {
+    public void findStarAsDash() {
       assertLexResult("*", "D");
     }
 
     @Test
-    public void findsColon() throws Exception {
+    public void findsColon() {
       assertLexResult(":", "C");
     }
 
     @Test
-    public void findsSimpleName() throws Exception {
+    public void findsSimpleName() {
       assertLexResult("name", "#name#");
     }
 
     @Test
-    public void findComplexName() throws Exception {
+    public void findComplexName() {
       assertLexResult("Room_222", "#Room_222#");
     }
 
     @Test
-    public void error() throws Exception {
+    public void error() {
       assertLexResult(".", "E1/1");
     }
 
     @Test
-    public void nothingButWhiteSpace() throws Exception {
+    public void nothingButWhiteSpace() {
       assertLexResult(" ", "");
     }
 
     @Test
-    public void whiteSpaceBeforeEach() throws Exception {
+    public void whiteSpaceBeforeEach() {
       assertLexResult("  \t\n  -", "D");
     }
   }
@@ -143,12 +143,12 @@ public class LexerTest implements TokenCollector {
   @Nested
   public class CommentTests {
     @Test
-    public void commentAfterToken() throws Exception {
+    public void commentAfterToken() {
       assertLexResult("-//comment\n", "D");
     }
 
     @Test
-    public void commentLines() throws Exception {
+    public void commentLines() {
       assertLexResult("//comment 1\n-//comment2\n//comment2\n-//comment4;", "D,D");
     }
   }
@@ -156,22 +156,22 @@ public class LexerTest implements TokenCollector {
   @Nested
   public class MultipleTokenTests {
     @Test
-    public void simpleSequence() throws Exception {
+    public void simpleSequence() {
       assertLexResult("{}", "OB,CB");
     }
 
     @Test
-    public void complexSequence() throws Exception {
+    public void complexSequence() {
       assertLexResult("FSM:fsm{this}", "#FSM#,C,#fsm#,OB,#this#,CB");
     }
 
     @Test
-    public void allTokens() throws Exception {
+    public void allTokens() {
       assertLexResult("{}()<>-: name .", "OB,CB,OP,CP,OA,CA,D,C,#name#,E1/15");
     }
 
     @Test
-    public void multipleLines() throws Exception {
+    public void multipleLines() {
       assertLexResult("FSM:fsm.\n{bob-.}", "#FSM#,C,#fsm#,E1/8,OB,#bob#,D,E2/6,CB");
     }
   }

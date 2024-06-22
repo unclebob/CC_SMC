@@ -14,52 +14,52 @@ public class UtilitiesTest {
   @Nested
   public class CompressWhiteSpace {
     @Test
-    public void emptyString() throws Exception {
+    public void emptyString() {
       assertThat(compressWhiteSpace(""), is(""));
     }
 
     @Test
-    public void NoWhiteSpace() throws Exception {
+    public void NoWhiteSpace() {
       assertThat(compressWhiteSpace("stringwithnowhitespace"), is("stringwithnowhitespace"));
     }
 
     @Test
-    public void oneSpace() throws Exception {
+    public void oneSpace() {
       assertThat(compressWhiteSpace("one space"), is("one space"));
     }
 
     @Test
-    public void manyWordsWithSingleSpaces() throws Exception {
+    public void manyWordsWithSingleSpaces() {
       assertThat(compressWhiteSpace("many words with single spaces"), is("many words with single spaces"));
     }
 
     @Test
-    public void oneTab() throws Exception {
+    public void oneTab() {
       assertThat(compressWhiteSpace("one\ttab"), is("one tab"));
     }
 
     @Test
-    public void twoTabs() throws Exception {
+    public void twoTabs() {
       assertThat(compressWhiteSpace("two\t\ttabs"), is("two tabs"));
     }
 
     @Test
-    public void oneReturn() throws Exception {
+    public void oneReturn() {
       assertThat(compressWhiteSpace("one\nreturn"), is("one\nreturn"));
     }
 
     @Test
-    public void returnsAndSpaces() throws Exception {
+    public void returnsAndSpaces() {
       assertThat(compressWhiteSpace("word \n word"), is("word\nword"));
     }
 
     @Test
-    public void startingWhitespace() throws Exception {
+    public void startingWhitespace() {
       assertThat(compressWhiteSpace("\n  this"), is("\nthis"));
     }
 
     @Test
-    public void acceptanceTest() throws Exception {
+    public void acceptanceTest() {
       assertThat(compressWhiteSpace("this  is\n\na\t\t  string     \n     \twith\n\nmany\n\n\n\t  whitespaces"),
         is("this is\na string\nwith\nmany\nwhitespaces"));
     }

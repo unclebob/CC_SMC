@@ -34,7 +34,7 @@ public class CNestedSwitchCaseImplementerTest {
   }
 
   @BeforeEach
-  public void setUp() throws Exception {
+  public void setUp() {
     builder = new SyntaxBuilder();
     parser = new Parser(builder);
     lexer = new Lexer(parser);
@@ -53,74 +53,80 @@ public class CNestedSwitchCaseImplementerTest {
 
 
   @Test
-  public void noAction_shouldBeError() throws Exception {
-    OptimizedStateMachine sm = produceStateMachine("Initial: I\n" +
-      "Fsm: fsm\n" +
-      "{" +
-      "  I E I A" +
-      "}");
+  public void noAction_shouldBeError() {
+    OptimizedStateMachine sm = produceStateMachine("""
+            Initial: I
+            Fsm: fsm
+            {\
+              I E I A\
+            }""");
     NSCNode generatedFsm = generator.generate(sm);
     generatedFsm.accept(implementer);
     assertThat(implementer.getErrors().size(), is(1));
-    assertThat(implementer.getErrors().get(0), is(CNestedSwitchCaseImplementer.Error.NO_ACTION));
+    assertThat(implementer.getErrors().getFirst(), is(CNestedSwitchCaseImplementer.Error.NO_ACTION));
   }
 
   @Test
-  public void oneTransition() throws Exception {
-    OptimizedStateMachine sm = produceStateMachine("Initial: I\n" +
-      "Fsm: fsm\n" +
-      "Actions: acts\n" +
-      "{" +
-      "  I E I A" +
-      "}");
+  public void oneTransition() {
+    OptimizedStateMachine sm = produceStateMachine("""
+            Initial: I
+            Fsm: fsm
+            Actions: acts
+            {\
+              I E I A\
+            }""");
     NSCNode generatedFsm = generator.generate(sm);
     generatedFsm.accept(implementer);
-    assertWhiteSpaceEquivalent(implementer.getFsmHeader(), "#ifndef FSM_H\n" +
-      "#define FSM_H\n" +
-      "struct acts;\n" +
-      "struct fsm;\n" +
-      "struct fsm *make_fsm(struct acts*);\n" +
-      "void fsm_E(struct fsm*);\n" +
-      "#endif\n");
+    assertWhiteSpaceEquivalent(implementer.getFsmHeader(), """
+            #ifndef FSM_H
+            #define FSM_H
+            struct acts;
+            struct fsm;
+            struct fsm *make_fsm(struct acts*);
+            void fsm_E(struct fsm*);
+            #endif
+            """);
 
-    assertWhiteSpaceEquivalent(implementer.getFsmImplementation(), "#include <stdlib.h>\n" +
-      "#include \"acts.h\"\n" +
-      "#include \"fsm.h\"\n" +
-      "enum Event {E};\n" +
-      "enum State {I};\n" +
-      "struct fsm {\n" +
-      "  enum State state;\n" +
-      "  struct acts *actions;\n" +
-      "};\n" +
-      "struct fsm *make_fsm(struct acts* actions) {\n" +
-      "  struct fsm *fsm = malloc(sizeof(struct fsm));\n" +
-      "  fsm->actions = actions;\n" +
-      "  fsm->state = I;\n" +
-      "  return fsm;\n" +
-      "}\n" +
-      "static void setState(struct fsm *fsm, enum State state) {\n" +
-      "  fsm->state = state;\n" +
-      "}\n" +
-      "static void A(struct fsm *fsm) {\n" +
-      "  fsm->actions->A();\n" +
-      "}\n" +
-      "static void processEvent(enum State state, enum Event event, struct fsm *fsm, char *event_name) {\n" +
-      "  switch (state) {\n" +
-      "    case I:\n" +
-      "      switch (event) {\n" +
-      "        case E:\n" +
-      "          setState(fsm, I);\n" +
-      "          A(fsm);\n" +
-      "          break;\n" +
-      "        default:\n" +
-      "          (fsm->actions->unexpected_transition)(\"I\", event_name);\n" +
-      "          break;\n" +
-      "      }\n" +
-      "      break;\n" +
-      "  }\n" +
-      "}\n" +
-      "void fsm_E(struct fsm* fsm) {\n" +
-      "  processEvent(fsm->state, E, fsm, \"E\");\n" +
-      "}\n");
+    assertWhiteSpaceEquivalent(implementer.getFsmImplementation(), """
+            #include <stdlib.h>
+            #include "acts.h"
+            #include "fsm.h"
+            enum Event {E};
+            enum State {I};
+            struct fsm {
+              enum State state;
+              struct acts *actions;
+            };
+            struct fsm *make_fsm(struct acts* actions) {
+              struct fsm *fsm = malloc(sizeof(struct fsm));
+              fsm->actions = actions;
+              fsm->state = I;
+              return fsm;
+            }
+            static void setState(struct fsm *fsm, enum State state) {
+              fsm->state = state;
+            }
+            static void A(struct fsm *fsm) {
+              fsm->actions->A();
+            }
+            static void processEvent(enum State state, enum Event event, struct fsm *fsm, char *event_name) {
+              switch (state) {
+                case I:
+                  switch (event) {
+                    case E:
+                      setState(fsm, I);
+                      A(fsm);
+                      break;
+                    default:
+                      (fsm->actions->unexpected_transition)("I", event_name);
+                      break;
+                  }
+                  break;
+              }
+            }
+            void fsm_E(struct fsm* fsm) {
+              processEvent(fsm->state, E, fsm, "E");
+            }
+            """);
   }
 }

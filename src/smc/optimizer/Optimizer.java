@@ -50,7 +50,7 @@ public class Optimizer {
 
     private List<SemanticState> makeRootFirstHierarchyOfStates() {
       List<SemanticState> hierarchy = new ArrayList<>();
-      addAllStatesInHiearchyLeafFirst(currentState, hierarchy);
+      addAllStatesInHierarchyLeafFirst(currentState, hierarchy);
       Collections.reverse(hierarchy);
       return hierarchy;
     }
@@ -92,7 +92,7 @@ public class Optimizer {
 
       private void addEntryActions(SemanticState entryState) {
         List<SemanticState> hierarchy = new ArrayList<>();
-        addAllStatesInHiearchyLeafFirst(entryState, hierarchy);
+        addAllStatesInHierarchyLeafFirst(entryState, hierarchy);
         for (SemanticState superState : hierarchy) {
           subTransition.actions.addAll(superState.entryActions);
         }
@@ -100,7 +100,7 @@ public class Optimizer {
 
       private void addExitActions(SemanticState exitState) {
         List<SemanticState> hierarchy = new ArrayList<>();
-        addAllStatesInHiearchyLeafFirst(exitState, hierarchy);
+        addAllStatesInHierarchyLeafFirst(exitState, hierarchy);
         Collections.reverse(hierarchy);
         for (SemanticState superState : hierarchy) {
           subTransition.actions.addAll(superState.exitActions);
@@ -109,10 +109,10 @@ public class Optimizer {
     } // SubTransitionOptimizer
   } // StateOptimizer
 
-  private void addAllStatesInHiearchyLeafFirst(SemanticState state, List<SemanticState> hierarchy) {
+  private void addAllStatesInHierarchyLeafFirst(SemanticState state, List<SemanticState> hierarchy) {
     for (SemanticState superState : state.superStates) {
       if (!hierarchy.contains(superState))
-        addAllStatesInHiearchyLeafFirst(superState, hierarchy);
+        addAllStatesInHierarchyLeafFirst(superState, hierarchy);
     }
     hierarchy.add(state);
   }

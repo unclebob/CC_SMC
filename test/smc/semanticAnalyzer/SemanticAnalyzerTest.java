@@ -29,7 +29,7 @@ public class SemanticAnalyzerTest {
   private SemanticAnalyzer analyzer;
 
   @BeforeEach
-  public void setUp() throws Exception {
+  public void setUp() {
     builder = new SyntaxBuilder();
     parser = new Parser(builder);
     lexer = new Lexer(parser);
@@ -52,7 +52,7 @@ public class SemanticAnalyzerTest {
     @Nested
     public class HeaderErrors {
       @Test
-      public void noHeaders() throws Exception {
+      public void noHeaders() {
         List<AnalysisError> errors = produceAst("{}").errors;
         assertThat(errors, hasItems(
           new AnalysisError(NO_FSM),
@@ -60,7 +60,7 @@ public class SemanticAnalyzerTest {
       }
 
       @Test
-      public void missingActions() throws Exception {
+      public void missingActions() {
         List<AnalysisError> errors = produceAst("FSM:f Initial:i {}").errors;
         assertThat(errors, not(hasItems(
           new AnalysisError(NO_FSM),
@@ -68,7 +68,7 @@ public class SemanticAnalyzerTest {
       }
 
       @Test
-      public void missingFsm() throws Exception {
+      public void missingFsm() {
         List<AnalysisError> errors = produceAst("actions:a Initial:i {}").errors;
         assertThat(errors, not(hasItems(
           new AnalysisError(NO_INITIAL))));
@@ -76,14 +76,14 @@ public class SemanticAnalyzerTest {
       }
 
       @Test
-      public void missingInitial() throws Exception {
+      public void missingInitial() {
         List<AnalysisError> errors = produceAst("Actions:a Fsm:f {}").errors;
         assertThat(errors, not(hasItems(new AnalysisError(NO_FSM))));
         assertThat(errors, hasItems(new AnalysisError(NO_INITIAL)));
       }
 
       @Test
-      public void nothingMissing() throws Exception {
+      public void nothingMissing() {
         List<AnalysisError> errors = produceAst("Initial: f Actions:a Fsm:f {}").errors;
         assertThat(errors, not(hasItems(
           new AnalysisError(NO_INITIAL),
@@ -91,21 +91,21 @@ public class SemanticAnalyzerTest {
       }
 
       @Test
-      public void unexpectedHeader() throws Exception {
+      public void unexpectedHeader() {
         List<AnalysisError> errors = produceAst("X: x{s - - -}").errors;
         assertThat(errors, hasItems(
           new AnalysisError(INVALID_HEADER, new Header("X", "x"))));
       }
 
       @Test
-      public void duplicateHeader() throws Exception {
+      public void duplicateHeader() {
         List<AnalysisError> errors = produceAst("fsm:f fsm:x{s - - -}").errors;
         assertThat(errors, hasItems(
           new AnalysisError(EXTRA_HEADER_IGNORED, new Header("fsm", "x"))));
       }
 
       @Test
-      public void initialStateMustBeDefined() throws Exception {
+      public void initialStateMustBeDefined() {
         List<AnalysisError> errors = produceAst("initial: i {s - - -}").errors;
         assertThat(errors, hasItems(
           new AnalysisError(UNDEFINED_STATE, "initial: i")));
@@ -115,67 +115,67 @@ public class SemanticAnalyzerTest {
     @Nested
     public class StateErrors {
       @Test
-      public void nullNextStateIsNotUndefined() throws Exception {
+      public void nullNextStateIsNotUndefined() {
         List<AnalysisError> errors = produceAst("{s - - -}").errors;
         assertThat(errors, not(hasItems(new AnalysisError(UNDEFINED_STATE, null))));
       }
 
       @Test
-      public void undefinedState() throws Exception {
+      public void undefinedState() {
         List<AnalysisError> errors = produceAst("{s - s2 -}").errors;
         assertThat(errors, hasItems(new AnalysisError(UNDEFINED_STATE, "s2")));
       }
 
       @Test
-      public void noUndefinedStates() throws Exception {
+      public void noUndefinedStates() {
         List<AnalysisError> errors = produceAst("{s - s -}").errors;
         assertThat(errors, not(hasItems(new AnalysisError(UNDEFINED_STATE, "s2"))));
       }
 
       @Test
-      public void undefinedSuperState() throws Exception {
+      public void undefinedSuperState() {
         List<AnalysisError> errors = produceAst("{s:ss - - -}").errors;
         assertThat(errors, hasItems(new AnalysisError(UNDEFINED_SUPER_STATE, "ss")));
       }
 
       @Test
-      public void superStateDefined() throws Exception {
+      public void superStateDefined() {
         List<AnalysisError> errors = produceAst("{ss - - - s:ss - - -}").errors;
         assertThat(errors, not(hasItems(new AnalysisError(UNDEFINED_SUPER_STATE, "s2"))));
       }
 
       @Test
-      public void unusedStates() throws Exception {
+      public void unusedStates() {
         List<AnalysisError> errors = produceAst("{s e n -}").errors;
         assertThat(errors, hasItems(new AnalysisError(UNUSED_STATE, "s")));
       }
 
       @Test
-      public void noUnusedStates() throws Exception {
+      public void noUnusedStates() {
         List<AnalysisError> errors = produceAst("{s e s -}").errors;
         assertThat(errors, not(hasItems(new AnalysisError(UNUSED_STATE, "s"))));
       }
 
       @Test
-      public void nextStateNullIsImplicitUse() throws Exception {
+      public void nextStateNullIsImplicitUse() {
         List<AnalysisError> errors = produceAst("{s e - -}").errors;
         assertThat(errors, not(hasItems(new AnalysisError(UNUSED_STATE, "s"))));
       }
 
       @Test
-      public void usedAsBaseIsValidUsage() throws Exception {
+      public void usedAsBaseIsValidUsage() {
         List<AnalysisError> errors = produceAst("{b e n - s:b e2 s -}").errors;
         assertThat(errors, not(hasItems(new AnalysisError(UNUSED_STATE, "b"))));
       }
 
       @Test
-      public void usedAsInitialIsValidUsage() throws Exception {
+      public void usedAsInitialIsValidUsage() {
         List<AnalysisError> errors = produceAst("initial: b {b e n -}").errors;
         assertThat(errors, not(hasItems(new AnalysisError(UNUSED_STATE, "b"))));
       }
 
       @Test
-      public void errorIfSuperStatesHaveConflictingTransitions() throws Exception {
+      public void errorIfSuperStatesHaveConflictingTransitions() {
         List<AnalysisError> errors = produceAst(
           "FSM: f Actions: act Initial: s" +
             "{" +
@@ -190,7 +190,7 @@ public class SemanticAnalyzerTest {
       }
 
       @Test
-      public void noErrorForOverriddenTransition() throws Exception {
+      public void noErrorForOverriddenTransition() {
         List<AnalysisError> errors = produceAst(
           "FSM: f Actions: act Initial: s" +
             "{" +
@@ -203,7 +203,7 @@ public class SemanticAnalyzerTest {
       }
 
       @Test
-      public void noErrorIfSuperStatesHaveIdenticalTransitions() throws Exception {
+      public void noErrorIfSuperStatesHaveIdenticalTransitions() {
         List<AnalysisError> errors = produceAst(
           "FSM: f Actions: act Initial: s" +
             "{" +
@@ -217,7 +217,7 @@ public class SemanticAnalyzerTest {
       }
 
       @Test
-      public void errorIfSuperstatesHaveDifferentActionsInSameTransitions() throws Exception {
+      public void errorIfSuperstatesHaveDifferentActionsInSameTransitions() {
         List<AnalysisError> errors = produceAst(
           "FSM: f Actions: act Initial: s" +
             "{" +
@@ -235,31 +235,31 @@ public class SemanticAnalyzerTest {
     @Nested
     public class TransitionErrors {
       @Test
-      public void duplicateTransitions() throws Exception {
+      public void duplicateTransitions() {
         List<AnalysisError> errors = produceAst("{s e - - s e - -}").errors;
         assertThat(errors, hasItems(new AnalysisError(DUPLICATE_TRANSITION, "s(e)")));
       }
 
       @Test
-      public void noDuplicateTransitions() throws Exception {
+      public void noDuplicateTransitions() {
         List<AnalysisError> errors = produceAst("{s e - -}").errors;
         assertThat(errors, not(hasItems(new AnalysisError(DUPLICATE_TRANSITION, "s(e)"))));
       }
 
       @Test
-      public void abstractStatesCantBeTargets() throws Exception {
+      public void abstractStatesCantBeTargets() {
         List<AnalysisError> errors = produceAst("{(as) e - - s e as -}").errors;
         assertThat(errors, hasItems(new AnalysisError(ABSTRACT_STATE_USED_AS_NEXT_STATE, "s(e)->as")));
       }
 
       @Test
-      public void abstractStatesCanBeUsedAsSuperStates() throws Exception {
+      public void abstractStatesCanBeUsedAsSuperStates() {
         List<AnalysisError> errors = produceAst("{(as) e - - s:as e s -}").errors;
         assertThat(errors, not(hasItems(new AnalysisError(ABSTRACT_STATE_USED_AS_NEXT_STATE, "s(e)->s"))));
       }
 
       @Test
-      public void entryAndExitActionsNotMultiplyDefined() throws Exception {
+      public void entryAndExitActionsNotMultiplyDefined() {
         List<AnalysisError> errors = produceAst(
           "{" +
             "  s - - - " +
@@ -276,20 +276,20 @@ public class SemanticAnalyzerTest {
       }
 
       @Test
-      public void errorIfStateHasMultipleEntryActionDefinitions() throws Exception {
+      public void errorIfStateHasMultipleEntryActionDefinitions() {
         List<AnalysisError> errors = produceAst("{s - - - ds <x - - - ds <y - - -}").errors;
         assertThat(errors, not(hasItems(new AnalysisError(STATE_ACTIONS_MULTIPLY_DEFINED, "s"))));
         assertThat(errors, hasItems(new AnalysisError(STATE_ACTIONS_MULTIPLY_DEFINED, "ds")));
       }
 
       @Test
-      public void errorIfStateHasMultipleExitActionDefinitions() throws Exception {
+      public void errorIfStateHasMultipleExitActionDefinitions() {
         List<AnalysisError> errors = produceAst("{ds >x - - - ds >y - -}").errors;
         assertThat(errors, hasItems(new AnalysisError(STATE_ACTIONS_MULTIPLY_DEFINED, "ds")));
       }
 
       @Test
-      public void errorIfStateHasMultiplyDefinedEntryAndExitActions() throws Exception {
+      public void errorIfStateHasMultiplyDefinedEntryAndExitActions() {
         List<AnalysisError> errors = produceAst("{ds >x - - - ds <y - -}").errors;
         assertThat(errors, hasItems(new AnalysisError(STATE_ACTIONS_MULTIPLY_DEFINED, "ds")));
       }
@@ -299,7 +299,7 @@ public class SemanticAnalyzerTest {
   @Nested
   public class Warnings {
     @Test
-    public void warnIfStateUsedAsBothAbstractAndConcrete() throws Exception {
+    public void warnIfStateUsedAsBothAbstractAndConcrete() {
       List<AnalysisError> errors = produceAst("{(ias) e - - ias e - - (cas) e - -}").warnings;
       assertThat(errors, not(hasItems(new AnalysisError(INCONSISTENT_ABSTRACTION, "cas"))));
       assertThat(errors, hasItems(new AnalysisError(INCONSISTENT_ABSTRACTION, "ias")));
@@ -309,13 +309,13 @@ public class SemanticAnalyzerTest {
   @Nested
   public class Lists {
     @Test
-    public void oneState() throws Exception {
+    public void oneState() {
       SemanticStateMachine ast = produceAst("{s - - -}");
       assertThat(ast.states.values(), contains(new SemanticStateMachine.SemanticState("s")));
     }
 
     @Test
-    public void manyStates() throws Exception {
+    public void manyStates() {
       SemanticStateMachine ast = produceAst("{s1 - - - s2 - - - s3 - - -}");
       assertThat(ast.states.values(), hasItems(
         new SemanticStateMachine.SemanticState("s1"),
@@ -324,7 +324,7 @@ public class SemanticAnalyzerTest {
     }
 
     @Test
-    public void statesAreKeyedByName() throws Exception {
+    public void statesAreKeyedByName() {
       SemanticStateMachine ast = produceAst("{s1 - - - s2 - - - s3 - - -}");
       assertThat(ast.states.get("s1"), equalTo(new SemanticStateMachine.SemanticState("s1")));
       assertThat(ast.states.get("s2"), equalTo(new SemanticStateMachine.SemanticState("s2")));
@@ -332,34 +332,34 @@ public class SemanticAnalyzerTest {
     }
 
     @Test
-    public void manyEvents() throws Exception {
+    public void manyEvents() {
       SemanticStateMachine ast = produceAst("{s1 e1 - - s2 e2 - - s3 e3 - -}");
       assertThat(ast.events, hasItems("e1", "e2", "e3"));
       assertThat(ast.events, hasSize(3));
     }
 
     @Test
-    public void manyEventsButNoDuplicates() throws Exception {
+    public void manyEventsButNoDuplicates() {
       SemanticStateMachine ast = produceAst("{s1 e1 - - s2 e2 - - s3 e1 - -}");
       assertThat(ast.events, hasItems("e1", "e2"));
       assertThat(ast.events, hasSize(2));
     }
 
     @Test
-    public void noNullEvents() throws Exception {
+    public void noNullEvents() {
       SemanticStateMachine ast = produceAst("{(s1) - - -}");
       assertThat(ast.events, hasSize(0));
     }
 
     @Test
-    public void manyActionsButNoDuplicates() throws Exception {
+    public void manyActionsButNoDuplicates() {
       SemanticStateMachine ast = produceAst("{s1 e1 - {a1 a2} s2 e2 - {a3 a1}}");
       assertThat(ast.actions, hasItems("a1", "a2", "a3"));
       assertThat(ast.actions, hasSize(3));
     }
 
     @Test
-    public void entryAndExitActionsAreCountedAsActions() throws Exception {
+    public void entryAndExitActionsAreCountedAsActions() {
       SemanticStateMachine ast = produceAst("{s <ea >xa - - a}");
       assertThat(ast.actions, hasItems("ea", "xa"));
     }
@@ -377,217 +377,238 @@ public class SemanticAnalyzerTest {
     }
 
     @Test
-    public void oneTransition() throws Exception {
+    public void oneTransition() {
       assertSyntaxToAst("{s e s a}",
-        "{\n" +
-          "  s {\n" +
-          "    e s {a}\n" +
-          "  }\n" +
-          "}\n");
+              """
+                      {
+                        s {
+                          e s {a}
+                        }
+                      }
+                      """);
     }
 
     @Test
-    public void twoTransitionsAreAggregated() throws Exception {
+    public void twoTransitionsAreAggregated() {
       assertSyntaxToAst("{s e1 s a s e2 s a}",
-        "{\n" +
-          "  s {\n" +
-          "    e1 s {a}\n" +
-          "    e2 s {a}\n" +
-          "  }\n" +
-          "}\n");
+              """
+                      {
+                        s {
+                          e1 s {a}
+                          e2 s {a}
+                        }
+                      }
+                      """);
     }
 
     @Test
-    public void superStatesAreAggregated() throws Exception {
+    public void superStatesAreAggregated() {
       assertSyntaxToAst("{s:b1 e1 s a s:b2 e2 s a (b1) e s - (b2) e s -}",
-        "{\n" +
-          "  (b1) {\n" +
-          "    e s {}\n" +
-          "  }\n" +
-          "\n" +
-          "  (b2) {\n" +
-          "    e s {}\n" +
-          "  }\n" +
-          "\n" +
-          "  s :b1 :b2 {\n" +
-          "    e1 s {a}\n" +
-          "    e2 s {a}\n" +
-          "  }\n" +
-          "}\n");
+              """
+                      {
+                        (b1) {
+                          e s {}
+                        }
+
+                        (b2) {
+                          e s {}
+                        }
+
+                        s :b1 :b2 {
+                          e1 s {a}
+                          e2 s {a}
+                        }
+                      }
+                      """);
     }
 
     @Test
-    public void nullNextStateRefersToSelf() throws Exception {
+    public void nullNextStateRefersToSelf() {
       assertSyntaxToAst("{s e - a}",
-        "{\n" +
-          "  s {\n" +
-          "    e s {a}\n" +
-          "  }\n" +
-          "}\n"
+              """
+                      {
+                        s {
+                          e s {a}
+                        }
+                      }
+                      """
       );
     }
 
     @Test
-    public void actionsRemainInOrder() throws Exception {
+    public void actionsRemainInOrder() {
       assertSyntaxToAst("{s e s {the quick brown fox jumped over the lazy dogs back}}",
-        "{\n" +
-          "  s {\n" +
-          "    e s {the quick brown fox jumped over the lazy dogs back}\n" +
-          "  }\n" +
-          "}\n");
+              """
+                      {
+                        s {
+                          e s {the quick brown fox jumped over the lazy dogs back}
+                        }
+                      }
+                      """);
     }
 
     @Test
-    public void entryAndExitActionsRemainInOrder() throws Exception {
+    public void entryAndExitActionsRemainInOrder() {
       assertSyntaxToAst("{s <{d o} <g >{c a} >t e s a}",
-        "{\n" +
-          "  s <d <o <g >c >a >t {\n" +
-          "    e s {a}\n" +
-          "  }\n" +
-          "}\n");
+              """
+                      {
+                        s <d <o <g >c >a >t {
+                          e s {a}
+                        }
+                      }
+                      """);
     }
   } //Logic
 
   @Nested
   public class AcceptanceTests {
     @Test
-    public void subwayTurnstileOne() throws Exception {
+    public void subwayTurnstileOne() {
       SemanticStateMachine ast = produceAst(
-        "Actions: Turnstile\n" +
-          "FSM: OneCoinTurnstile\n" +
-          "Initial: Locked\n" +
-          "{\n" +
-          "  Locked\tCoin\tUnlocked\t{alarmOff unlock}\n" +
-          "  Locked \tPass\tLocked\t\talarmOn\n" +
-          "  Unlocked\tCoin\tUnlocked\tthankyou\n" +
-          "  Unlocked\tPass\tLocked\t\tlock\n" +
-          "}");
+              """
+                      Actions: Turnstile
+                      FSM: OneCoinTurnstile
+                      Initial: Locked
+                      {
+                        Locked\tCoin\tUnlocked\t{alarmOff unlock}
+                        Locked \tPass\tLocked\t\talarmOn
+                        Unlocked\tCoin\tUnlocked\tthankyou
+                        Unlocked\tPass\tLocked\t\tlock
+                      }""");
       assertThat(ast.toString(), equalTo(
-        "Actions: Turnstile\n" +
-          "FSM: OneCoinTurnstile\n" +
-          "Initial: Locked{\n" +
-          "  Locked {\n" +
-          "    Coin Unlocked {alarmOff unlock}\n" +
-          "    Pass Locked {alarmOn}\n" +
-          "  }\n" +
-          "\n" +
-          "  Unlocked {\n" +
-          "    Coin Unlocked {thankyou}\n" +
-          "    Pass Locked {lock}\n" +
-          "  }\n" +
-          "}\n"));
+              """
+                      Actions: Turnstile
+                      FSM: OneCoinTurnstile
+                      Initial: Locked{
+                        Locked {
+                          Coin Unlocked {alarmOff unlock}
+                          Pass Locked {alarmOn}
+                        }
+
+                        Unlocked {
+                          Coin Unlocked {thankyou}
+                          Pass Locked {lock}
+                        }
+                      }
+                      """));
     }
 
     @Test
-    public void subwayTurnstileTwo() throws Exception {
+    public void subwayTurnstileTwo() {
       SemanticStateMachine ast = produceAst(
-        "Actions: Turnstile\n" +
-          "FSM: TwoCoinTurnstile\n" +
-          "Initial: Locked\n" +
-          "{\n" +
-          "\tLocked {\n" +
-          "\t\tPass\tAlarming\talarmOn\n" +
-          "\t\tCoin\tFirstCoin\t-\n" +
-          "\t\tReset\tLocked\t{lock alarmOff}\n" +
-          "\t}\n" +
-          "\t\n" +
-          "\tAlarming\tReset\tLocked {lock alarmOff}\n" +
-          "\t\n" +
-          "\tFirstCoin {\n" +
-          "\t\tPass\tAlarming\t-\n" +
-          "\t\tCoin\tUnlocked\tunlock\n" +
-          "\t\tReset\tLocked {lock alarmOff}\n" +
-          "\t}\n" +
-          "\t\n" +
-          "\tUnlocked {\n" +
-          "\t\tPass\tLocked\tlock\n" +
-          "\t\tCoin\t-\t\tthankyou\n" +
-          "\t\tReset\tLocked {lock alarmOff}\n" +
-          "\t}\n" +
-          "}"
+              """
+                      Actions: Turnstile
+                      FSM: TwoCoinTurnstile
+                      Initial: Locked
+                      {
+                      \tLocked {
+                      \t\tPass\tAlarming\talarmOn
+                      \t\tCoin\tFirstCoin\t-
+                      \t\tReset\tLocked\t{lock alarmOff}
+                      \t}
+                      \t
+                      \tAlarming\tReset\tLocked {lock alarmOff}
+                      \t
+                      \tFirstCoin {
+                      \t\tPass\tAlarming\t-
+                      \t\tCoin\tUnlocked\tunlock
+                      \t\tReset\tLocked {lock alarmOff}
+                      \t}
+                      \t
+                      \tUnlocked {
+                      \t\tPass\tLocked\tlock
+                      \t\tCoin\t-\t\tthankyou
+                      \t\tReset\tLocked {lock alarmOff}
+                      \t}
+                      }"""
       );
       assertThat(ast.toString(), equalTo(
-        "Actions: Turnstile\n" +
-          "FSM: TwoCoinTurnstile\n" +
-          "Initial: Locked{\n" +
-          "  Alarming {\n" +
-          "    Reset Locked {lock alarmOff}\n" +
-          "  }\n" +
-          "\n" +
-          "  FirstCoin {\n" +
-          "    Pass Alarming {}\n" +
-          "    Coin Unlocked {unlock}\n" +
-          "    Reset Locked {lock alarmOff}\n" +
-          "  }\n" +
-          "\n" +
-          "  Locked {\n" +
-          "    Pass Alarming {alarmOn}\n" +
-          "    Coin FirstCoin {}\n" +
-          "    Reset Locked {lock alarmOff}\n" +
-          "  }\n" +
-          "\n" +
-          "  Unlocked {\n" +
-          "    Pass Locked {lock}\n" +
-          "    Coin Unlocked {thankyou}\n" +
-          "    Reset Locked {lock alarmOff}\n" +
-          "  }\n" +
-          "}\n"));
+              """
+                      Actions: Turnstile
+                      FSM: TwoCoinTurnstile
+                      Initial: Locked{
+                        Alarming {
+                          Reset Locked {lock alarmOff}
+                        }
+
+                        FirstCoin {
+                          Pass Alarming {}
+                          Coin Unlocked {unlock}
+                          Reset Locked {lock alarmOff}
+                        }
+
+                        Locked {
+                          Pass Alarming {alarmOn}
+                          Coin FirstCoin {}
+                          Reset Locked {lock alarmOff}
+                        }
+
+                        Unlocked {
+                          Pass Locked {lock}
+                          Coin Unlocked {thankyou}
+                          Reset Locked {lock alarmOff}
+                        }
+                      }
+                      """));
     }
 
     @Test
-    public void subwayTurnstileThree() throws Exception {
+    public void subwayTurnstileThree() {
       SemanticStateMachine ast = produceAst(
-        "Actions: Turnstile\n" +
-          "FSM: TwoCoinTurnstile\n" +
-          "Initial: Locked\n" +
-          "{\n" +
-          "    (Base)\tReset\tLocked\tlock\n" +
-          "\n" +
-          "\tLocked : Base {\n" +
-          "\t\tPass\tAlarming\t-\n" +
-          "\t\tCoin\tFirstCoin\t-\n" +
-          "\t}\n" +
-          "\t\n" +
-          "\tAlarming : Base\t<alarmOn >alarmOff -\t-\t-\n" +
-          "\t\n" +
-          "\tFirstCoin : Base {\n" +
-          "\t\tPass\tAlarming\t-\n" +
-          "\t\tCoin\tUnlocked\tunlock\n" +
-          "\t}\n" +
-          "\t\n" +
-          "\tUnlocked : Base {\n" +
-          "\t\tPass\tLocked\tlock\n" +
-          "\t\tCoin\t-\t\tthankyou\n" +
-          "\t}\n" +
-          "}"
+              """
+                      Actions: Turnstile
+                      FSM: TwoCoinTurnstile
+                      Initial: Locked
+                      {
+                          (Base)\tReset\tLocked\tlock
+
+                      \tLocked : Base {
+                      \t\tPass\tAlarming\t-
+                      \t\tCoin\tFirstCoin\t-
+                      \t}
+                      \t
+                      \tAlarming : Base\t<alarmOn >alarmOff -\t-\t-
+                      \t
+                      \tFirstCoin : Base {
+                      \t\tPass\tAlarming\t-
+                      \t\tCoin\tUnlocked\tunlock
+                      \t}
+                      \t
+                      \tUnlocked : Base {
+                      \t\tPass\tLocked\tlock
+                      \t\tCoin\t-\t\tthankyou
+                      \t}
+                      }"""
       );
       assertThat(ast.toString(), equalTo(
-        "Actions: Turnstile\n" +
-          "FSM: TwoCoinTurnstile\n" +
-          "Initial: Locked{\n" +
-          "  Alarming :Base <alarmOn >alarmOff {\n" +
-          "    null Alarming {}\n" +
-          "  }\n" +
-          "\n" +
-          "  (Base) {\n" +
-          "    Reset Locked {lock}\n" +
-          "  }\n" +
-          "\n" +
-          "  FirstCoin :Base {\n" +
-          "    Pass Alarming {}\n" +
-          "    Coin Unlocked {unlock}\n" +
-          "  }\n" +
-          "\n" +
-          "  Locked :Base {\n" +
-          "    Pass Alarming {}\n" +
-          "    Coin FirstCoin {}\n" +
-          "  }\n" +
-          "\n" +
-          "  Unlocked :Base {\n" +
-          "    Pass Locked {lock}\n" +
-          "    Coin Unlocked {thankyou}\n" +
-          "  }\n" +
-          "}\n"));
+              """
+                      Actions: Turnstile
+                      FSM: TwoCoinTurnstile
+                      Initial: Locked{
+                        Alarming :Base <alarmOn >alarmOff {
+                          null Alarming {}
+                        }
+
+                        (Base) {
+                          Reset Locked {lock}
+                        }
+
+                        FirstCoin :Base {
+                          Pass Alarming {}
+                          Coin Unlocked {unlock}
+                        }
+
+                        Locked :Base {
+                          Pass Alarming {}
+                          Coin FirstCoin {}
+                        }
+
+                        Unlocked :Base {
+                          Pass Locked {lock}
+                          Coin Unlocked {thankyou}
+                        }
+                      }
+                      """));
     }
 
   }

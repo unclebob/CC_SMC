@@ -78,7 +78,7 @@ FSM: RootFSMGen
     // thumbnail screen is displayed in the 'processing' state,
     // meaning that the thumbnails are filled in with the pages of the
     // selected batch.  There are several substates, each one
-    // relflecting a particular mode of batch processing.    
+    // reflecting a particular mode of batch processing.
     (processingBatch) >hideThumbnailScreen
     {
         // these transitions are to correct button bounce on 

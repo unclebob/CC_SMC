@@ -26,13 +26,12 @@ public class NSCGeneratorTest {
   private SyntaxBuilder builder;
   private SemanticAnalyzer analyzer;
   private Optimizer optimizer;
-  private final String stdHead = "Initial: I FSM:f Actions:acts";
   private NSCGenerator generator;
   private NSCNodeVisitor implementer;
   private String output = "";
 
   @BeforeEach
-  public void setUp() throws Exception {
+  public void setUp() {
     builder = new SyntaxBuilder();
     parser = new Parser(builder);
     lexer = new Lexer(parser);
@@ -53,7 +52,8 @@ public class NSCGeneratorTest {
   }
 
   private void assertGenerated(String stt, String switchCase) {
-    OptimizedStateMachine sm = headerAndSttToSm(stdHead, stt);
+      String stdHead = "Initial: I FSM:f Actions:acts";
+      OptimizedStateMachine sm = headerAndSttToSm(stdHead, stt);
     generator.generate(sm).accept(implementer);
     assertThat(output, equalTo(switchCase));
   }
@@ -113,14 +113,14 @@ public class NSCGeneratorTest {
     }
 
     @Test
-    public void OneTransition() throws Exception {
+    public void OneTransition() {
       assertGenerated(
         "{I e I a}",
         "s state {case I {s event {case e {setState(State.I) a() } default(I);}}}");
     }
 
     @Test
-    public void twoTransitions() throws Exception {
+    public void twoTransitions() {
       assertGenerated("{I e1 S a1 S e2 I a2}",
         "s state {" +
           "case I {s event {case e1 {setState(State.S) a1() } default(I);}}" +
@@ -129,7 +129,7 @@ public class NSCGeneratorTest {
     }
 
     @Test
-    public void twoStatesTwoEventsFourActions() throws Exception {
+    public void twoStatesTwoEventsFourActions() {
       assertGenerated(
         "{" +
           "  I e1 S a1 " +
@@ -176,7 +176,7 @@ public class NSCGeneratorTest {
     }
 
     @Test
-    public void statesAndEvents() throws Exception {
+    public void statesAndEvents() {
       assertGenerated(
         "{" +
           "  I e1 S a1 " +
@@ -202,7 +202,7 @@ public class NSCGeneratorTest {
     }
 
     @Test
-    public void statePropertyIsCreated() throws Exception {
+    public void statePropertyIsCreated() {
       assertGenerated("{I e I a}", "state property = I");
     }
 
@@ -223,7 +223,7 @@ public class NSCGeneratorTest {
     }
 
     @Test
-    public void eventDelegatorsAreGenerated() throws Exception {
+    public void eventDelegatorsAreGenerated() {
       assertGenerated(
               "{" +
                 "  I e1 S a1 " +
@@ -250,7 +250,7 @@ public class NSCGeneratorTest {
     }
 
     @Test
-    public void handleEventIsGenerated() throws Exception {
+    public void handleEventIsGenerated() {
       assertGenerated("{I e I a}", "he(s)");
     }
 
@@ -277,7 +277,7 @@ public class NSCGeneratorTest {
     }
 
     @Test
-    public void fsmClassNodeIsGenerated() throws Exception {
+    public void fsmClassNodeIsGenerated() {
       assertGenerated("{I e I a}", "class f:acts {d e e p he sc}");
     }
 

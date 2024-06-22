@@ -304,15 +304,11 @@ setState(State.processingAutoBatch);
 hideThumbnailScreen();
 displayAutoThumbnailProcessing();
 break;
-case ok:
+case ok, cancel:
 setState(State.processingBatch);
 hideThumbnailScreen();
 break;
-case cancel:
-setState(State.processingBatch);
-hideThumbnailScreen();
-break;
-case requeue:
+    case requeue:
 setState(State.determiningUserMode);
 hideThumbnailScreen();
 cleanupThumbnails();
@@ -366,15 +362,11 @@ setState(State.processingAutoBatchStopped);
 hideThumbnailScreen();
 displayAutoThumbnailProcessing();
 break;
-case ok:
+case ok, cancel:
 setState(State.processingBatch);
 hideThumbnailScreen();
 break;
-case cancel:
-setState(State.processingBatch);
-hideThumbnailScreen();
-break;
-case requeue:
+    case requeue:
 setState(State.determiningUserMode);
 hideThumbnailScreen();
 cleanupThumbnails();
@@ -408,15 +400,11 @@ setState(State.processingManualBatch);
 hideThumbnailScreen();
 displayManualThumbnailProcessing();
 break;
-case ok:
+case ok, cancel:
 setState(State.processingBatch);
 hideThumbnailScreen();
 break;
-case cancel:
-setState(State.processingBatch);
-hideThumbnailScreen();
-break;
-case complete:
+    case complete:
 setState(State.determiningUserMode);
 hideThumbnailScreen();
 cleanupThumbnails();

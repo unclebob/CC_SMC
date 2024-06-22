@@ -31,7 +31,7 @@ public class CppNestedSwitchCaseImplementerTests {
   private CppNestedSwitchCaseImplementer implementer;
 
   @BeforeEach
-  public void setUp() throws Exception {
+  public void setUp() {
     builder = new SyntaxBuilder();
     parser = new Parser(builder);
     lexer = new Lexer(parser);
@@ -60,59 +60,63 @@ public class CppNestedSwitchCaseImplementerTests {
     }
 
     @Test
-    public void noActions_shouldBeError() throws Exception {
-      OptimizedStateMachine sm = produceStateMachine("Initial: I\n" +
-        "Fsm: fsm\n" +
-        "{" +
-        "  I E I A" +
-        "}");
+    public void noActions_shouldBeError() {
+      OptimizedStateMachine sm = produceStateMachine("""
+              Initial: I
+              Fsm: fsm
+              {\
+                I E I A\
+              }""");
       NSCNode generatedFsm = generator.generate(sm);
       generatedFsm.accept(implementer);
       assertThat(implementer.getErrors().size(), is(1));
-      assertThat(implementer.getErrors().get(0), is(CppNestedSwitchCaseImplementer.Error.NO_ACTIONS));
+      assertThat(implementer.getErrors().getFirst(), is(CppNestedSwitchCaseImplementer.Error.NO_ACTIONS));
     }
     @Test
-    public void oneTransition() throws Exception {
-      OptimizedStateMachine sm = produceStateMachine("Initial: I\n" +
-        "Fsm: fsm\n" +
-        "Actions: acts\n" +
-        "{" +
-        "  I E I A" +
-        "}");
+    public void oneTransition() {
+      OptimizedStateMachine sm = produceStateMachine("""
+              Initial: I
+              Fsm: fsm
+              Actions: acts
+              {\
+                I E I A\
+              }""");
       NSCNode generatedFsm = generator.generate(sm);
       generatedFsm.accept(implementer);
 
-      assertWhitespaceEquivalent(implementer.getOutput(), "#ifndef FSM_H\n" +
-        "#define FSM_H\n" +
-        "#include \"acts.h\"\n" +
-        "class fsm : public acts {\n" +
-        "public:\n" +
-        "  fsm()\n" +
-        "  : state(State_I)\n" +
-        "  {}\n" +
-        "  void E() {processEvent(Event_E, \"E\");}\n" +
-        "private:\n" +
-        "  enum State {State_I};\n" +
-        "  State state;\n" +
-        "  void setState(State s) {state=s;}\n" +
-        "  enum Event {Event_E};\n" +
-        "  void processEvent(Event event, const char* eventName) {\n" +
-        "    switch (state) {\n" +
-        "      case State_I:\n" +
-        "        switch (event) {\n" +
-        "          case Event_E:\n" +
-        "            setState(State_I);\n" +
-        "            A();\n" +
-        "            break;\n" +
-        "          default:\n" +
-        "            unexpected_transition(\"I\", eventName);\n" +
-        "            break;\n" +
-        "        }\n" +
-        "        break;\n" +
-        "    }\n" +
-        "  }\n" +
-        "};\n" +
-        "#endif\n");
+      assertWhitespaceEquivalent(implementer.getOutput(), """
+              #ifndef FSM_H
+              #define FSM_H
+              #include "acts.h"
+              class fsm : public acts {
+              public:
+                fsm()
+                : state(State_I)
+                {}
+                void E() {processEvent(Event_E, "E");}
+              private:
+                enum State {State_I};
+                State state;
+                void setState(State s) {state=s;}
+                enum Event {Event_E};
+                void processEvent(Event event, const char* eventName) {
+                  switch (state) {
+                    case State_I:
+                      switch (event) {
+                        case Event_E:
+                          setState(State_I);
+                          A();
+                          break;
+                        default:
+                          unexpected_transition("I", eventName);
+                          break;
+                      }
+                      break;
+                  }
+                }
+              };
+              #endif
+              """);
     }
   } // no flags
 }

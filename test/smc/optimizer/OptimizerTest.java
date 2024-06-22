@@ -29,7 +29,7 @@ public class OptimizerTest {
   private OptimizedStateMachine optimizedStateMachine;
 
   @BeforeEach
-  public void setUp() throws Exception {
+  public void setUp() {
     builder = new SyntaxBuilder();
     parser = new Parser(builder);
     lexer = new Lexer(parser);
@@ -59,7 +59,7 @@ public class OptimizerTest {
   @Nested
   public class BasicOptimizerFunctions {
     @Test
-    public void header() throws Exception {
+    public void header() {
       OptimizedStateMachine sm = produceStateMachineWithHeader("{i e i -}");
       assertThat(sm.header.fsm, equalTo("f"));
       assertThat(sm.header.initial, equalTo("i"));
@@ -67,37 +67,39 @@ public class OptimizerTest {
     }
 
     @Test
-    public void statesArePreserved() throws Exception {
+    public void statesArePreserved() {
       OptimizedStateMachine sm = produceStateMachineWithHeader("{i e s - s e i -}");
       assertThat(sm.states, contains("i", "s"));
     }
 
     @Test
-    public void abstractStatesAreRemoved() throws Exception {
+    public void abstractStatesAreRemoved() {
       OptimizedStateMachine sm = produceStateMachineWithHeader("{(b) - - - i:b e i -}");
       assertThat(sm.states, not(hasItems("b")));
     }
 
     @Test
-    public void eventsArePreserved() throws Exception {
+    public void eventsArePreserved() {
       OptimizedStateMachine sm = produceStateMachineWithHeader("{i e1 s - s e2 i -}");
       assertThat(sm.events, contains("e1", "e2"));
     }
 
     @Test
-    public void actionsArePreserved() throws Exception {
+    public void actionsArePreserved() {
       OptimizedStateMachine sm = produceStateMachineWithHeader("{i e1 s a1 s e2 i a2}");
       assertThat(sm.actions, contains("a1", "a2"));
     }
 
     @Test
-    public void simpleStateMachine() throws Exception {
+    public void simpleStateMachine() {
       assertOptimization(
               "{i e i a1}",
 
-        "i {\n" +
-          "  e i {a1}\n" +
-          "}\n");
+              """
+                      i {
+                        e i {a1}
+                      }
+                      """);
         assertThat(optimizedStateMachine.transitions, hasSize(1));
 
     }
@@ -106,41 +108,45 @@ public class OptimizerTest {
   @Nested
   public class EntryAndExitActions {
     @Test
-    public void entryFunctionsAdded() throws Exception {
+    public void entryFunctionsAdded() {
       assertOptimization(
         "{" +
           "  i e s a1" +
           "  i e2 s a2" +
           "  s <n1 <n2 e i -" +
           "}",
-        "i {\n" +
-          "  e s {n1 n2 a1}\n" +
-          "  e2 s {n1 n2 a2}\n" +
-          "}\n" +
-          "s {\n" +
-          "  e i {}\n" +
-          "}\n");
+              """
+                      i {
+                        e s {n1 n2 a1}
+                        e2 s {n1 n2 a2}
+                      }
+                      s {
+                        e i {}
+                      }
+                      """);
     }
 
     @Test
-    public void exitFunctionsAdded() throws Exception {
+    public void exitFunctionsAdded() {
       assertOptimization(
         "{" +
           "  i >x2 >x1 e s a1" +
           "  i e2 s a2" +
           "  s e i -" +
           "}",
-        "i {\n" +
-          "  e s {x2 x1 a1}\n" +
-          "  e2 s {x2 x1 a2}\n" +
-          "}\n" +
-          "s {\n" +
-          "  e i {}\n" +
-          "}\n");
+              """
+                      i {
+                        e s {x2 x1 a1}
+                        e2 s {x2 x1 a2}
+                      }
+                      s {
+                        e i {}
+                      }
+                      """);
     }
 
     @Test
-    public void firstSuperStateEntryAndExitActionsAreAdded() throws Exception {
+    public void firstSuperStateEntryAndExitActionsAreAdded() {
       assertOptimization(
         "{" +
           "  (ib) >ibx1 >ibx2 - - -" +
@@ -148,16 +154,18 @@ public class OptimizerTest {
           "  i:ib >x e s a" +
           "  s:sb <n e i -" +
           "}",
-        "i {\n" +
-          "  e s {x ibx1 ibx2 sbn1 sbn2 n a}\n" +
-          "}\n" +
-          "s {\n" +
-          "  e i {}\n" +
-          "}\n");
+              """
+                      i {
+                        e s {x ibx1 ibx2 sbn1 sbn2 n a}
+                      }
+                      s {
+                        e i {}
+                      }
+                      """);
     }
 
     @Test
-    public void multipleSuperStateEntryAndExitActionsAreAdded() throws Exception {
+    public void multipleSuperStateEntryAndExitActionsAreAdded() {
       assertOptimization(
         "{" +
           "  (ib1) >ib1x - - -" +
@@ -167,16 +175,18 @@ public class OptimizerTest {
           "  i:ib2 >x e s a" +
           "  s:sb2 <n e i -" +
           "}",
-        "i {\n" +
-          "  e s {x ib2x ib1x sb1n sb2n n a}\n" +
-          "}\n" +
-          "s {\n" +
-          "  e i {}\n" +
-          "}\n");
+              """
+                      i {
+                        e s {x ib2x ib1x sb1n sb2n n a}
+                      }
+                      s {
+                        e i {}
+                      }
+                      """);
     }
 
     @Test
-    public void diamondSuperStateEntryAndExitActionsAreAdded() throws Exception {
+    public void diamondSuperStateEntryAndExitActionsAreAdded() {
       assertOptimization(
         "{" +
           "  (ib1) >ib1x - - -" +
@@ -188,37 +198,41 @@ public class OptimizerTest {
           "  i:ib2 :ib3 >x e s a" +
           "  s :sb2 :sb3 <n e i -" +
           "}",
-        "i {\n" +
-          "  e s {x ib3x ib2x ib1x sb1n sb2n sb3n n a}\n" +
-          "}\n" +
-          "s {\n" +
-          "  e i {}\n" +
-          "}\n");
+              """
+                      i {
+                        e s {x ib3x ib2x ib1x sb1n sb2n sb3n n a}
+                      }
+                      s {
+                        e i {}
+                      }
+                      """);
     }
   } // Entry and Exit Actions
 
   @Nested
   public class superStateTransitions {
     @Test
-    public void simpleInheritanceOfTransitions() throws Exception {
+    public void simpleInheritanceOfTransitions() {
       assertOptimization(
         "{" +
           "  (b) be s ba" +
           "  i:b e s a" +
           "  s e i -" +
           "}",
-        "i {\n" +
-          "  e s {a}\n" +
-          "  be s {ba}\n" +
-          "}\n" +
-          "s {\n" +
-          "  e i {}\n" +
-          "}\n"
+              """
+                      i {
+                        e s {a}
+                        be s {ba}
+                      }
+                      s {
+                        e i {}
+                      }
+                      """
       );
     }
 
     @Test
-    public void deepInheritanceOfTransitions() throws Exception {
+    public void deepInheritanceOfTransitions() {
       assertOptimization(
         "{" +
           "  (b1) {" +
@@ -229,20 +243,22 @@ public class OptimizerTest {
           "  i:b2 e s a" +
           "  s e i -" +
           "}",
-        "i {\n" +
-          "  e s {a}\n" +
-          "  b2e s {b2a}\n" +
-          "  b1e1 s {b1a1}\n" +
-          "  b1e2 s {b1a2}\n" +
-          "}\n" +
-          "s {\n" +
-          "  e i {}\n" +
-          "}\n"
+              """
+                      i {
+                        e s {a}
+                        b2e s {b2a}
+                        b1e1 s {b1a1}
+                        b1e2 s {b1a2}
+                      }
+                      s {
+                        e i {}
+                      }
+                      """
       );
     }
 
     @Test
-    public void multipleInheritanceOfTransitions() throws Exception {
+    public void multipleInheritanceOfTransitions() {
       assertOptimization(
         "{" +
           "  (b1) b1e s b1a" +
@@ -250,19 +266,21 @@ public class OptimizerTest {
           "  i:b1 :b2 e s a" +
           "  s e i -" +
           "}",
-        "i {\n" +
-          "  e s {a}\n" +
-          "  b2e s {b2a}\n" +
-          "  b1e s {b1a}\n" +
-          "}\n" +
-          "s {\n" +
-          "  e i {}\n" +
-          "}\n"
+              """
+                      i {
+                        e s {a}
+                        b2e s {b2a}
+                        b1e s {b1a}
+                      }
+                      s {
+                        e i {}
+                      }
+                      """
       );
     }
 
     @Test
-    public void diamondInheritanceOfTransitions() throws Exception {
+    public void diamondInheritanceOfTransitions() {
       assertOptimization(
         "{" +
           "  (b) be s ba" +
@@ -271,20 +289,22 @@ public class OptimizerTest {
           "  i:b1 :b2 e s a" +
           "  s e i -" +
           "}",
-        "i {\n" +
-          "  e s {a}\n" +
-          "  b2e s {b2a}\n" +
-          "  b1e s {b1a}\n" +
-          "  be s {ba}\n" +
-          "}\n" +
-          "s {\n" +
-          "  e i {}\n" +
-          "}\n"
+              """
+                      i {
+                        e s {a}
+                        b2e s {b2a}
+                        b1e s {b1a}
+                        be s {ba}
+                      }
+                      s {
+                        e i {}
+                      }
+                      """
       );
     }
 
     @Test
-    public void overridingTransitions() throws Exception {
+    public void overridingTransitions() {
       assertOptimization(
         "{" +
           "  (b) e s2 a2" +
@@ -292,32 +312,36 @@ public class OptimizerTest {
           "  s e i -" +
           "  s2 e i -" +
           "}",
-        "i {\n" +
-          "  e s {a}\n" +
-          "}\n" +
-          "s {\n" +
-          "  e i {}\n" +
-          "}\n" +
-          "s2 {\n" +
-          "  e i {}\n" +
-          "}\n"
+              """
+                      i {
+                        e s {a}
+                      }
+                      s {
+                        e i {}
+                      }
+                      s2 {
+                        e i {}
+                      }
+                      """
       );
     }
 
     @Test
-    public void eliminationOfDuplicateTransitions() throws Exception {
+    public void eliminationOfDuplicateTransitions() {
       assertOptimization(
         "{" +
           "  (b) e s a" +
           "  i:b e s a" +
           "  s e i -" +
           "}",
-        "i {\n" +
-          "  e s {a}\n" +
-          "}\n" +
-          "s {\n" +
-          "  e i {}\n" +
-          "}\n"
+              """
+                      i {
+                        e s {a}
+                      }
+                      s {
+                        e i {}
+                      }
+                      """
       );
 
     }
@@ -326,50 +350,53 @@ public class OptimizerTest {
   @Nested
   public class AcceptanceTests {
     @Test
-    public void turnstyle3() throws Exception {
+    public void turnstile3() {
       OptimizedStateMachine sm = produceStateMachine(
-        "Actions: Turnstile\n" +
-          "FSM: TwoCoinTurnstile\n" +
-          "Initial: Locked\n" +
-          "{" +
-          "    (Base)  Reset  Locked  lock" +
-          "  Locked : Base {" +
-          "    Pass  Alarming  -" +
-          "    Coin  FirstCoin -" +
-          "  }" +
-          "  Alarming : Base <alarmOn >alarmOff -  -  -" +
-          "  FirstCoin : Base {" +
-          "    Pass  Alarming  -" +
-          "    Coin  Unlocked  unlock" +
-          "  }" +
-          "  Unlocked : Base {" +
-          "    Pass  Locked  lock" +
-          "    Coin  -       thankyou" +
-          "}");
+              """
+                      Actions: Turnstile
+                      FSM: TwoCoinTurnstile
+                      Initial: Locked
+                      {\
+                          (Base)  Reset  Locked  lock\
+                        Locked : Base {\
+                          Pass  Alarming  -\
+                          Coin  FirstCoin -\
+                        }\
+                        Alarming : Base <alarmOn >alarmOff -  -  -\
+                        FirstCoin : Base {\
+                          Pass  Alarming  -\
+                          Coin  Unlocked  unlock\
+                        }\
+                        Unlocked : Base {\
+                          Pass  Locked  lock\
+                          Coin  -       thankyou\
+                      }""");
       assertThat(sm.toString(), equalTo(
-        "Initial: Locked\n" +
-          "Fsm: TwoCoinTurnstile\n" +
-          "Actions:Turnstile\n" +
-          "{\n" +
-          "  Alarming {\n" +
-          "    Reset Locked {alarmOff lock}\n" +
-          "  }\n" +
-          "  FirstCoin {\n" +
-          "    Pass Alarming {alarmOn}\n" +
-          "    Coin Unlocked {unlock}\n" +
-          "    Reset Locked {lock}\n" +
-          "  }\n" +
-          "  Locked {\n" +
-          "    Pass Alarming {alarmOn}\n" +
-          "    Coin FirstCoin {}\n" +
-          "    Reset Locked {lock}\n" +
-          "  }\n" +
-          "  Unlocked {\n" +
-          "    Pass Locked {lock}\n" +
-          "    Coin Unlocked {thankyou}\n" +
-          "    Reset Locked {lock}\n" +
-          "  }\n" +
-          "}\n"));
+              """
+                      Initial: Locked
+                      Fsm: TwoCoinTurnstile
+                      Actions:Turnstile
+                      {
+                        Alarming {
+                          Reset Locked {alarmOff lock}
+                        }
+                        FirstCoin {
+                          Pass Alarming {alarmOn}
+                          Coin Unlocked {unlock}
+                          Reset Locked {lock}
+                        }
+                        Locked {
+                          Pass Alarming {alarmOn}
+                          Coin FirstCoin {}
+                          Reset Locked {lock}
+                        }
+                        Unlocked {
+                          Pass Locked {lock}
+                          Coin Unlocked {thankyou}
+                          Reset Locked {lock}
+                        }
+                      }
+                      """));
     }
   } // Acceptance Tests
 }
