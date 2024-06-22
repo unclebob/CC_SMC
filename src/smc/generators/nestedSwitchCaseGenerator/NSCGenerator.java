@@ -31,6 +31,7 @@ public class NSCGenerator {
     fsm.stateProperty = statePropertyNode;
     fsm.handleEvent = handleEventNode;
     fsm.actions = sm.actions;
+    fsm.states = sm.states;
     return fsm;
   }
 
