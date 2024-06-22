@@ -4,3 +4,4 @@ build
 .idea
 test_cases/java_turnstile/.idea
 
+*.class
