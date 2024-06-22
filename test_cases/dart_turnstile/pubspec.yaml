@@ -1,0 +1,7 @@
+name: turnstile
+
+dependencies:
+  meta: ^1.2.4
+
+dev_dependencies:
+  test: ^1.15.7
