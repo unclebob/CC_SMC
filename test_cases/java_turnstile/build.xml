@@ -2,6 +2,7 @@
     <target name="clean">
         <delete dir="build"/>
         <delete dir="out"/>
+        <delete file="src/TwoCoinTurnstile.java"/>
     </target>
 
     <target name="smc">
